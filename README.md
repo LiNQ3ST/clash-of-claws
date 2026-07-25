@@ -21,6 +21,8 @@ and PRs. Replace every <placeholder> and delete this comment before you submit.
 | 2 — <Slice> | | | | | | | in-progress |
 | 3 — <Slice> | | | | | | | planned |
 | 4 — <Slice> | | | | | | | planned |
+| 4- Creature Roster| | | | | | | planned |
+
 
 _Status values: planned · in-progress · complete_
 
