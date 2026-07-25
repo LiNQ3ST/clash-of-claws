@@ -32,7 +32,7 @@ Issue if the team later decides to attempt it for extra credit._
 
 - Slice 5 — Luke McCormick : not building Evolutions.
 - <Slice 2>: <beyond-scope item> — out of scope.
-- <Battle Engine>: < type-effectiveness matrix, status effects, animations> — out of scope.
+- <Slice 3>: Battle Engine <beyond-scope item>: type-effectiveness matrix, status effects, animations — out of scope.
 
 ## Code Review Log
 | PR | Author | Human reviewer(s) | AI review (link) | Outcome |
