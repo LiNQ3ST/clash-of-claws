@@ -18,7 +18,7 @@ and PRs. Replace every <placeholder> and delete this comment before you submit.
 | Slice | Owner | GitHub username | Issues | Branch(es) | PR(s) | Enhancement chosen | Status |
 |-------|-------|-----------------|--------|------------|-------|--------------------|--------|
 | 1 — Accounts | Sahtra Green | SahtraRG | |  |  |  | planned |
-| 2 — <Slice> | | | | | | | in-progress |
+| 2 — Admin & Arenas| Nabiha Fatima|nfatima-csumb | | | | | planned |
 | 3 — Battle Engine | Quinton Nisonger| QuintonScripts | X | X | X | Extra TestFX scene tests | planned |
 | 4 — Marketplace | Todd Gonzales | toddgonzales-xg | | | | | planned |
 | 5- Creature Roster|Luke McCormick  |lumccormick-collab | 0 | 0 | 0 |data binding| planned |
