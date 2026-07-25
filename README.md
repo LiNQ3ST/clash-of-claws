@@ -30,7 +30,7 @@ _Status values: planned · in-progress · complete_
 _Slices and beyond-scope items we are consciously NOT building. Move an item to a tracked
 Issue if the team later decides to attempt it for extra credit._
 
-- Slice 5 — <name>: not building (team size).
+- Slice 5 — Luke McCormick : not building Evolutions.
 - <Slice 2>: <beyond-scope item> — out of scope.
 - <Slice 3>: <beyond-scope item> — out of scope.
 
