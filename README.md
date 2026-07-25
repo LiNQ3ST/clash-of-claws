@@ -12,7 +12,7 @@ and PRs. Replace every <placeholder> and delete this comment before you submit.
 
 # <Clash of Claws>
 
-<One-line description.> CST 338 Project 2 — Team **<L!NQ3ST>**.
+<Collect cats. Train champions. Throw paws.> CST 338 Project 2 — Team **L!NQ3ST**.
 
 ## Team & Slice Ownership
 | Slice | Owner | GitHub username | Issues | Branch(es) | PR(s) | Enhancement chosen | Status |
