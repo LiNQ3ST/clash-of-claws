@@ -21,7 +21,7 @@ and PRs. Replace every <placeholder> and delete this comment before you submit.
 | 2 — <Slice> | | | | | | | in-progress |
 | 3 — <Slice> | | | | | | | planned |
 | 4 — <Slice> | | | | | | | planned |
-| 5- Creature Roster| | | | | | | planned |
+| 5- Creature Roster|Luke McCormick  |lumccormick-collab | 0 | 0 | 0 |data binding| planned |
 
 
 _Status values: planned · in-progress · complete_
