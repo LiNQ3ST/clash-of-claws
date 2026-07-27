@@ -17,11 +17,11 @@ and PRs. Replace every <placeholder> and delete this comment before you submit.
 ## Team & Slice Ownership
 | Slice | Owner | GitHub username | Issues | Branch(es) | PR(s) | Enhancement chosen | Status |
 |-------|-------|-----------------|--------|------------|-------|--------------------|--------|
-| 1 — Accounts | Sahtra Green | SahtraRG | |  |  | Custom reusable FXML component | planned |
+| 1 — Accounts | Sahtra Green | SahtraRG | | | | Custom reusable FXML component | planned |
 | 2 — Admin & Arenas| Nabiha Fatima|nfatima-csumb | | | | | planned |
-| 3 — Battle Engine | Quinton Nisonger| QuintonScripts | X | X | X | Extra TestFX scene tests | planned |
+| 3 — Battle Engine | Quinton Nisonger| QuintonScripts | | | | Extra TestFX scene tests | planned |
 | 4 — Marketplace & Trading | Todd Gonzales | toddgonzales-xg | | | | | planned |
-| 5- Creature Roster|Luke McCormick  |lumccormick-collab | 0 | 0 | 0 |data binding| planned |
+| 5- Creature Roster|Luke McCormick  |lumccormick-collab | | | | Data binding | planned |
 
 
 _Status values: planned · in-progress · complete_
@@ -30,10 +30,11 @@ _Status values: planned · in-progress · complete_
 _Slices and beyond-scope items we are consciously NOT building. Move an item to a tracked
 Issue if the team later decides to attempt it for extra credit._
 
-- Slice 1 - Accounts : Customizable user profiles, user roles/permissions, and password-reset - out of scope
-- Slice 5 — Luke McCormick : not building Evolutions.
-- <Slice 2>: <beyond-scope item> — out of scope.
-- <Slice 3> Quinton Nisonger: Battle Engine <beyond-scope item>: type-effectiveness matrix, status effects, animations — out of scope.
+- <Slice 1>: Sahtra Green, Accounts: User profiles and roles - out of scope.
+- <Slice 2>: Nabiha Fatima, Admin & Arenas: Tournaments and seasonal areas — out of scope.
+- <Slice 3>: Quinton Nisonger, Battle Engine: Type-effectiveness matrix, status effects, animations — out of scope.
+- <Slice 4>: Todd Gonzales, Marketplace & Trading: Auctions, trade history, and REST imports — out of scope.
+- <Slice 5>: Luke McCormick, Creature Roster: Building Evolutions - out of scope.
 
 ## Code Review Log
 | PR | Author | Human reviewer(s) | AI review (link) | Outcome |
