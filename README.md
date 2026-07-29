@@ -10,9 +10,10 @@ extra-credit), and closed by a PR via "Closes #N". The tables below link into th
 and PRs. Replace every <placeholder> and delete this comment before you submit.
 -->
 
-# <Clash of Claws>
+# Clash of Claws
+### Collect cats. Train champions. Throw paws.
 
-<Collect cats. Train champions. Throw paws.> CST 338 Project 2 — Team **L!NQ3ST**.
+CST 338 Project 2 — Team **L!NQ3ST**.
 
 ## Team & Slice Ownership
 | Slice | Owner | GitHub username | Issues | Branch(es) | PR(s) | Enhancement chosen | Status |
@@ -55,4 +56,8 @@ Issue if the team later decides to attempt it for extra credit._
 ./gradlew run        # launch the app
 ./gradlew test       # run the test suite
 ```
-Requirements: JDK <version>, JavaFX <version>. Any setup notes go here.
+**Requirements:**
+- JDK 25
+- IntelliJ IDEA
+- Git
+
