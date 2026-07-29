@@ -18,7 +18,7 @@ and PRs. Replace every <placeholder> and delete this comment before you submit.
 | Slice | Owner | GitHub username | Issues | Branch(es) | PR(s) | Enhancement chosen | Status |
 |-------|-------|-----------------|--------|------------|-------|--------------------|--------|
 | 1 — Accounts | Sahtra Green | SahtraRG | | | | Custom reusable FXML component | planned |
-| 2 — Admin & Arenas| Nabiha Fatima|nfatima-csumb | | | | | planned |
+| 2 — Admin & Arenas| Nabiha Fatima|nfatima-csumb | | | | Confirmation and Validation Dialogs | planned |
 | 3 — Battle Engine | Quinton Nisonger| QuintonScripts | | | | Extra TestFX scene tests | planned |
 | 4 — Marketplace & Trading | Todd Gonzales | toddgonzales-xg | | | | Notifications / alerts | planned |
 | 5- Creature Roster|Luke McCormick  |lumccormick-collab | | | | Data binding | planned |
