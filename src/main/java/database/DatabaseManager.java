@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.stream.Collectors;
 
 public final class DatabaseManager {
 
@@ -41,11 +42,15 @@ public final class DatabaseManager {
             throws SQLException {
         String schema = loadSchema();
 
+        String executableSchema = schema.lines()
+                .filter(line -> !line.stripLeading().startsWith("--"))
+                .collect(Collectors.joining(System.lineSeparator()));
+
         try (
                 Connection connection = getConnection(databaseUrl);
                 Statement statement = connection.createStatement()
         ) {
-            for (String sql : schema.split(";")) {
+            for (String sql : executableSchema.split(";")) {
                 String trimmedSql = sql.trim();
 
                 if (!trimmedSql.isEmpty()) {
