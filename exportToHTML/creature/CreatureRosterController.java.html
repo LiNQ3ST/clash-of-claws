@@ -1,0 +1,174 @@
+<html>
+<head>
+<title>CreatureRosterController.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #5f826b; font-style: italic;}
+.s4 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+CreatureRosterController.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">creature</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">javafx</span><span class="s2">.</span><span class="s1">fxml</span><span class="s2">.</span><span class="s1">FXML</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">javafx</span><span class="s2">.</span><span class="s1">scene</span><span class="s2">.</span><span class="s1">control</span><span class="s2">.</span><span class="s1">Label</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">javafx</span><span class="s2">.</span><span class="s1">scene</span><span class="s2">.</span><span class="s1">control</span><span class="s2">.</span><span class="s1">ListView</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">javafx</span><span class="s2">.</span><span class="s1">scene</span><span class="s2">.</span><span class="s1">control</span><span class="s2">.</span><span class="s1">TextField</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">nio</span><span class="s2">.</span><span class="s1">file</span><span class="s2">.</span><span class="s1">Files</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">nio</span><span class="s2">.</span><span class="s1">file</span><span class="s2">.</span><span class="s1">Path</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">List</span><span class="s2">;</span>
+
+<span class="s3">/**</span>
+ <span class="s3">* Minimal milestone scene. The team's scene factory only needs to load the</span>
+ <span class="s3">* matching FXML file; generation and persistence stay in the backend classes.</span>
+ <span class="s3">*/</span>
+<span class="s0">public final class </span><span class="s1">CreatureRosterController </span><span class="s2">{</span>
+    <span class="s1">@FXML </span><span class="s0">private </span><span class="s1">Label nameLabel</span><span class="s2">;</span>
+    <span class="s1">@FXML </span><span class="s0">private </span><span class="s1">Label typeLabel</span><span class="s2">;</span>
+    <span class="s1">@FXML </span><span class="s0">private </span><span class="s1">Label hpLabel</span><span class="s2">;</span>
+    <span class="s1">@FXML </span><span class="s0">private </span><span class="s1">Label playerCatLabel</span><span class="s2">;</span>
+    <span class="s1">@FXML </span><span class="s0">private </span><span class="s1">Label statusLabel</span><span class="s2">;</span>
+    <span class="s1">@FXML </span><span class="s0">private </span><span class="s1">ListView</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">abilityListView</span><span class="s2">;</span>
+    <span class="s1">@FXML </span><span class="s0">private </span><span class="s1">ListView</span><span class="s2">&lt;</span><span class="s1">Cat</span><span class="s2">&gt; </span><span class="s1">catDexListView</span><span class="s2">;</span>
+    <span class="s1">@FXML </span><span class="s0">private </span><span class="s1">TextField renameField</span><span class="s2">;</span>
+
+    <span class="s0">private </span><span class="s1">CatDAO catDAO</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">CatGenerator catGenerator</span><span class="s2">;</span>
+
+    <span class="s1">@FXML</span>
+    <span class="s0">private void </span><span class="s1">initialize</span><span class="s2">() {</span>
+        <span class="s1">String defaultPath </span><span class="s2">= </span><span class="s1">Path</span><span class="s2">.</span><span class="s1">of</span><span class="s2">(</span><span class="s4">&quot;data&quot;</span><span class="s2">, </span><span class="s4">&quot;clash-of-cats.db&quot;</span><span class="s2">).</span><span class="s1">toString</span><span class="s2">();</span>
+        <span class="s1">String databasePath </span><span class="s2">= </span><span class="s1">System</span><span class="s2">.</span><span class="s1">getProperty</span><span class="s2">(</span><span class="s4">&quot;clashofcats.db&quot;</span><span class="s2">, </span><span class="s1">defaultPath</span><span class="s2">);</span>
+        <span class="s1">createParentDirectory</span><span class="s2">(</span><span class="s1">databasePath</span><span class="s2">);</span>
+
+        <span class="s1">catDAO </span><span class="s2">= </span><span class="s0">new </span><span class="s1">CatDAO</span><span class="s2">(</span><span class="s4">&quot;jdbc:sqlite:&quot; </span><span class="s2">+ </span><span class="s1">databasePath</span><span class="s2">);</span>
+        <span class="s1">catDAO</span><span class="s2">.</span><span class="s1">initializeSchema</span><span class="s2">();</span>
+        <span class="s1">catGenerator </span><span class="s2">= </span><span class="s0">new </span><span class="s1">CatGenerator</span><span class="s2">();</span>
+
+        <span class="s1">catDexListView</span><span class="s2">.</span><span class="s1">getSelectionModel</span><span class="s2">()</span>
+                <span class="s2">.</span><span class="s1">selectedItemProperty</span><span class="s2">()</span>
+                <span class="s2">.</span><span class="s1">addListener</span><span class="s2">((</span><span class="s1">observable</span><span class="s2">, </span><span class="s1">oldCat</span><span class="s2">, </span><span class="s1">newCat</span><span class="s2">) </span><span class="s1">-&gt; displayCat</span><span class="s2">(</span><span class="s1">newCat</span><span class="s2">));</span>
+
+        <span class="s1">refreshCatDex</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@FXML</span>
+    <span class="s0">private void </span><span class="s1">handleGenerateCat</span><span class="s2">() {</span>
+        <span class="s1">runSafely</span><span class="s2">(() </span><span class="s1">-&gt; </span><span class="s2">{</span>
+            <span class="s1">Cat cat </span><span class="s2">= </span><span class="s1">catGenerator</span><span class="s2">.</span><span class="s1">generateUniqueAndStore</span><span class="s2">(</span><span class="s1">catDAO</span><span class="s2">);</span>
+            <span class="s1">refreshCatDex</span><span class="s2">();</span>
+            <span class="s1">selectById</span><span class="s2">(</span><span class="s1">cat</span><span class="s2">.</span><span class="s1">getId</span><span class="s2">());</span>
+            <span class="s1">displayCat</span><span class="s2">(</span><span class="s1">cat</span><span class="s2">);</span>
+            <span class="s1">statusLabel</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s4">&quot;Generated and stored cat #&quot; </span><span class="s2">+ </span><span class="s1">cat</span><span class="s2">.</span><span class="s1">getId</span><span class="s2">());</span>
+        <span class="s2">});</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@FXML</span>
+    <span class="s0">private void </span><span class="s1">handleRefresh</span><span class="s2">() {</span>
+        <span class="s1">runSafely</span><span class="s2">(</span><span class="s0">this</span><span class="s1">::refreshCatDex</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@FXML</span>
+    <span class="s0">private void </span><span class="s1">handleRenameSelected</span><span class="s2">() {</span>
+        <span class="s1">runSafely</span><span class="s2">(() </span><span class="s1">-&gt; </span><span class="s2">{</span>
+            <span class="s1">Cat selected </span><span class="s2">= </span><span class="s1">catDexListView</span><span class="s2">.</span><span class="s1">getSelectionModel</span><span class="s2">().</span><span class="s1">getSelectedItem</span><span class="s2">();</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">selected </span><span class="s2">== </span><span class="s0">null</span><span class="s2">) {</span>
+                <span class="s1">statusLabel</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s4">&quot;Select a cat before updating&quot;</span><span class="s2">);</span>
+                <span class="s0">return</span><span class="s2">;</span>
+            <span class="s2">}</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">renameField</span><span class="s2">.</span><span class="s1">getText</span><span class="s2">() == </span><span class="s0">null </span><span class="s2">|| </span><span class="s1">renameField</span><span class="s2">.</span><span class="s1">getText</span><span class="s2">().</span><span class="s1">isBlank</span><span class="s2">()) {</span>
+                <span class="s1">statusLabel</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s4">&quot;Enter a new name first&quot;</span><span class="s2">);</span>
+                <span class="s0">return</span><span class="s2">;</span>
+            <span class="s2">}</span>
+
+            <span class="s1">selected</span><span class="s2">.</span><span class="s1">setName</span><span class="s2">(</span><span class="s1">renameField</span><span class="s2">.</span><span class="s1">getText</span><span class="s2">());</span>
+            <span class="s0">boolean </span><span class="s1">updated </span><span class="s2">= </span><span class="s1">catDAO</span><span class="s2">.</span><span class="s1">update</span><span class="s2">(</span><span class="s1">selected</span><span class="s2">);</span>
+            <span class="s1">refreshCatDex</span><span class="s2">();</span>
+            <span class="s1">selectById</span><span class="s2">(</span><span class="s1">selected</span><span class="s2">.</span><span class="s1">getId</span><span class="s2">());</span>
+            <span class="s1">statusLabel</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s1">updated </span><span class="s2">? </span><span class="s4">&quot;Updated cat #&quot; </span><span class="s2">+ </span><span class="s1">selected</span><span class="s2">.</span><span class="s1">getId</span><span class="s2">() : </span><span class="s4">&quot;Cat was not found&quot;</span><span class="s2">);</span>
+            <span class="s1">renameField</span><span class="s2">.</span><span class="s1">clear</span><span class="s2">();</span>
+        <span class="s2">});</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@FXML</span>
+    <span class="s0">private void </span><span class="s1">handleDeleteSelected</span><span class="s2">() {</span>
+        <span class="s1">runSafely</span><span class="s2">(() </span><span class="s1">-&gt; </span><span class="s2">{</span>
+            <span class="s1">Cat selected </span><span class="s2">= </span><span class="s1">catDexListView</span><span class="s2">.</span><span class="s1">getSelectionModel</span><span class="s2">().</span><span class="s1">getSelectedItem</span><span class="s2">();</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">selected </span><span class="s2">== </span><span class="s0">null</span><span class="s2">) {</span>
+                <span class="s1">statusLabel</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s4">&quot;Select a cat before deleting&quot;</span><span class="s2">);</span>
+                <span class="s0">return</span><span class="s2">;</span>
+            <span class="s2">}</span>
+
+            <span class="s0">boolean </span><span class="s1">deleted </span><span class="s2">= </span><span class="s1">catDAO</span><span class="s2">.</span><span class="s1">delete</span><span class="s2">(</span><span class="s1">selected</span><span class="s2">.</span><span class="s1">getId</span><span class="s2">());</span>
+            <span class="s1">refreshCatDex</span><span class="s2">();</span>
+            <span class="s1">clearDetails</span><span class="s2">();</span>
+            <span class="s1">statusLabel</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s1">deleted </span><span class="s2">? </span><span class="s4">&quot;Deleted cat #&quot; </span><span class="s2">+ </span><span class="s1">selected</span><span class="s2">.</span><span class="s1">getId</span><span class="s2">() : </span><span class="s4">&quot;Cat was not found&quot;</span><span class="s2">);</span>
+        <span class="s2">});</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private void </span><span class="s1">refreshCatDex</span><span class="s2">() {</span>
+        <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">Cat</span><span class="s2">&gt; </span><span class="s1">cats </span><span class="s2">= </span><span class="s1">catDAO</span><span class="s2">.</span><span class="s1">findAll</span><span class="s2">();</span>
+        <span class="s1">catDexListView</span><span class="s2">.</span><span class="s1">getItems</span><span class="s2">().</span><span class="s1">setAll</span><span class="s2">(</span><span class="s1">cats</span><span class="s2">);</span>
+        <span class="s1">statusLabel</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s1">cats</span><span class="s2">.</span><span class="s1">isEmpty</span><span class="s2">() ? </span><span class="s4">&quot;No cat data&quot; </span><span class="s2">: </span><span class="s4">&quot;Loaded &quot; </span><span class="s2">+ </span><span class="s1">cats</span><span class="s2">.</span><span class="s1">size</span><span class="s2">() + </span><span class="s4">&quot; CatDex entries&quot;</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private void </span><span class="s1">displayCat</span><span class="s2">(</span><span class="s1">Cat cat</span><span class="s2">) {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">cat </span><span class="s2">== </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s1">clearDetails</span><span class="s2">();</span>
+            <span class="s0">return</span><span class="s2">;</span>
+        <span class="s2">}</span>
+
+        <span class="s1">nameLabel</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s1">cat</span><span class="s2">.</span><span class="s1">getName</span><span class="s2">());</span>
+        <span class="s1">typeLabel</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s1">cat</span><span class="s2">.</span><span class="s1">getType</span><span class="s2">());</span>
+        <span class="s1">hpLabel</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s1">Integer</span><span class="s2">.</span><span class="s1">toString</span><span class="s2">(</span><span class="s1">cat</span><span class="s2">.</span><span class="s1">getHp</span><span class="s2">()));</span>
+        <span class="s1">playerCatLabel</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s1">cat</span><span class="s2">.</span><span class="s1">isPlayerCat</span><span class="s2">() ? </span><span class="s4">&quot;Player cat&quot; </span><span class="s2">: </span><span class="s4">&quot;Generated opponent&quot;</span><span class="s2">);</span>
+        <span class="s1">abilityListView</span><span class="s2">.</span><span class="s1">getItems</span><span class="s2">().</span><span class="s1">setAll</span><span class="s2">(</span><span class="s1">cat</span><span class="s2">.</span><span class="s1">getAbilityIds</span><span class="s2">());</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private void </span><span class="s1">clearDetails</span><span class="s2">() {</span>
+        <span class="s1">nameLabel</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s4">&quot;-&quot;</span><span class="s2">);</span>
+        <span class="s1">typeLabel</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s4">&quot;-&quot;</span><span class="s2">);</span>
+        <span class="s1">hpLabel</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s4">&quot;-&quot;</span><span class="s2">);</span>
+        <span class="s1">playerCatLabel</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s4">&quot;-&quot;</span><span class="s2">);</span>
+        <span class="s1">abilityListView</span><span class="s2">.</span><span class="s1">getItems</span><span class="s2">().</span><span class="s1">clear</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private void </span><span class="s1">selectById</span><span class="s2">(</span><span class="s0">int </span><span class="s1">catId</span><span class="s2">) {</span>
+        <span class="s1">catDexListView</span><span class="s2">.</span><span class="s1">getItems</span><span class="s2">().</span><span class="s1">stream</span><span class="s2">()</span>
+                <span class="s2">.</span><span class="s1">filter</span><span class="s2">(</span><span class="s1">cat -&gt; cat</span><span class="s2">.</span><span class="s1">getId</span><span class="s2">() == </span><span class="s1">catId</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">findFirst</span><span class="s2">()</span>
+                <span class="s2">.</span><span class="s1">ifPresent</span><span class="s2">(</span><span class="s1">cat -&gt; catDexListView</span><span class="s2">.</span><span class="s1">getSelectionModel</span><span class="s2">().</span><span class="s1">select</span><span class="s2">(</span><span class="s1">cat</span><span class="s2">));</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private void </span><span class="s1">runSafely</span><span class="s2">(</span><span class="s1">Runnable action</span><span class="s2">) {</span>
+        <span class="s0">try </span><span class="s2">{</span>
+            <span class="s1">action</span><span class="s2">.</span><span class="s1">run</span><span class="s2">();</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">RuntimeException exception</span><span class="s2">) {</span>
+            <span class="s1">statusLabel</span><span class="s2">.</span><span class="s1">setText</span><span class="s2">(</span><span class="s1">exception</span><span class="s2">.</span><span class="s1">getMessage</span><span class="s2">());</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private static void </span><span class="s1">createParentDirectory</span><span class="s2">(</span><span class="s1">String databasePath</span><span class="s2">) {</span>
+        <span class="s0">try </span><span class="s2">{</span>
+            <span class="s1">Path path </span><span class="s2">= </span><span class="s1">Path</span><span class="s2">.</span><span class="s1">of</span><span class="s2">(</span><span class="s1">databasePath</span><span class="s2">).</span><span class="s1">toAbsolutePath</span><span class="s2">();</span>
+            <span class="s1">Path parent </span><span class="s2">= </span><span class="s1">path</span><span class="s2">.</span><span class="s1">getParent</span><span class="s2">();</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">parent </span><span class="s2">!= </span><span class="s0">null</span><span class="s2">) {</span>
+                <span class="s1">Files</span><span class="s2">.</span><span class="s1">createDirectories</span><span class="s2">(</span><span class="s1">parent</span><span class="s2">);</span>
+            <span class="s2">}</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">Exception exception</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalStateException</span><span class="s2">(</span><span class="s4">&quot;Could not create the database directory&quot;</span><span class="s2">, </span><span class="s1">exception</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

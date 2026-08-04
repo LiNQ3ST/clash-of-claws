@@ -1,0 +1,219 @@
+<html>
+<head>
+<title>CatGenerator.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #5f826b; font-style: italic;}
+.s4 { color: #2aacb8;}
+.s5 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+CatGenerator.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">creature</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">io</span><span class="s2">.</span><span class="s1">BufferedReader</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">io</span><span class="s2">.</span><span class="s1">IOException</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">io</span><span class="s2">.</span><span class="s1">InputStream</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">io</span><span class="s2">.</span><span class="s1">InputStreamReader</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">math</span><span class="s2">.</span><span class="s1">BigInteger</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">nio</span><span class="s2">.</span><span class="s1">charset</span><span class="s2">.</span><span class="s1">StandardCharsets</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">ArrayList</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">Collections</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">List</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">Objects</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">Random</span><span class="s2">;</span>
+
+<span class="s3">/**</span>
+ <span class="s3">* Backend portion of the CreatureGen slice.</span>
+ <span class="s3">*</span>
+ <span class="s3">* It chooses a name, breed/type, type-appropriate HP, and 1-4 unique ability</span>
+ <span class="s3">* IDs. The arena is responsible for interpreting what each ability ID does.</span>
+ <span class="s3">*/</span>
+<span class="s0">public final class </span><span class="s1">CatGenerator </span><span class="s2">{</span>
+    <span class="s0">private static final int </span><span class="s1">MAX_RANDOM_ATTEMPTS </span><span class="s2">= </span><span class="s4">10_000</span><span class="s2">;</span>
+
+    <span class="s0">private final </span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">names</span><span class="s2">;</span>
+    <span class="s0">private final </span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">abilityIds</span><span class="s2">;</span>
+    <span class="s0">private final </span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">CatTypeDefinition</span><span class="s2">&gt; </span><span class="s1">types</span><span class="s2">;</span>
+    <span class="s0">private final </span><span class="s1">Random random</span><span class="s2">;</span>
+
+    <span class="s0">public </span><span class="s1">CatGenerator</span><span class="s2">() {</span>
+        <span class="s0">this</span><span class="s2">(</span>
+                <span class="s1">loadResourceLines</span><span class="s2">(</span><span class="s5">&quot;/com/clashofcats/creaturegen/data/cat_names.txt&quot;</span><span class="s2">),</span>
+                <span class="s1">loadResourceLines</span><span class="s2">(</span><span class="s5">&quot;/com/clashofcats/creaturegen/data/ability_ids.txt&quot;</span><span class="s2">),</span>
+                <span class="s1">defaultTypes</span><span class="s2">(),</span>
+                <span class="s0">new </span><span class="s1">Random</span><span class="s2">()</span>
+        <span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">CatGenerator</span><span class="s2">(</span>
+            <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">names</span><span class="s2">,</span>
+            <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">abilityIds</span><span class="s2">,</span>
+            <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">CatTypeDefinition</span><span class="s2">&gt; </span><span class="s1">types</span><span class="s2">,</span>
+            <span class="s1">Random random</span>
+    <span class="s2">) {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">names </span><span class="s2">== </span><span class="s0">null </span><span class="s2">|| </span><span class="s1">names</span><span class="s2">.</span><span class="s1">isEmpty</span><span class="s2">()) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalArgumentException</span><span class="s2">(</span><span class="s5">&quot;At least one cat name is required&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">abilityIds </span><span class="s2">== </span><span class="s0">null </span><span class="s2">|| </span><span class="s1">abilityIds</span><span class="s2">.</span><span class="s1">isEmpty</span><span class="s2">()) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalArgumentException</span><span class="s2">(</span><span class="s5">&quot;At least one ability ID is required&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">types </span><span class="s2">== </span><span class="s0">null </span><span class="s2">|| </span><span class="s1">types</span><span class="s2">.</span><span class="s1">isEmpty</span><span class="s2">()) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalArgumentException</span><span class="s2">(</span><span class="s5">&quot;At least one cat type is required&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">names </span><span class="s2">= </span><span class="s1">List</span><span class="s2">.</span><span class="s1">copyOf</span><span class="s2">(</span><span class="s1">names</span><span class="s2">);</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">abilityIds </span><span class="s2">= </span><span class="s1">List</span><span class="s2">.</span><span class="s1">copyOf</span><span class="s2">(</span><span class="s1">abilityIds</span><span class="s2">);</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">types </span><span class="s2">= </span><span class="s1">List</span><span class="s2">.</span><span class="s1">copyOf</span><span class="s2">(</span><span class="s1">types</span><span class="s2">);</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">random </span><span class="s2">= </span><span class="s1">Objects</span><span class="s2">.</span><span class="s1">requireNonNull</span><span class="s2">(</span><span class="s1">random</span><span class="s2">, </span><span class="s5">&quot;random cannot be null&quot;</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">Cat generateRandomCat</span><span class="s2">() {</span>
+        <span class="s1">String name </span><span class="s2">= </span><span class="s1">randomItem</span><span class="s2">(</span><span class="s1">names</span><span class="s2">);</span>
+        <span class="s1">CatTypeDefinition type </span><span class="s2">= </span><span class="s1">randomItem</span><span class="s2">(</span><span class="s1">types</span><span class="s2">);</span>
+        <span class="s0">int </span><span class="s1">hp </span><span class="s2">= </span><span class="s1">randomBetween</span><span class="s2">(</span><span class="s1">type</span><span class="s2">.</span><span class="s1">minimumHp</span><span class="s2">(), </span><span class="s1">type</span><span class="s2">.</span><span class="s1">maximumHp</span><span class="s2">());</span>
+
+        <span class="s0">int </span><span class="s1">largestAbilitySet </span><span class="s2">= </span><span class="s1">Math</span><span class="s2">.</span><span class="s1">min</span><span class="s2">(</span><span class="s4">4</span><span class="s2">, </span><span class="s1">abilityIds</span><span class="s2">.</span><span class="s1">size</span><span class="s2">());</span>
+        <span class="s0">int </span><span class="s1">abilityCount </span><span class="s2">= </span><span class="s1">randomBetween</span><span class="s2">(</span><span class="s4">1</span><span class="s2">, </span><span class="s1">largestAbilitySet</span><span class="s2">);</span>
+        <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">selectedAbilities </span><span class="s2">= </span><span class="s1">chooseUniqueAbilities</span><span class="s2">(</span><span class="s1">abilityCount</span><span class="s2">);</span>
+
+        <span class="s0">return new </span><span class="s1">Cat</span><span class="s2">(</span><span class="s1">name</span><span class="s2">, </span><span class="s1">type</span><span class="s2">.</span><span class="s1">name</span><span class="s2">(), </span><span class="s1">hp</span><span class="s2">, </span><span class="s1">selectedAbilities</span><span class="s2">, </span><span class="s0">false</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Generates an opponent, prevents exact duplicates, inserts it, and returns it.</span>
+     <span class="s3">*/</span>
+    <span class="s0">public </span><span class="s1">Cat generateUniqueAndStore</span><span class="s2">(</span><span class="s1">CatDAO catDAO</span><span class="s2">) {</span>
+        <span class="s1">Objects</span><span class="s2">.</span><span class="s1">requireNonNull</span><span class="s2">(</span><span class="s1">catDAO</span><span class="s2">, </span><span class="s5">&quot;catDAO cannot be null&quot;</span><span class="s2">);</span>
+
+        <span class="s1">BigInteger possible </span><span class="s2">= </span><span class="s1">totalPossibleOpponentCats</span><span class="s2">();</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">possible</span><span class="s2">.</span><span class="s1">compareTo</span><span class="s2">(</span><span class="s1">BigInteger</span><span class="s2">.</span><span class="s1">valueOf</span><span class="s2">(</span><span class="s1">catDAO</span><span class="s2">.</span><span class="s1">countOpponentCats</span><span class="s2">())) &lt;= </span><span class="s4">0</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalStateException</span><span class="s2">(</span><span class="s5">&quot;You already have defeated all the cats&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">attempt </span><span class="s2">= </span><span class="s4">0</span><span class="s2">; </span><span class="s1">attempt </span><span class="s2">&lt; </span><span class="s1">MAX_RANDOM_ATTEMPTS</span><span class="s2">; </span><span class="s1">attempt</span><span class="s2">++) {</span>
+            <span class="s1">Cat cat </span><span class="s2">= </span><span class="s1">generateRandomCat</span><span class="s2">();</span>
+            <span class="s0">if </span><span class="s2">(!</span><span class="s1">catDAO</span><span class="s2">.</span><span class="s1">exists</span><span class="s2">(</span><span class="s1">cat</span><span class="s2">)) {</span>
+                <span class="s0">return </span><span class="s1">catDAO</span><span class="s2">.</span><span class="s1">insert</span><span class="s2">(</span><span class="s1">cat</span><span class="s2">);</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+
+        <span class="s0">throw new </span><span class="s1">IllegalStateException</span><span class="s2">(</span>
+                <span class="s5">&quot;A unique cat could not be found after &quot; </span><span class="s2">+ </span><span class="s1">MAX_RANDOM_ATTEMPTS </span><span class="s2">+ </span><span class="s5">&quot; attempts&quot;</span>
+        <span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Stores a user-created player cat through the same CatDex table.</span>
+     <span class="s3">*/</span>
+    <span class="s0">public </span><span class="s1">Cat createPlayerCatAndStore</span><span class="s2">(</span>
+            <span class="s1">String name</span><span class="s2">,</span>
+            <span class="s1">String type</span><span class="s2">,</span>
+            <span class="s0">int </span><span class="s1">hp</span><span class="s2">,</span>
+            <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">selectedAbilityIds</span><span class="s2">,</span>
+            <span class="s1">CatDAO catDAO</span>
+    <span class="s2">) {</span>
+        <span class="s1">Objects</span><span class="s2">.</span><span class="s1">requireNonNull</span><span class="s2">(</span><span class="s1">catDAO</span><span class="s2">, </span><span class="s5">&quot;catDAO cannot be null&quot;</span><span class="s2">);</span>
+        <span class="s1">Cat cat </span><span class="s2">= </span><span class="s0">new </span><span class="s1">Cat</span><span class="s2">(</span><span class="s1">name</span><span class="s2">, </span><span class="s1">type</span><span class="s2">, </span><span class="s1">hp</span><span class="s2">, </span><span class="s1">selectedAbilityIds</span><span class="s2">, </span><span class="s0">true</span><span class="s2">);</span>
+        <span class="s0">return </span><span class="s1">catDAO</span><span class="s2">.</span><span class="s1">insert</span><span class="s2">(</span><span class="s1">cat</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">BigInteger totalPossibleOpponentCats</span><span class="s2">() {</span>
+        <span class="s1">BigInteger abilityCombinations </span><span class="s2">= </span><span class="s1">BigInteger</span><span class="s2">.</span><span class="s1">ZERO</span><span class="s2">;</span>
+        <span class="s0">int </span><span class="s1">largestAbilitySet </span><span class="s2">= </span><span class="s1">Math</span><span class="s2">.</span><span class="s1">min</span><span class="s2">(</span><span class="s4">4</span><span class="s2">, </span><span class="s1">abilityIds</span><span class="s2">.</span><span class="s1">size</span><span class="s2">());</span>
+
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">count </span><span class="s2">= </span><span class="s4">1</span><span class="s2">; </span><span class="s1">count </span><span class="s2">&lt;= </span><span class="s1">largestAbilitySet</span><span class="s2">; </span><span class="s1">count</span><span class="s2">++) {</span>
+            <span class="s1">abilityCombinations </span><span class="s2">= </span><span class="s1">abilityCombinations</span><span class="s2">.</span><span class="s1">add</span><span class="s2">(</span><span class="s1">combination</span><span class="s2">(</span><span class="s1">abilityIds</span><span class="s2">.</span><span class="s1">size</span><span class="s2">(), </span><span class="s1">count</span><span class="s2">));</span>
+        <span class="s2">}</span>
+
+        <span class="s0">long </span><span class="s1">hpAndTypeCombinations </span><span class="s2">= </span><span class="s1">types</span><span class="s2">.</span><span class="s1">stream</span><span class="s2">()</span>
+                <span class="s2">.</span><span class="s1">mapToLong</span><span class="s2">(</span><span class="s1">type -&gt; </span><span class="s2">(</span><span class="s0">long</span><span class="s2">) </span><span class="s1">type</span><span class="s2">.</span><span class="s1">maximumHp</span><span class="s2">() - </span><span class="s1">type</span><span class="s2">.</span><span class="s1">minimumHp</span><span class="s2">() + </span><span class="s4">1L</span><span class="s2">)</span>
+                <span class="s2">.</span><span class="s1">sum</span><span class="s2">();</span>
+
+        <span class="s0">return </span><span class="s1">BigInteger</span><span class="s2">.</span><span class="s1">valueOf</span><span class="s2">(</span><span class="s1">names</span><span class="s2">.</span><span class="s1">size</span><span class="s2">())</span>
+                <span class="s2">.</span><span class="s1">multiply</span><span class="s2">(</span><span class="s1">BigInteger</span><span class="s2">.</span><span class="s1">valueOf</span><span class="s2">(</span><span class="s1">hpAndTypeCombinations</span><span class="s2">))</span>
+                <span class="s2">.</span><span class="s1">multiply</span><span class="s2">(</span><span class="s1">abilityCombinations</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private </span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">chooseUniqueAbilities</span><span class="s2">(</span><span class="s0">int </span><span class="s1">amount</span><span class="s2">) {</span>
+        <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">shuffled </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ArrayList</span><span class="s2">&lt;&gt;(</span><span class="s1">abilityIds</span><span class="s2">);</span>
+        <span class="s1">Collections</span><span class="s2">.</span><span class="s1">shuffle</span><span class="s2">(</span><span class="s1">shuffled</span><span class="s2">, </span><span class="s1">random</span><span class="s2">);</span>
+        <span class="s0">return </span><span class="s1">List</span><span class="s2">.</span><span class="s1">copyOf</span><span class="s2">(</span><span class="s1">shuffled</span><span class="s2">.</span><span class="s1">subList</span><span class="s2">(</span><span class="s4">0</span><span class="s2">, </span><span class="s1">amount</span><span class="s2">));</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private </span><span class="s2">&lt;</span><span class="s1">T</span><span class="s2">&gt; </span><span class="s1">T randomItem</span><span class="s2">(</span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">T</span><span class="s2">&gt; </span><span class="s1">values</span><span class="s2">) {</span>
+        <span class="s0">return </span><span class="s1">values</span><span class="s2">.</span><span class="s1">get</span><span class="s2">(</span><span class="s1">random</span><span class="s2">.</span><span class="s1">nextInt</span><span class="s2">(</span><span class="s1">values</span><span class="s2">.</span><span class="s1">size</span><span class="s2">()));</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private int </span><span class="s1">randomBetween</span><span class="s2">(</span><span class="s0">int </span><span class="s1">minimum</span><span class="s2">, </span><span class="s0">int </span><span class="s1">maximum</span><span class="s2">) {</span>
+        <span class="s0">return </span><span class="s1">random</span><span class="s2">.</span><span class="s1">nextInt</span><span class="s2">(</span><span class="s1">maximum </span><span class="s2">- </span><span class="s1">minimum </span><span class="s2">+ </span><span class="s4">1</span><span class="s2">) + </span><span class="s1">minimum</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private static </span><span class="s1">BigInteger combination</span><span class="s2">(</span><span class="s0">int </span><span class="s1">n</span><span class="s2">, </span><span class="s0">int </span><span class="s1">k</span><span class="s2">) {</span>
+        <span class="s0">int </span><span class="s1">smallerK </span><span class="s2">= </span><span class="s1">Math</span><span class="s2">.</span><span class="s1">min</span><span class="s2">(</span><span class="s1">k</span><span class="s2">, </span><span class="s1">n </span><span class="s2">- </span><span class="s1">k</span><span class="s2">);</span>
+        <span class="s1">BigInteger result </span><span class="s2">= </span><span class="s1">BigInteger</span><span class="s2">.</span><span class="s1">ONE</span><span class="s2">;</span>
+
+        <span class="s0">for </span><span class="s2">(</span><span class="s0">int </span><span class="s1">i </span><span class="s2">= </span><span class="s4">1</span><span class="s2">; </span><span class="s1">i </span><span class="s2">&lt;= </span><span class="s1">smallerK</span><span class="s2">; </span><span class="s1">i</span><span class="s2">++) {</span>
+            <span class="s1">result </span><span class="s2">= </span><span class="s1">result</span>
+                    <span class="s2">.</span><span class="s1">multiply</span><span class="s2">(</span><span class="s1">BigInteger</span><span class="s2">.</span><span class="s1">valueOf</span><span class="s2">(</span><span class="s1">n </span><span class="s2">- </span><span class="s1">smallerK </span><span class="s2">+ </span><span class="s1">i</span><span class="s2">))</span>
+                    <span class="s2">.</span><span class="s1">divide</span><span class="s2">(</span><span class="s1">BigInteger</span><span class="s2">.</span><span class="s1">valueOf</span><span class="s2">(</span><span class="s1">i</span><span class="s2">));</span>
+        <span class="s2">}</span>
+        <span class="s0">return </span><span class="s1">result</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private static </span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">loadResourceLines</span><span class="s2">(</span><span class="s1">String resourcePath</span><span class="s2">) {</span>
+        <span class="s1">InputStream stream </span><span class="s2">= </span><span class="s1">CatGenerator</span><span class="s2">.</span><span class="s0">class</span><span class="s2">.</span><span class="s1">getResourceAsStream</span><span class="s2">(</span><span class="s1">resourcePath</span><span class="s2">);</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">stream </span><span class="s2">== </span><span class="s0">null</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalStateException</span><span class="s2">(</span><span class="s5">&quot;Resource not found: &quot; </span><span class="s2">+ </span><span class="s1">resourcePath</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s0">try </span><span class="s2">(</span><span class="s1">BufferedReader reader </span><span class="s2">= </span><span class="s0">new </span><span class="s1">BufferedReader</span><span class="s2">(</span>
+                <span class="s0">new </span><span class="s1">InputStreamReader</span><span class="s2">(</span><span class="s1">stream</span><span class="s2">, </span><span class="s1">StandardCharsets</span><span class="s2">.</span><span class="s1">UTF_8</span><span class="s2">)</span>
+        <span class="s2">)) {</span>
+            <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">lines </span><span class="s2">= </span><span class="s1">reader</span><span class="s2">.</span><span class="s1">lines</span><span class="s2">()</span>
+                    <span class="s2">.</span><span class="s1">map</span><span class="s2">(</span><span class="s1">String::trim</span><span class="s2">)</span>
+                    <span class="s2">.</span><span class="s1">filter</span><span class="s2">(</span><span class="s1">line -&gt; </span><span class="s2">!</span><span class="s1">line</span><span class="s2">.</span><span class="s1">isBlank</span><span class="s2">())</span>
+                    <span class="s2">.</span><span class="s1">filter</span><span class="s2">(</span><span class="s1">line -&gt; </span><span class="s2">!</span><span class="s1">line</span><span class="s2">.</span><span class="s1">startsWith</span><span class="s2">(</span><span class="s5">&quot;#&quot;</span><span class="s2">))</span>
+                    <span class="s2">.</span><span class="s1">toList</span><span class="s2">();</span>
+
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">lines</span><span class="s2">.</span><span class="s1">isEmpty</span><span class="s2">()) {</span>
+                <span class="s0">throw new </span><span class="s1">IllegalStateException</span><span class="s2">(</span><span class="s5">&quot;Resource contained no usable values: &quot; </span><span class="s2">+ </span><span class="s1">resourcePath</span><span class="s2">);</span>
+            <span class="s2">}</span>
+            <span class="s0">return </span><span class="s1">lines</span><span class="s2">;</span>
+        <span class="s2">} </span><span class="s0">catch </span><span class="s2">(</span><span class="s1">IOException exception</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalStateException</span><span class="s2">(</span><span class="s5">&quot;Could not load resource: &quot; </span><span class="s2">+ </span><span class="s1">resourcePath</span><span class="s2">, </span><span class="s1">exception</span><span class="s2">);</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+
+    <span class="s0">private static </span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">CatTypeDefinition</span><span class="s2">&gt; </span><span class="s1">defaultTypes</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">List</span><span class="s2">.</span><span class="s1">of</span><span class="s2">(</span>
+                <span class="s0">new </span><span class="s1">CatTypeDefinition</span><span class="s2">(</span><span class="s5">&quot;Tabby&quot;</span><span class="s2">, </span><span class="s4">80</span><span class="s2">, </span><span class="s4">110</span><span class="s2">),</span>
+                <span class="s0">new </span><span class="s1">CatTypeDefinition</span><span class="s2">(</span><span class="s5">&quot;Sphynx&quot;</span><span class="s2">, </span><span class="s4">65</span><span class="s2">, </span><span class="s4">95</span><span class="s2">),</span>
+                <span class="s0">new </span><span class="s1">CatTypeDefinition</span><span class="s2">(</span><span class="s5">&quot;Maine Coon&quot;</span><span class="s2">, </span><span class="s4">110</span><span class="s2">, </span><span class="s4">150</span><span class="s2">),</span>
+                <span class="s0">new </span><span class="s1">CatTypeDefinition</span><span class="s2">(</span><span class="s5">&quot;Siamese&quot;</span><span class="s2">, </span><span class="s4">75</span><span class="s2">, </span><span class="s4">105</span><span class="s2">),</span>
+                <span class="s0">new </span><span class="s1">CatTypeDefinition</span><span class="s2">(</span><span class="s5">&quot;Calico&quot;</span><span class="s2">, </span><span class="s4">85</span><span class="s2">, </span><span class="s4">120</span><span class="s2">)</span>
+        <span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">record CatTypeDefinition</span><span class="s2">(</span><span class="s1">String name</span><span class="s2">, </span><span class="s0">int </span><span class="s1">minimumHp</span><span class="s2">, </span><span class="s0">int </span><span class="s1">maximumHp</span><span class="s2">) {</span>
+        <span class="s0">public </span><span class="s1">CatTypeDefinition </span><span class="s2">{</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">name </span><span class="s2">== </span><span class="s0">null </span><span class="s2">|| </span><span class="s1">name</span><span class="s2">.</span><span class="s1">isBlank</span><span class="s2">()) {</span>
+                <span class="s0">throw new </span><span class="s1">IllegalArgumentException</span><span class="s2">(</span><span class="s5">&quot;Type name cannot be blank&quot;</span><span class="s2">);</span>
+            <span class="s2">}</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">minimumHp </span><span class="s2">&lt;= </span><span class="s4">0 </span><span class="s2">|| </span><span class="s1">maximumHp </span><span class="s2">&lt; </span><span class="s1">minimumHp</span><span class="s2">) {</span>
+                <span class="s0">throw new </span><span class="s1">IllegalArgumentException</span><span class="s2">(</span><span class="s5">&quot;Invalid HP range for &quot; </span><span class="s2">+ </span><span class="s1">name</span><span class="s2">);</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<html>
+<head>
+<title>Cat.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #5f826b; font-style: italic;}
+.s4 { color: #2aacb8;}
+.s5 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Cat.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">creature</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">time</span><span class="s2">.</span><span class="s1">LocalDateTime</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">ArrayList</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">Collections</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">List</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">Locale</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">java</span><span class="s2">.</span><span class="s1">util</span><span class="s2">.</span><span class="s1">Objects</span><span class="s2">;</span>
+
+<span class="s3">/**</span>
+ <span class="s3">* Data object shared with the battle arena, store, and CatDex scene.</span>
+ <span class="s3">* Ability IDs are intentionally stored as strings; the battle arena owns</span>
+ <span class="s3">* the combat behavior associated with each ID.</span>
+ <span class="s3">*/</span>
+<span class="s0">public final class </span><span class="s1">Cat </span><span class="s2">{</span>
+    <span class="s0">private int </span><span class="s1">id</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">String name</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">String type</span><span class="s2">;</span>
+    <span class="s0">private int </span><span class="s1">hp</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">abilityIds</span><span class="s2">;</span>
+    <span class="s0">private boolean </span><span class="s1">playerCat</span><span class="s2">;</span>
+    <span class="s0">private </span><span class="s1">LocalDateTime createdAt</span><span class="s2">;</span>
+
+    <span class="s0">public </span><span class="s1">Cat</span><span class="s2">(</span>
+            <span class="s1">String name</span><span class="s2">,</span>
+            <span class="s1">String type</span><span class="s2">,</span>
+            <span class="s0">int </span><span class="s1">hp</span><span class="s2">,</span>
+            <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">abilityIds</span><span class="s2">,</span>
+            <span class="s0">boolean </span><span class="s1">playerCat</span>
+    <span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">(</span><span class="s4">0</span><span class="s2">, </span><span class="s1">name</span><span class="s2">, </span><span class="s1">type</span><span class="s2">, </span><span class="s1">hp</span><span class="s2">, </span><span class="s1">abilityIds</span><span class="s2">, </span><span class="s1">playerCat</span><span class="s2">, </span><span class="s1">LocalDateTime</span><span class="s2">.</span><span class="s1">now</span><span class="s2">());</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">Cat</span><span class="s2">(</span>
+            <span class="s0">int </span><span class="s1">id</span><span class="s2">,</span>
+            <span class="s1">String name</span><span class="s2">,</span>
+            <span class="s1">String type</span><span class="s2">,</span>
+            <span class="s0">int </span><span class="s1">hp</span><span class="s2">,</span>
+            <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">abilityIds</span><span class="s2">,</span>
+            <span class="s0">boolean </span><span class="s1">playerCat</span><span class="s2">,</span>
+            <span class="s1">LocalDateTime createdAt</span>
+    <span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">id </span><span class="s2">= </span><span class="s1">id</span><span class="s2">;</span>
+        <span class="s1">setName</span><span class="s2">(</span><span class="s1">name</span><span class="s2">);</span>
+        <span class="s1">setType</span><span class="s2">(</span><span class="s1">type</span><span class="s2">);</span>
+        <span class="s1">setHp</span><span class="s2">(</span><span class="s1">hp</span><span class="s2">);</span>
+        <span class="s1">setAbilityIds</span><span class="s2">(</span><span class="s1">abilityIds</span><span class="s2">);</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">playerCat </span><span class="s2">= </span><span class="s1">playerCat</span><span class="s2">;</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">createdAt </span><span class="s2">= </span><span class="s1">Objects</span><span class="s2">.</span><span class="s1">requireNonNull</span><span class="s2">(</span><span class="s1">createdAt</span><span class="s2">, </span><span class="s5">&quot;createdAt cannot be null&quot;</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public int </span><span class="s1">getId</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">id</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public void </span><span class="s1">setId</span><span class="s2">(</span><span class="s0">int </span><span class="s1">id</span><span class="s2">) {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">id </span><span class="s2">&lt; </span><span class="s4">0</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalArgumentException</span><span class="s2">(</span><span class="s5">&quot;id cannot be negative&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">id </span><span class="s2">= </span><span class="s1">id</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">String getName</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">name</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public void </span><span class="s1">setName</span><span class="s2">(</span><span class="s1">String name</span><span class="s2">) {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">name </span><span class="s2">== </span><span class="s0">null </span><span class="s2">|| </span><span class="s1">name</span><span class="s2">.</span><span class="s1">isBlank</span><span class="s2">()) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalArgumentException</span><span class="s2">(</span><span class="s5">&quot;Cat name cannot be blank&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">name </span><span class="s2">= </span><span class="s1">name</span><span class="s2">.</span><span class="s1">trim</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">String getType</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">type</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public void </span><span class="s1">setType</span><span class="s2">(</span><span class="s1">String type</span><span class="s2">) {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">type </span><span class="s2">== </span><span class="s0">null </span><span class="s2">|| </span><span class="s1">type</span><span class="s2">.</span><span class="s1">isBlank</span><span class="s2">()) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalArgumentException</span><span class="s2">(</span><span class="s5">&quot;Cat type cannot be blank&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">type </span><span class="s2">= </span><span class="s1">type</span><span class="s2">.</span><span class="s1">trim</span><span class="s2">();</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public int </span><span class="s1">getHp</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">hp</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public void </span><span class="s1">setHp</span><span class="s2">(</span><span class="s0">int </span><span class="s1">hp</span><span class="s2">) {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">hp </span><span class="s2">&lt;= </span><span class="s4">0</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalArgumentException</span><span class="s2">(</span><span class="s5">&quot;HP must be greater than zero&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">hp </span><span class="s2">= </span><span class="s1">hp</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">getAbilityIds</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">List</span><span class="s2">.</span><span class="s1">copyOf</span><span class="s2">(</span><span class="s1">abilityIds</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public void </span><span class="s1">setAbilityIds</span><span class="s2">(</span><span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">abilityIds</span><span class="s2">) {</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">abilityIds </span><span class="s2">== </span><span class="s0">null </span><span class="s2">|| </span><span class="s1">abilityIds</span><span class="s2">.</span><span class="s1">isEmpty</span><span class="s2">() || </span><span class="s1">abilityIds</span><span class="s2">.</span><span class="s1">size</span><span class="s2">() &gt; </span><span class="s4">4</span><span class="s2">) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalArgumentException</span><span class="s2">(</span><span class="s5">&quot;A cat must have between 1 and 4 abilities&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">cleaned </span><span class="s2">= </span><span class="s1">abilityIds</span><span class="s2">.</span><span class="s1">stream</span><span class="s2">()</span>
+                <span class="s2">.</span><span class="s1">map</span><span class="s2">(</span><span class="s1">id -&gt; Objects</span><span class="s2">.</span><span class="s1">requireNonNull</span><span class="s2">(</span><span class="s1">id</span><span class="s2">, </span><span class="s5">&quot;Ability ID cannot be null&quot;</span><span class="s2">).</span><span class="s1">trim</span><span class="s2">())</span>
+                <span class="s2">.</span><span class="s1">map</span><span class="s2">(</span><span class="s1">id -&gt; id</span><span class="s2">.</span><span class="s1">toUpperCase</span><span class="s2">(</span><span class="s1">Locale</span><span class="s2">.</span><span class="s1">ROOT</span><span class="s2">))</span>
+                <span class="s2">.</span><span class="s1">toList</span><span class="s2">();</span>
+
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">cleaned</span><span class="s2">.</span><span class="s1">stream</span><span class="s2">().</span><span class="s1">anyMatch</span><span class="s2">(</span><span class="s1">String::isBlank</span><span class="s2">)) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalArgumentException</span><span class="s2">(</span><span class="s5">&quot;Ability ID cannot be blank&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">cleaned</span><span class="s2">.</span><span class="s1">stream</span><span class="s2">().</span><span class="s1">anyMatch</span><span class="s2">(</span><span class="s1">id -&gt; id</span><span class="s2">.</span><span class="s1">contains</span><span class="s2">(</span><span class="s5">&quot;;&quot;</span><span class="s2">))) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalArgumentException</span><span class="s2">(</span><span class="s5">&quot;Ability IDs cannot contain semicolons&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">cleaned</span><span class="s2">.</span><span class="s1">stream</span><span class="s2">().</span><span class="s1">distinct</span><span class="s2">().</span><span class="s1">count</span><span class="s2">() != </span><span class="s1">cleaned</span><span class="s2">.</span><span class="s1">size</span><span class="s2">()) {</span>
+            <span class="s0">throw new </span><span class="s1">IllegalArgumentException</span><span class="s2">(</span><span class="s5">&quot;A cat cannot have duplicate abilities&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">abilityIds </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ArrayList</span><span class="s2">&lt;&gt;(</span><span class="s1">cleaned</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public boolean </span><span class="s1">isPlayerCat</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">playerCat</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public void </span><span class="s1">setPlayerCat</span><span class="s2">(</span><span class="s0">boolean </span><span class="s1">playerCat</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">playerCat </span><span class="s2">= </span><span class="s1">playerCat</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public </span><span class="s1">LocalDateTime getCreatedAt</span><span class="s2">() {</span>
+        <span class="s0">return </span><span class="s1">createdAt</span><span class="s2">;</span>
+    <span class="s2">}</span>
+
+    <span class="s0">public void </span><span class="s1">setCreatedAt</span><span class="s2">(</span><span class="s1">LocalDateTime createdAt</span><span class="s2">) {</span>
+        <span class="s0">this</span><span class="s2">.</span><span class="s1">createdAt </span><span class="s2">= </span><span class="s1">Objects</span><span class="s2">.</span><span class="s1">requireNonNull</span><span class="s2">(</span><span class="s1">createdAt</span><span class="s2">, </span><span class="s5">&quot;createdAt cannot be null&quot;</span><span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Canonical key used to prevent two stored cats from having the exact</span>
+     <span class="s3">* same generated attributes. Ability order does not affect uniqueness.</span>
+     <span class="s3">*/</span>
+    <span class="s0">public </span><span class="s1">String generationKey</span><span class="s2">() {</span>
+        <span class="s1">List</span><span class="s2">&lt;</span><span class="s1">String</span><span class="s2">&gt; </span><span class="s1">sorted </span><span class="s2">= </span><span class="s0">new </span><span class="s1">ArrayList</span><span class="s2">&lt;&gt;(</span><span class="s1">abilityIds</span><span class="s2">);</span>
+        <span class="s1">Collections</span><span class="s2">.</span><span class="s1">sort</span><span class="s2">(</span><span class="s1">sorted</span><span class="s2">);</span>
+
+        <span class="s0">return </span><span class="s1">String</span><span class="s2">.</span><span class="s1">join</span><span class="s2">(</span>
+                <span class="s5">&quot;|&quot;</span><span class="s2">,</span>
+                <span class="s1">name</span><span class="s2">.</span><span class="s1">toUpperCase</span><span class="s2">(</span><span class="s1">Locale</span><span class="s2">.</span><span class="s1">ROOT</span><span class="s2">),</span>
+                <span class="s1">type</span><span class="s2">.</span><span class="s1">toUpperCase</span><span class="s2">(</span><span class="s1">Locale</span><span class="s2">.</span><span class="s1">ROOT</span><span class="s2">),</span>
+                <span class="s1">Integer</span><span class="s2">.</span><span class="s1">toString</span><span class="s2">(</span><span class="s1">hp</span><span class="s2">),</span>
+                <span class="s1">String</span><span class="s2">.</span><span class="s1">join</span><span class="s2">(</span><span class="s5">&quot;;&quot;</span><span class="s2">, </span><span class="s1">sorted</span><span class="s2">),</span>
+                <span class="s1">Boolean</span><span class="s2">.</span><span class="s1">toString</span><span class="s2">(</span><span class="s1">playerCat</span><span class="s2">)</span>
+        <span class="s2">);</span>
+    <span class="s2">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public </span><span class="s1">String toString</span><span class="s2">() {</span>
+        <span class="s1">String owner </span><span class="s2">= </span><span class="s1">playerCat </span><span class="s2">? </span><span class="s5">&quot;PC&quot; </span><span class="s2">: </span><span class="s5">&quot;Opponent&quot;</span><span class="s2">;</span>
+        <span class="s0">return </span><span class="s5">&quot;%s #%d - %s (%s, %d HP)&quot;</span><span class="s2">.</span><span class="s1">formatted</span><span class="s2">(</span><span class="s1">owner</span><span class="s2">, </span><span class="s1">id</span><span class="s2">, </span><span class="s1">name</span><span class="s2">, </span><span class="s1">type</span><span class="s2">, </span><span class="s1">hp</span><span class="s2">);</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>
