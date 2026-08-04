@@ -13,6 +13,11 @@ import java.io.IOException;
 public class MainController {
 
     @FXML
+    private void handleBackToLogin() {
+        SceneFactory.show(SceneType.LOGIN);
+    }
+
+    @FXML
     private void openCatDex(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(
                 MainApplication.class.getResource("/app/cat-dex.fxml")
