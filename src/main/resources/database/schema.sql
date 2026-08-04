@@ -16,15 +16,17 @@ PRAGMA foreign_keys = ON;
 
 -- ============================================================================
 -- Slice 3 - Battle Engine
--- ============================================================================
 
--- BATTLE
+-- battle
+CREATE TABLE IF NOT EXISTS battle (
+    battle_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    player_id INTEGER NOT NULL,
+    battle_type TEXT NOT NULL,
+    arena_id INTEGER,
+    status TEXT NOT NULL
+);
 
---CREATE TABLE IF NOT EXISTS battle (
 
---);
-
--- Future tables:
--- battle_turn
--- battle_participant
--- capture
+-- TODO battle_turn
+-- TODO battle_participant
+-- TODO capture
