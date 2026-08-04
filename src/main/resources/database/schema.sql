@@ -15,6 +15,20 @@
 PRAGMA foreign_keys = ON;
 
 -- ============================================================================
+-- Slice 1 - Accounts
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS player (
+    player_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    currency_balance INTEGER NOT NULL DEFAULT 0,
+    experience INTEGER NOT NULL DEFAULT 0,
+    active_cat_id INTEGER,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================================================================
 -- Slice 3 - Battle Engine
 
 -- battle
