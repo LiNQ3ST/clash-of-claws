@@ -16,7 +16,7 @@ public class CredentialFieldsController {
     private PasswordField passwordField;
 
     public String getUsername() {
-        return usernameField.getText();
+        return usernameField.getText().trim();
     }
 
     public String getPassword() {
