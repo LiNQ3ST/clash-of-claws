@@ -1,5 +1,6 @@
 package marketplace;
-
+/*
+ */
 import database.DatabaseManager;
 
 import java.sql.Connection;

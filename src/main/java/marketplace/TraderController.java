@@ -1,5 +1,6 @@
 package marketplace;
-
+/*
+ */
 import app.SceneFactory;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
