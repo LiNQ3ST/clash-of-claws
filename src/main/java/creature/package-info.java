@@ -1,4 +1,4 @@
 /**
- * Package placeholder for Creature Roster.
+ * Creature generation, CatDex persistence, and Creature Roster UI classes.
  */
 package creature;

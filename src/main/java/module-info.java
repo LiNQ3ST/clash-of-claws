@@ -4,6 +4,7 @@ module clashofclaws {
     requires java.sql;
 
     opens app to javafx.fxml;
+    opens creature to javafx.fxml;
     opens battle to javafx.fxml;
 
     exports app;
