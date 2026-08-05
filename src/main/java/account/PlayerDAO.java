@@ -213,10 +213,13 @@ public class PlayerDAO {
     }
 
     private Connection getConnection() throws SQLException {
+        DatabaseManager databaseManager =
+                DatabaseManager.getInstance();
+
         if (databaseUrl == null) {
-            return DatabaseManager.getConnection();
+            return databaseManager.getConnection();
         }
 
-        return DatabaseManager.getConnection(databaseUrl);
+        return databaseManager.getConnection(databaseUrl);
     }
 }

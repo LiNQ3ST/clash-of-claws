@@ -1,33 +1,32 @@
 package app;
 
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.Node;
-import javafx.stage.Stage;
 
-import java.io.IOException;
+import javafx.fxml.FXML;
 
 public class MainController {
 
     @FXML
-    private void openCatDex(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(
-                MainApplication.class.getResource("/app/cat-dex.fxml")
-        );
+    private void handleBackToLogin() {
+        SceneFactory.show(SceneType.LOGIN);
+    }
 
-        Parent catDexRoot = loader.load();
+    @FXML
+    private void handleBattle() {
+        SceneFactory.show(SceneType.BATTLE);
+    }
 
-        Stage stage = (Stage) ((Node) event.getSource())
-                .getScene()
-                .getWindow();
+    @FXML
+    private void handleArena() {
+        SceneFactory.show(SceneType.ARENA);
+    }
 
-        Scene scene = new Scene(catDexRoot, 960, 540);
+    @FXML
+    private void handleTrader() {
+        SceneFactory.show(SceneType.TRADER);
+    }
 
-        stage.setScene(scene);
-        stage.setTitle("Clash of Claws - Cat Dex");
-        stage.show();
+    @FXML
+    private void handleCatDex() {
+        SceneFactory.show(SceneType.CAT_DEX);
     }
 }

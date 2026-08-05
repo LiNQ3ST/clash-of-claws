@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="account.RegisterController"
+        prefWidth="960.0"
+        prefHeight="540.0">
+
+    <center>
+        <VBox
+                alignment="CENTER"
+                spacing="14.0"
+                style="-fx-padding: 12px 40px 18px 40px;">
+
+            <Label
+                    text="JOIN THE BATTLE"
+                    style="-fx-font-size: 58px;"/>
+
+            <Label
+                    text="Create your player account"
+                    style="-fx-font-size: 34px;"/>
+
+            <fx:include
+                    fx:id="credentialFields"
+                    source="CredentialFields.fxml"/>
+
+            <HBox
+                    alignment="CENTER"
+                    spacing="18.0">
+
+                <Label
+                        text="Confirm:"
+                        style="-fx-font-size: 30px;
+                               -fx-min-width: 185px;
+                               -fx-alignment: center-right;"/>
+
+                <PasswordField
+                        fx:id="confirmPasswordField"
+                        prefWidth="510.0"
+                        prefHeight="46.0"
+                        style="-fx-font-size: 22px;"/>
+            </HBox>
+
+            <Label
+                    fx:id="messageLabel"
+                    minHeight="24.0"
+                    wrapText="true"
+                    style="-fx-font-size: 18px;"/>
+
+            <Button
+                    text="Create Account"
+                    prefWidth="220.0"
+                    prefHeight="46.0"
+                    onAction="#handleCreateAccount"
+                    style="-fx-font-size: 22px;"/>
+
+            <Button
+                    text="Back"
+                    prefWidth="185.0"
+                    prefHeight="46.0"
+                    onAction="#handleBack"
+                    style="-fx-font-size: 22px;"/>
+
+        </VBox>
+    </center>
+
+</BorderPane>
