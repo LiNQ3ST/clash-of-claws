@@ -44,9 +44,14 @@ public final class DatabaseManager {
     public void initializeDatabase(String databaseUrl) throws SQLException {
         String schema = loadSchema();
 
-        String executableSchema = schema.lines().filter(line -> !line.stripLeading().startsWith("--")).collect(Collectors.joining(System.lineSeparator()));
+        String executableSchema = schema.lines().filter(line ->
+                !line.stripLeading().startsWith("--")
+        ).collect(
+                Collectors.joining(System.lineSeparator())
+        );
 
-        try (Connection connection = getConnection(databaseUrl); Statement statement = connection.createStatement()) {
+        try (Connection connection = getConnection(databaseUrl);
+             Statement statement = connection.createStatement()) {
             for (String sql : executableSchema.split(";")) {
                 String trimmedSql = sql.trim();
 
@@ -58,13 +63,17 @@ public final class DatabaseManager {
     }
 
     private String loadSchema() {
-        try (InputStream inputStream = DatabaseManager.class.getResourceAsStream("/database/schema.sql")) {
+        try (InputStream inputStream =
+                     DatabaseManager.class.getResourceAsStream(
+                             "/database/schema.sql")
+        ) {
             if (inputStream == null) {
                 throw new IllegalStateException("Could not find /database/schema.sql");
             }
 
             return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException exception) {
+
             throw new IllegalStateException("Could not load database schema.", exception);
         }
     }
