@@ -40,7 +40,7 @@ Issue if the team later decides to attempt it for extra credit._
 ## Code Review Log
 | PR  | Author  | Human reviewer(s) | AI review (link) | Outcome |
 |-----|---------|-------------------|------------------|---------|
-| #12 |         |                   | <link or commit> | merged |
+| #24 | Todd Gonzales        | Luke McCormick                   | - | merged |
 | #27 | Quinton Nisonger | Sahtra Green      | -                | merged |
 | #17 | Luke McCormick | Todd Gonzales     | -                | merged |
 
