@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane
+  xmlns="http://javafx.com/javafx"
+  xmlns:fx="http://javafx.com/fxml"
+  fx:controller="battle.BattleController"
+  prefHeight="400.0" prefWidth="600.0">
+
+  <Label
+    fx:id="battleMessageLabel"
+    text="Battle has begun!"
+    layoutX="220"
+    layoutY="40"/>
+
+  <Label
+    fx:id="playerHealthLabel"
+    text="Player HP: 100"
+    layoutX="20"
+    layoutY="20"/>
+
+  <Label
+    fx:id="opponentHealthLabel"
+    text="Opponent HP: 100"
+    layoutX="20"
+    layoutY="40"/>
+
+  <Button
+    text="Attack"
+    layoutX="190"
+    layoutY="320"
+    onAction="#handleAttack"/>
+
+  <Button
+    text="Bag"
+    layoutX="275"
+    layoutY="320"
+    onAction="#handleBag"/>
+
+  <Button
+    text="Run"
+    layoutX="345"
+    layoutY="320"
+    onAction="#handleRun"/>
+
+</AnchorPane>

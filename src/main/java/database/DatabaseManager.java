@@ -22,6 +22,7 @@ public final class DatabaseManager {
         return getConnection(DATABASE_URL);
     }
 
+
     public static Connection getConnection(String databaseUrl)
             throws SQLException {
         Connection connection =
@@ -34,17 +35,23 @@ public final class DatabaseManager {
         return connection;
     }
 
+
     public static void initializeDatabase() throws SQLException {
         initializeDatabase(DATABASE_URL);
     }
+
 
     public static void initializeDatabase(String databaseUrl)
             throws SQLException {
         String schema = loadSchema();
 
         String executableSchema = schema.lines()
-                .filter(line -> !line.stripLeading().startsWith("--"))
-                .collect(Collectors.joining(System.lineSeparator()));
+                .filter(line ->
+                        !line.stripLeading().startsWith("--")
+                )
+                .collect(
+                        Collectors.joining(System.lineSeparator())
+                );
 
         try (
                 Connection connection = getConnection(databaseUrl);
