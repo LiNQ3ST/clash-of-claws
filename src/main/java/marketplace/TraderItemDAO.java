@@ -179,7 +179,7 @@ public class TraderItemDAO {
 
     private Connection openConnection() throws SQLException {
         if (jdbcUrl == null) {
-            return DatabaseManager.getConnection();
+            return DatabaseManager.getInstance().getConnection();
         }
         return DriverManager.getConnection(jdbcUrl);
     }
