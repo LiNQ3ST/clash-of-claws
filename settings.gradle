@@ -1,1 +1,3 @@
 rootProject.name = "clash-of-claws"
+
+include 'src:test:marketplace'
