@@ -42,6 +42,7 @@ Issue if the team later decides to attempt it for extra credit._
 |-----|---------|-------------------|------------------|---------|
 | #12 |         |                   | <link or commit> | merged |
 | #27 | Quinton Nisonger | Sahtra Green      | -                | merged |
+| #17 | Luke McCormick | Todd Gonzales     | -                | merged |
 
 ## AI Usage Log
 - **AI-drafted tests:** <link to TESTING.md / commit> — per owner.
