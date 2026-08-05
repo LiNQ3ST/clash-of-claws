@@ -11,22 +11,24 @@ import java.util.stream.Collectors;
 
 public final class DatabaseManager {
 
-    private static final String DATABASE_URL =
-            "jdbc:sqlite:clash-of-claws.db";
+    private static final String DATABASE_URL = "jdbc:sqlite:clash-of-claws.db";
+
+    private static final DatabaseManager INSTANCE = new DatabaseManager();
 
     private DatabaseManager() {
-        // Prevents this utility class from being instantiated.
+        // Prevents additional DatabaseManager instances.
     }
 
-    public static Connection getConnection() throws SQLException {
+    public static DatabaseManager getInstance() {
+        return INSTANCE;
+    }
+
+    public Connection getConnection() throws SQLException {
         return getConnection(DATABASE_URL);
     }
 
-
-    public static Connection getConnection(String databaseUrl)
-            throws SQLException {
-        Connection connection =
-                DriverManager.getConnection(databaseUrl);
+    public Connection getConnection(String databaseUrl) throws SQLException {
+        Connection connection = DriverManager.getConnection(databaseUrl);
 
         try (Statement statement = connection.createStatement()) {
             statement.execute("PRAGMA foreign_keys = ON");
@@ -35,28 +37,16 @@ public final class DatabaseManager {
         return connection;
     }
 
-
-    public static void initializeDatabase() throws SQLException {
+    public void initializeDatabase() throws SQLException {
         initializeDatabase(DATABASE_URL);
     }
 
-
-    public static void initializeDatabase(String databaseUrl)
-            throws SQLException {
+    public void initializeDatabase(String databaseUrl) throws SQLException {
         String schema = loadSchema();
 
-        String executableSchema = schema.lines()
-                .filter(line ->
-                        !line.stripLeading().startsWith("--")
-                )
-                .collect(
-                        Collectors.joining(System.lineSeparator())
-                );
+        String executableSchema = schema.lines().filter(line -> !line.stripLeading().startsWith("--")).collect(Collectors.joining(System.lineSeparator()));
 
-        try (
-                Connection connection = getConnection(databaseUrl);
-                Statement statement = connection.createStatement()
-        ) {
+        try (Connection connection = getConnection(databaseUrl); Statement statement = connection.createStatement()) {
             for (String sql : executableSchema.split(";")) {
                 String trimmedSql = sql.trim();
 
@@ -67,26 +57,15 @@ public final class DatabaseManager {
         }
     }
 
-    private static String loadSchema() {
-        try (InputStream inputStream =
-                     DatabaseManager.class.getResourceAsStream(
-                             "/database/schema.sql"
-                     )) {
+    private String loadSchema() {
+        try (InputStream inputStream = DatabaseManager.class.getResourceAsStream("/database/schema.sql")) {
             if (inputStream == null) {
-                throw new IllegalStateException(
-                        "Could not find /database/schema.sql"
-                );
+                throw new IllegalStateException("Could not find /database/schema.sql");
             }
 
-            return new String(
-                    inputStream.readAllBytes(),
-                    StandardCharsets.UTF_8
-            );
+            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException exception) {
-            throw new IllegalStateException(
-                    "Could not load database schema.",
-                    exception
-            );
+            throw new IllegalStateException("Could not load database schema.", exception);
         }
     }
 }

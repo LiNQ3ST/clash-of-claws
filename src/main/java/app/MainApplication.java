@@ -20,7 +20,7 @@ public class MainApplication extends Application {
 
     private void initializeDatabase() {
         try {
-            DatabaseManager.initializeDatabase();
+            DatabaseManager.getInstance().initializeDatabase();
         } catch (SQLException exception) {
             throw new IllegalStateException(
                     "Unable to initialize the Clash of Claws database.",
