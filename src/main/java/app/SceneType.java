@@ -12,6 +12,7 @@ public enum SceneType {
     LOGIN("/account/Login.fxml"),
     REGISTER("/account/Register.fxml"),
     MAIN("/app/main-view.fxml");
+
   private final String fxmlPath;
 
   SceneType(String fxmlPath) {
