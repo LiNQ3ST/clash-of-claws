@@ -21,7 +21,7 @@ class DatabaseManagerTest {
 
     @Test
     void getConnection() throws SQLException {
-        try (Connection connection = DatabaseManager.getConnection()) {
+        try (Connection connection = DatabaseManager.getInstance().getConnection()) {
             assertNotNull(connection);
             assertFalse(connection.isClosed());
         }
