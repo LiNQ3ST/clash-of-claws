@@ -38,9 +38,10 @@ Issue if the team later decides to attempt it for extra credit._
 - <Slice 5>: Luke McCormick, Creature Roster: Building Evolutions - out of scope.
 
 ## Code Review Log
-| PR | Author | Human reviewer(s) | AI review (link) | Outcome |
-|----|--------|-------------------|------------------|---------|
-| #12 | | | <link or commit> | merged |
+| PR  | Author  | Human reviewer(s) | AI review (link) | Outcome |
+|-----|---------|-------------------|------------------|---------|
+| #12 |         |                   | <link or commit> | merged |
+| #27 | Quinton Nisonger | Sahtra Green      | -                | merged |
 
 ## AI Usage Log
 - **AI-drafted tests:** <link to TESTING.md / commit> — per owner.
