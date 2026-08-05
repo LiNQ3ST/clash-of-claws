@@ -18,6 +18,12 @@ public class MainController {
     }
 
     @FXML
+    private void handleBattle() {
+        SceneFactory.show(SceneType.BATTLE);
+    }
+
+
+    @FXML
     private void openCatDex(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(
                 MainApplication.class.getResource("/app/cat-dex.fxml")
