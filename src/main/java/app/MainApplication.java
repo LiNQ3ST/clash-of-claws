@@ -16,7 +16,7 @@ public class MainApplication extends Application {
         initializeDatabase();
 
         FXMLLoader loader = new FXMLLoader(
-                MainApplication.class.getResource("/app/cat-dex.fxml")
+                MainApplication.class.getResource("/app/main-view.fxml")
         );
 
         Scene scene = new Scene(loader.load(), 960, 540);
