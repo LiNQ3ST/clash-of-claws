@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="creature.CatDexController"
+      spacing="10"
+      prefWidth="700"
+      prefHeight="450"
+      style="-fx-padding: 20;">
+
+    <Label text="CatDex"
+           style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+
+    <ListView fx:id="catListView"
+              VBox.vgrow="ALWAYS" />
+
+    <Label fx:id="statusLabel"
+           text="No cats loaded" />
+
+</VBox>

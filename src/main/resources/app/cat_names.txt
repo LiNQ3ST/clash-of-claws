@@ -1,0 +1,16 @@
+# One possible generated cat name per line.
+Mochi
+Luna
+Whiskers
+Beans
+Shadow
+Pepper
+Biscuit
+Pumpkin
+Smudge
+Mittens
+Noodle
+Waffles
+Pickles
+Clover
+Marble

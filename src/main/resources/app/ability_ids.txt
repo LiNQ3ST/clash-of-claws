@@ -1,0 +1,9 @@
+# Stable IDs only. The battle arena defines their effects.
+SCRATCH
+POUNCE
+HAIRBALL
+HEALING_PURR
+NIGHT_CLAW
+FLAME_PAW
+TAIL_WHIP
+ZOOMIES
