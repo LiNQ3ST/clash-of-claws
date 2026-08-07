@@ -3,13 +3,20 @@ package account;
 import app.SceneFactory;
 import app.SceneType;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
+import javafx.scene.control.*;
+import java.sql.SQLException;
 
 /**
  * Controls the player registration scene.
+ *
+ * @author Sahtra Green
+ * @version 0.1.0
+ * @since 8/3/2026
  */
+
 public class RegisterController {
+
+    private final AccountService accountService = AccountService.getInstance();
 
     @FXML
     private CredentialFieldsController credentialFieldsController;
@@ -18,33 +25,54 @@ public class RegisterController {
     private PasswordField confirmPasswordField;
 
     @FXML
-    private Label messageLabel;
+    private Label errorLabel;
 
     @FXML
     private void handleCreateAccount() {
-        String username = credentialFieldsController.getUsername();
-        String password = credentialFieldsController.getPassword();
-        String confirmation = confirmPasswordField.getText();
+        try {
+            accountService.register(
+                    credentialFieldsController.getUsername(),
+                    credentialFieldsController.getPassword(),
+                    confirmPasswordField.getText()
+            );
 
-        if (username.isBlank()
-                || password.isBlank()
-                || confirmation.isBlank()) {
-            messageLabel.setText("Complete all required fields.");
-            return;
+            showAccountCreatedAlert();
+
+        } catch (IllegalArgumentException exception) {
+            errorLabel.setText(exception.getMessage());
+
+        } catch (SQLException exception) {
+            errorLabel.setText(
+                    "Unable to create account. Please try again."
+            );
         }
-
-        if (!password.equals(confirmation)) {
-            messageLabel.setText("Passwords do not match.");
-            return;
-        }
-
-        messageLabel.setText(
-                "Registration will be implemented in Issue #7."
-        );
     }
 
     @FXML
     private void handleBack() {
+        SceneFactory.show(SceneType.LOGIN);
+    }
+
+    private void showAccountCreatedAlert() {
+        Alert alert = new Alert(
+                Alert.AlertType.INFORMATION
+        );
+
+        alert.setTitle("Account Created");
+        alert.setHeaderText(
+                "Your account was successfully created!"
+        );
+        alert.setContentText(
+                "Log in now to start playing."
+        );
+
+        ButtonType loginButton =
+                new ButtonType("Log In");
+
+        alert.getButtonTypes().setAll(loginButton);
+
+        alert.showAndWait();
+
         SceneFactory.show(SceneType.LOGIN);
     }
 }
