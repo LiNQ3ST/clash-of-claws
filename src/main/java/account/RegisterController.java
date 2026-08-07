@@ -22,18 +22,39 @@ public class RegisterController {
     private CredentialFieldsController credentialFieldsController;
 
     @FXML
-    private PasswordField confirmPasswordField;
+    private PasswordField confirmationField;
+
+    @FXML
+    private TextField visibleConfirmationField;
+
+    @FXML
+    private CheckBox showConfirmationCheckBox;
 
     @FXML
     private Label errorLabel;
 
     @FXML
+    private void initialize() {
+        visibleConfirmationField.textProperty()
+                .bindBidirectional(confirmationField.textProperty());
+    }
+
+    @FXML
+    private void handleShowConfirmation() {
+        boolean showPassword = showConfirmationCheckBox.isSelected();
+
+        visibleConfirmationField.setVisible(showPassword);
+        visibleConfirmationField.setManaged(showPassword);
+
+        confirmationField.setVisible(!showPassword);
+        confirmationField.setManaged(!showPassword);
+    }
+
+    @FXML
     private void handleCreateAccount() {
         try {
-            accountService.register(
-                    credentialFieldsController.getUsername(),
-                    credentialFieldsController.getPassword(),
-                    confirmPasswordField.getText()
+            accountService.register(credentialFieldsController.getUsername(),
+                    credentialFieldsController.getPassword(), confirmationField.getText()
             );
 
             showAccountCreatedAlert();
@@ -42,9 +63,7 @@ public class RegisterController {
             errorLabel.setText(exception.getMessage());
 
         } catch (SQLException exception) {
-            errorLabel.setText(
-                    "Unable to create account. Please try again."
-            );
+            errorLabel.setText("Unable to create account. Please try again.");
         }
     }
 
@@ -54,20 +73,13 @@ public class RegisterController {
     }
 
     private void showAccountCreatedAlert() {
-        Alert alert = new Alert(
-                Alert.AlertType.INFORMATION
-        );
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
 
         alert.setTitle("Account Created");
-        alert.setHeaderText(
-                "Your account was successfully created!"
-        );
-        alert.setContentText(
-                "Log in now to start playing."
-        );
+        alert.setHeaderText("Your account was successfully created!");
+        alert.setContentText("Log in now to start playing.");
 
-        ButtonType loginButton =
-                new ButtonType("Log In");
+        ButtonType loginButton = new ButtonType("Log In");
 
         alert.getButtonTypes().setAll(loginButton);
 
