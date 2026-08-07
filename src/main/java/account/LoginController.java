@@ -5,23 +5,44 @@ import app.SceneType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
+import java.sql.SQLException;
+
 /**
  * Controls the player login scene.
+ *
+ * @author Sahtra Green
+ * @version 0.1.0
+ * @since 8/3/2026
  */
+
 public class LoginController {
+
+    private final AccountService accountService = AccountService.getInstance();
 
     @FXML
     private CredentialFieldsController credentialFieldsController;
 
     @FXML
-    private Label messageLabel;
+    private Label errorLabel;
 
     @FXML
     private void handleLogin() {
-        String username = credentialFieldsController.getUsername();
-        String password = credentialFieldsController.getPassword();
+        try {
+            Player player = accountService.authenticate(
+                    credentialFieldsController.getUsername(),
+                    credentialFieldsController.getPassword()
+            );
 
-        SceneFactory.show(SceneType.MAIN);
+            routePlayer(player);
+
+        } catch (IllegalArgumentException exception) {
+            errorLabel.setText(exception.getMessage());
+
+        } catch (SQLException exception) {
+            errorLabel.setText(
+                    "Unable to log in. Please try again."
+            );
+        }
     }
 
     @FXML
@@ -30,4 +51,7 @@ public class LoginController {
     }
 
 
+    private void routePlayer(Player player) {
+        SceneFactory.show(SceneType.MAIN);
+    }
 }
