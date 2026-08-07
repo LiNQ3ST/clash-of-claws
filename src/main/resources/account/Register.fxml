@@ -50,10 +50,10 @@
             </HBox>
 
             <Label
-                    fx:id="messageLabel"
+                    fx:id="errorLabel"
                     minHeight="24.0"
                     wrapText="true"
-                    style="-fx-font-size: 18px;"/>
+                    style="-fx-font-size: 18px;-fx-text-fill: #9b0303;"/>
 
             <Button
                     text="Create Account"
