@@ -52,6 +52,10 @@ public class LoginController {
 
 
     private void routePlayer(Player player) {
-        SceneFactory.show(SceneType.MAIN);
+        if (player.getActiveCatId() == null) {
+            SceneFactory.show(SceneType.CAT_DEX);
+        } else {
+            SceneFactory.show(SceneType.MAIN);
+        }
     }
 }
