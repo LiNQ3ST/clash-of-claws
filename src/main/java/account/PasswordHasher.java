@@ -41,9 +41,7 @@ public class PasswordHasher {
 
         byte[] derivedHash = deriveHash(
                 password,
-                salt,
-                ITERATION_COUNT,
-                KEY_LENGTH_BITS
+                salt
         );
 
         return ITERATION_COUNT + ":"
@@ -54,7 +52,7 @@ public class PasswordHasher {
     /**
      * Checks whether an entered password matches a stored hash.
      *
-     * @param password entered plain-text password
+     * @param password    entered plain-text password
      * @param storedValue value previously returned by hash()
      * @return true when the password matches
      */
@@ -75,32 +73,21 @@ public class PasswordHasher {
                 return false;
             }
 
-            int iterationCount =
-                    Integer.parseInt(parts[0]);
+            int iterationCount = Integer.parseInt(parts[0]);
 
-            byte[] salt =
-                    Base64.getDecoder().decode(parts[1]);
+            byte[] salt = Base64.getDecoder().decode(parts[1]);
 
-            byte[] expectedHash =
-                    Base64.getDecoder().decode(parts[2]);
+            byte[] expectedHash = Base64.getDecoder().decode(parts[2]);
 
-            if (iterationCount <= 0
-                    || salt.length == 0
-                    || expectedHash.length == 0) {
+            if (iterationCount != ITERATION_COUNT
+                    || salt.length != SALT_LENGTH_BYTES
+                    || expectedHash.length != KEY_LENGTH_BITS / Byte.SIZE) {
                 return false;
             }
 
-            byte[] actualHash = deriveHash(
-                    password,
-                    salt,
-                    iterationCount,
-                    expectedHash.length * Byte.SIZE
-            );
+            byte[] actualHash = deriveHash(password, salt);
 
-            return MessageDigest.isEqual(
-                    expectedHash,
-                    actualHash
-            );
+            return MessageDigest.isEqual(expectedHash, actualHash);
         } catch (IllegalArgumentException exception) {
             // Covers malformed iteration counts and Base64 values.
             return false;
@@ -112,9 +99,7 @@ public class PasswordHasher {
      */
     private static byte[] deriveHash(
             String password,
-            byte[] salt,
-            int iterationCount,
-            int keyLengthBits
+            byte[] salt
     ) {
         char[] passwordCharacters =
                 password.toCharArray();
@@ -122,8 +107,8 @@ public class PasswordHasher {
         PBEKeySpec keySpec = new PBEKeySpec(
                 passwordCharacters,
                 salt,
-                iterationCount,
-                keyLengthBits
+                PasswordHasher.ITERATION_COUNT,
+                PasswordHasher.KEY_LENGTH_BITS
         );
 
         try {
