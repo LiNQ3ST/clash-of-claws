@@ -2,10 +2,9 @@ package account;
 
 import app.SceneFactory;
 import app.SceneType;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-
-import java.sql.SQLException;
 
 /**
  * Controls the player login scene.
@@ -27,22 +26,36 @@ public class LoginController {
 
     @FXML
     private void handleLogin() {
-        try {
-            Player player = accountService.authenticate(
-                    credentialFieldsController.getUsername(),
-                    credentialFieldsController.getPassword()
-            );
+        errorLabel.setText("");
 
+        String username = credentialFieldsController.getUsername();
+        String password = credentialFieldsController.getPassword();
+
+        Task<Player> loginTask = new Task<>() {
+            @Override
+            protected Player call() throws Exception {
+                return accountService.authenticate(username, password);
+            }
+        };
+
+        loginTask.setOnSucceeded(event -> {
+            Player player = loginTask.getValue();
             routePlayer(player);
+        });
 
-        } catch (IllegalArgumentException exception) {
-            errorLabel.setText(exception.getMessage());
+        loginTask.setOnFailed(event -> {
+            Throwable exception = loginTask.getException();
 
-        } catch (SQLException exception) {
-            errorLabel.setText(
-                    "Unable to log in. Please try again."
-            );
-        }
+            if (exception instanceof IllegalArgumentException) {
+                errorLabel.setText(exception.getMessage());
+            } else {
+                errorLabel.setText("Unable to log in. Please try again.");
+            }
+        });
+
+        Thread loginThread = new Thread(loginTask);
+        loginThread.setDaemon(true);
+        loginThread.start();
     }
 
     @FXML
