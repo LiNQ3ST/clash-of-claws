@@ -1,7 +1,6 @@
 package battle;
 
 import creature.Cat;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +19,9 @@ class BattleEngineTest {
 
   private Cat playerCat;
   private Cat opponentCat;
-  private BattleEngine battleEngine;
+
+  private BattleEngine wildBattleEngine;
+  private BattleEngine arenaBattleEngine;
 
   @BeforeEach
   void setUp() {
@@ -48,29 +49,38 @@ class BattleEngineTest {
         false
     );
 
-    battleEngine = new BattleEngine(playerCat, opponentCat);
-  }
+    wildBattleEngine = new BattleEngine(
+        playerCat,
+        opponentCat,
+        BattleType.WILD
+    );
 
-  @AfterEach
-  void tearDown() {
-    playerCat = null;
-    opponentCat = null;
-    battleEngine = null;
+    arenaBattleEngine = new BattleEngine(
+        playerCat,
+        opponentCat,
+        BattleType.ARENA
+    );
   }
 
   @Test
   void getPlayerCat() {
-    assertSame(playerCat, battleEngine.getPlayerCat());
+    assertSame(
+        playerCat,
+        wildBattleEngine.getPlayerCat()
+    );
   }
 
   @Test
   void getOpponentCat() {
-    assertSame(opponentCat, battleEngine.getOpponentCat());
+    assertSame(
+        opponentCat,
+        wildBattleEngine.getOpponentCat()
+    );
   }
 
   @Test
   void scratchDamagesOpponent() {
-    battleEngine.ability(
+    wildBattleEngine.ability(
         playerCat,
         opponentCat,
         "Scratch"
@@ -81,7 +91,7 @@ class BattleEngineTest {
 
   @Test
   void pounceDamagesOpponent() {
-    battleEngine.ability(
+    wildBattleEngine.ability(
         playerCat,
         opponentCat,
         "Pounce"
@@ -92,7 +102,7 @@ class BattleEngineTest {
 
   @Test
   void opponentCanUseSameAbilityMethod() {
-    battleEngine.ability(
+    wildBattleEngine.ability(
         opponentCat,
         playerCat,
         "Pounce"
@@ -105,7 +115,7 @@ class BattleEngineTest {
   void healingPurrHealsAttacker() {
     playerCat.setHp(50);
 
-    battleEngine.ability(
+    wildBattleEngine.ability(
         playerCat,
         opponentCat,
         "Healing Purr"
@@ -119,7 +129,7 @@ class BattleEngineTest {
   void healIncreasesTargetHp() {
     playerCat.setHp(40);
 
-    battleEngine.heal(playerCat, 20);
+    wildBattleEngine.heal(playerCat, 20);
 
     assertEquals(60, playerCat.getHp());
   }
@@ -128,7 +138,7 @@ class BattleEngineTest {
   void damageCannotReduceHpBelowZero() {
     opponentCat.setHp(5);
 
-    battleEngine.ability(
+    wildBattleEngine.ability(
         playerCat,
         opponentCat,
         "Scratch"
@@ -141,55 +151,55 @@ class BattleEngineTest {
   void defeatingOpponentSetsBattleWon() {
     opponentCat.setHp(10);
 
-    battleEngine.ability(
+    wildBattleEngine.ability(
         playerCat,
         opponentCat,
         "Scratch"
     );
 
-    assertTrue(battleEngine.isBattleWon());
+    assertTrue(wildBattleEngine.isBattleWon());
   }
 
   @Test
   void battleIsNotWonWhenOpponentStillHasHp() {
-    battleEngine.ability(
+    wildBattleEngine.ability(
         playerCat,
         opponentCat,
         "Scratch"
     );
 
-    assertFalse(battleEngine.isBattleWon());
+    assertFalse(wildBattleEngine.isBattleWon());
   }
 
   @Test
   void defeatingPlayerSetsBattleLost() {
     playerCat.setHp(10);
 
-    battleEngine.ability(
+    wildBattleEngine.ability(
         opponentCat,
         playerCat,
         "Scratch"
     );
 
-    assertTrue(battleEngine.isBattleLost());
+    assertTrue(wildBattleEngine.isBattleLost());
   }
 
   @Test
   void battleIsNotLostWhenPlayerStillHasHp() {
-    battleEngine.ability(
+    wildBattleEngine.ability(
         opponentCat,
         playerCat,
         "Scratch"
     );
 
-    assertFalse(battleEngine.isBattleLost());
+    assertFalse(wildBattleEngine.isBattleLost());
   }
 
   @Test
   void unknownAbilityThrowsException() {
     assertThrows(
         IllegalArgumentException.class,
-        () -> battleEngine.ability(
+        () -> wildBattleEngine.ability(
             playerCat,
             opponentCat,
             "Laser Eyes"
@@ -199,7 +209,8 @@ class BattleEngineTest {
 
   @Test
   void opponentTurnUsesOpponentAbility() {
-    String usedAbility = battleEngine.opponentTurn();
+    String usedAbility =
+        wildBattleEngine.opponentTurn();
 
     assertEquals("Pounce", usedAbility);
     assertEquals(85, playerCat.getHp());
@@ -207,7 +218,8 @@ class BattleEngineTest {
 
   @Test
   void playerTurnUsesPlayerAbility() {
-    String usedAbility = battleEngine.playerTurn("Scratch");
+    String usedAbility =
+        wildBattleEngine.playerTurn("Scratch");
 
     assertEquals("Scratch", usedAbility);
     assertEquals(90, opponentCat.getHp());
@@ -217,17 +229,17 @@ class BattleEngineTest {
   void opponentCannotActAfterBattleEnds() {
     opponentCat.setHp(10);
 
-    battleEngine.ability(
+    wildBattleEngine.ability(
         playerCat,
         opponentCat,
         "Scratch"
     );
 
-    assertTrue(battleEngine.isBattleWon());
+    assertTrue(wildBattleEngine.isBattleWon());
 
     assertThrows(
         IllegalStateException.class,
-        () -> battleEngine.opponentTurn()
+        wildBattleEngine::opponentTurn
     );
   }
 
@@ -235,17 +247,17 @@ class BattleEngineTest {
   void playerCannotActAfterBattleEnds() {
     playerCat.setHp(10);
 
-    battleEngine.ability(
+    wildBattleEngine.ability(
         opponentCat,
         playerCat,
         "Scratch"
     );
 
-    assertTrue(battleEngine.isBattleLost());
+    assertTrue(wildBattleEngine.isBattleLost());
 
     assertThrows(
         IllegalStateException.class,
-        () -> battleEngine.playerTurn("Scratch")
+        () -> wildBattleEngine.playerTurn("Scratch")
     );
   }
 
@@ -255,7 +267,7 @@ class BattleEngineTest {
 
     assertThrows(
         IllegalStateException.class,
-        () -> battleEngine.ability(
+        () -> wildBattleEngine.ability(
             playerCat,
             opponentCat,
             "Scratch"
@@ -267,17 +279,17 @@ class BattleEngineTest {
   void abilityCannotBeUsedAfterBattleEnds() {
     opponentCat.setHp(10);
 
-    battleEngine.ability(
+    wildBattleEngine.ability(
         playerCat,
         opponentCat,
         "Scratch"
     );
 
-    assertTrue(battleEngine.isBattleWon());
+    assertTrue(wildBattleEngine.isBattleWon());
 
     assertThrows(
         IllegalStateException.class,
-        () -> battleEngine.ability(
+        () -> wildBattleEngine.ability(
             playerCat,
             opponentCat,
             "Scratch"
@@ -289,7 +301,57 @@ class BattleEngineTest {
   void playerCannotUseAbilityTheyDoNotHave() {
     assertThrows(
         IllegalArgumentException.class,
-        () -> battleEngine.playerTurn("Flame Paw")
+        () -> wildBattleEngine.playerTurn("Flame Paw")
+    );
+  }
+
+  @Test
+  void wildBattleHasWildBattleType() {
+    assertEquals(
+        BattleType.WILD,
+        wildBattleEngine.getBattleType()
+    );
+  }
+
+  @Test
+  void arenaBattleHasArenaBattleType() {
+    assertEquals(
+        BattleType.ARENA,
+        arenaBattleEngine.getBattleType()
+    );
+  }
+
+  @Test
+  void wildBattleCanRunSuccessfully() {
+    boolean escaped =
+        wildBattleEngine.attemptRun(75);
+
+    assertTrue(escaped);
+
+    assertEquals(
+        BattleResult.ESCAPED,
+        wildBattleEngine.getBattleResult()
+    );
+  }
+
+  @Test
+  void wildBattleCanFailToRun() {
+    boolean escaped =
+        wildBattleEngine.attemptRun(25);
+
+    assertFalse(escaped);
+
+    assertEquals(
+        BattleResult.IN_PROGRESS,
+        wildBattleEngine.getBattleResult()
+    );
+  }
+
+  @Test
+  void arenaBattleCannotRun() {
+    assertThrows(
+        IllegalStateException.class,
+        () -> arenaBattleEngine.attemptRun(75)
     );
   }
 }

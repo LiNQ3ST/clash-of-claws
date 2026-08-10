@@ -53,15 +53,36 @@ public class BattleController {
   @FXML
   private Button abilityButton4;
 
+  @FXML
+  private Button healItemButton;
+
+  @FXML
+  private Button catchItemButton;
+
+  @FXML
+  private Button runButton;
+
   private BattleEngine battleEngine;
 
-  public void startBattle(Cat playerCat, Cat opponentCat) {
-    battleEngine = new BattleEngine(playerCat, opponentCat);
+  public void startBattle(
+      Cat playerCat,
+      Cat opponentCat,
+      BattleType battleType) {
+
+
+    battleEngine =
+        new BattleEngine(
+            playerCat,
+            opponentCat,
+            battleType
+        );
 
     playerNameLabel.setText(playerCat.getName());
     opponentNameLabel.setText(opponentCat.getName());
+
     updateHealthLabels();
     loadAbilityButtons();
+    configureBattleActions();
 
     battleMessageLabel.setText(
         playerCat.getName()
@@ -96,11 +117,17 @@ public class BattleController {
 
   private void updateHealthLabels() {
     playerHealthLabel.setText(
-        "HP: " + battleEngine.getPlayerCat().getHp()
+        "HP: "
+            + battleEngine.getPlayerCat().getHp()
+            + "/"
+            + battleEngine.getMaxHp(battleEngine.getPlayerCat())
     );
 
     opponentHealthLabel.setText(
-        "HP: " + battleEngine.getOpponentCat().getHp()
+        "HP: "
+            + battleEngine.getOpponentCat().getHp()
+            + "/"
+            + battleEngine.getMaxHp(battleEngine.getOpponentCat())
     );
   }
 
@@ -159,6 +186,17 @@ public class BattleController {
     actionMenu.setManaged(true);
   }
 
+  private void configureBattleActions() {
+    boolean wildBattle =
+        battleEngine.getBattleType() == BattleType.WILD;
+
+    catchItemButton.setVisible(wildBattle);
+    catchItemButton.setManaged(wildBattle);
+
+    runButton.setVisible(wildBattle);
+    runButton.setManaged(wildBattle);
+  }
+
   @FXML
   private void handleAttack() {
     actionMenu.setVisible(false);
@@ -172,7 +210,48 @@ public class BattleController {
 
   @FXML
   private void handleRun() {
-    battleMessageLabel.setText("The player ran away!");
+
+    int roll = (int) (Math.random() * 100);
+    boolean escaped = battleEngine.attemptRun(roll);
+
+    if (escaped) {
+      battleMessageLabel.setText(
+          "You escaped successfully."); //TODO replace fxml "you" with username
+
+      actionMenu.setVisible(false);
+      actionMenu.setManaged(false);
+
+      return;
+    }
+
+    String opponentAbility = battleEngine.opponentTurn();
+
+    updateHealthLabels();
+
+    if (battleEngine.isBattleLost()) {
+      battleMessageLabel.setText(
+          battleEngine.getOpponentCat().getName()
+              + " used "
+              + opponentAbility
+              + ". You were defeated."
+      );
+
+      actionMenu.setVisible(false);
+      actionMenu.setManaged(false);
+
+      return;
+    }
+
+    battleMessageLabel.setText(
+        "You failed to escape. "
+            + battleEngine.getOpponentCat().getName()
+            + " used "
+            + opponentAbility
+            + "."
+    );
+
+    actionMenu.setVisible(true);
+    actionMenu.setManaged(true);
   }
 
   @FXML
