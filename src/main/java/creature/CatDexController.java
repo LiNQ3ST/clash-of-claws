@@ -2,6 +2,8 @@ package creature;
 
 import account.AccountService;
 import account.Player;
+import app.SceneFactory;
+import app.SceneType;
 
 import java.util.ArrayList;
 
@@ -17,6 +19,10 @@ public class CatDexController {
     @FXML
     private Label statusLabel;
 
+    @FXML
+    private void handleBack() {
+        SceneFactory.show(SceneType.MAIN);
+    }
 
     @FXML
     private void initialize() {

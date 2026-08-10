@@ -4,6 +4,7 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.Button?>
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="creature.CatDexController"
       spacing="10"
@@ -19,5 +20,9 @@
 
     <Label fx:id="statusLabel"
            text="No cats loaded" />
+
+    <Button text="Back"
+            onAction="#handleBack"
+            prefWidth="120"/>
 
 </VBox>
