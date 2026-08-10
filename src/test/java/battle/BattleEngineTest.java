@@ -162,6 +162,30 @@ class BattleEngineTest {
   }
 
   @Test
+  void defeatingPlayerSetsBattleLost() {
+    playerCat.setHp(10);
+
+    battleEngine.ability(
+        opponentCat,
+        playerCat,
+        "Scratch"
+    );
+
+    assertTrue(battleEngine.isBattleLost());
+  }
+
+  @Test
+  void battleIsNotLostWhenPlayerStillHasHp() {
+    battleEngine.ability(
+        opponentCat,
+        playerCat,
+        "Scratch"
+    );
+
+    assertFalse(battleEngine.isBattleLost());
+  }
+
+  @Test
   void unknownAbilityThrowsException() {
     assertThrows(
         IllegalArgumentException.class,
@@ -170,6 +194,102 @@ class BattleEngineTest {
             opponentCat,
             "Laser Eyes"
         )
+    );
+  }
+
+  @Test
+  void opponentTurnUsesOpponentAbility() {
+    String usedAbility = battleEngine.opponentTurn();
+
+    assertEquals("Pounce", usedAbility);
+    assertEquals(85, playerCat.getHp());
+  }
+
+  @Test
+  void playerTurnUsesPlayerAbility() {
+    String usedAbility = battleEngine.playerTurn("Scratch");
+
+    assertEquals("Scratch", usedAbility);
+    assertEquals(90, opponentCat.getHp());
+  }
+
+  @Test
+  void opponentCannotActAfterBattleEnds() {
+    opponentCat.setHp(10);
+
+    battleEngine.ability(
+        playerCat,
+        opponentCat,
+        "Scratch"
+    );
+
+    assertTrue(battleEngine.isBattleWon());
+
+    assertThrows(
+        IllegalStateException.class,
+        () -> battleEngine.opponentTurn()
+    );
+  }
+
+  @Test
+  void playerCannotActAfterBattleEnds() {
+    playerCat.setHp(10);
+
+    battleEngine.ability(
+        opponentCat,
+        playerCat,
+        "Scratch"
+    );
+
+    assertTrue(battleEngine.isBattleLost());
+
+    assertThrows(
+        IllegalStateException.class,
+        () -> battleEngine.playerTurn("Scratch")
+    );
+  }
+
+  @Test
+  void defeatedCatCannotUseAbility() {
+    playerCat.setHp(0);
+
+    assertThrows(
+        IllegalStateException.class,
+        () -> battleEngine.ability(
+            playerCat,
+            opponentCat,
+            "Scratch"
+        )
+    );
+  }
+
+  @Test
+  void abilityCannotBeUsedAfterBattleEnds() {
+    opponentCat.setHp(10);
+
+    battleEngine.ability(
+        playerCat,
+        opponentCat,
+        "Scratch"
+    );
+
+    assertTrue(battleEngine.isBattleWon());
+
+    assertThrows(
+        IllegalStateException.class,
+        () -> battleEngine.ability(
+            playerCat,
+            opponentCat,
+            "Scratch"
+        )
+    );
+  }
+
+  @Test
+  void playerCannotUseAbilityTheyDoNotHave() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> battleEngine.playerTurn("Flame Paw")
     );
   }
 }
