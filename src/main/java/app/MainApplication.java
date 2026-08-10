@@ -8,28 +8,28 @@ import java.sql.SQLException;
 
 public class MainApplication extends Application {
 
-    @Override
-    public void start(Stage stage) {
-        initializeDatabase();
+  @Override
+  public void start(Stage stage) {
+    initializeDatabase();
 
-        stage.setTitle("Clash of Claws");
+    stage.setTitle("Clash of Claws");
 
-        SceneFactory.initialize(stage);
-        SceneFactory.show(SceneType.LOGIN);
+    SceneFactory.initialize(stage);
+    SceneFactory.show(SceneType.LOGIN);
+  }
+
+  private void initializeDatabase() {
+    try {
+      DatabaseManager.getInstance().initializeDatabase();
+    } catch (SQLException exception) {
+      throw new IllegalStateException(
+          "Unable to initialize the Clash of Claws database.",
+          exception
+      );
     }
+  }
 
-    private void initializeDatabase() {
-        try {
-            DatabaseManager.getInstance().initializeDatabase();
-        } catch (SQLException exception) {
-            throw new IllegalStateException(
-                    "Unable to initialize the Clash of Claws database.",
-                    exception
-            );
-        }
-    }
-
-    public static void main(String[] args) {
-        launch(args);
-    }
+  public static void main(String[] args) {
+    launch(args);
+  }
 }

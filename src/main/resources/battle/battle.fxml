@@ -1,49 +1,191 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane
+<BorderPane
   xmlns="http://javafx.com/javafx"
   xmlns:fx="http://javafx.com/fxml"
   fx:controller="battle.BattleController"
-  prefHeight="400.0" prefWidth="600.0">
+  prefWidth="700.0"
+  prefHeight="500.0">
 
-  <Label
-    fx:id="battleMessageLabel"
-    text="Battle has begun!"
-    layoutX="220"
-    layoutY="40"/>
+  <center>
+    <AnchorPane prefWidth="700.0" prefHeight="380.0">
 
-  <Label
-    fx:id="playerHealthLabel"
-    text="Player HP: 100"
-    layoutX="20"
-    layoutY="20"/>
+      <!-- Opponent information -->
+      <VBox
+        layoutX="35.0"
+        layoutY="30.0"
+        spacing="6.0"
+        prefWidth="220.0">
 
-  <Label
-    fx:id="opponentHealthLabel"
-    text="Opponent HP: 100"
-    layoutX="20"
-    layoutY="40"/>
+        <Label
+          fx:id="opponentNameLabel"
+          text="Opponent Cat"/>
 
-  <Button
-    text="Attack"
-    layoutX="190"
-    layoutY="320"
-    onAction="#handleAttack"/>
+        <Label
+          fx:id="opponentHealthLabel"
+          text="HP: 100"/>
 
-  <Button
-    text="Bag"
-    layoutX="275"
-    layoutY="320"
-    onAction="#handleBag"/>
+      </VBox>
 
-  <Button
-    text="Run"
-    layoutX="345"
-    layoutY="320"
-    onAction="#handleRun"/>
+      <!-- Opponent cat placeholder -->
+      <Label
+        layoutX="490.0"
+        layoutY="95.0"
+        text="[Opponent Cat]"/>
 
-</AnchorPane>
+      <!-- Player cat placeholder -->
+      <Label
+        layoutX="120.0"
+        layoutY="250.0"
+        text="[Player Cat]"/>
+
+      <!-- Player information -->
+      <VBox
+        layoutX="430.0"
+        layoutY="225.0"
+        spacing="6.0"
+        prefWidth="220.0">
+
+        <Label
+          fx:id="playerNameLabel"
+          text="Player Cat"/>
+
+        <Label
+          fx:id="playerHealthLabel"
+          text="HP: 100"/>
+
+      </VBox>
+
+      <!-- Battle message -->
+      <Label
+        fx:id="battleMessageLabel"
+        layoutX="230.0"
+        layoutY="340.0"
+        prefWidth="260.0"
+        text="Battle has begun!"/>
+
+    </AnchorPane>
+  </center>
+
+  <bottom>
+
+    <StackPane
+      fx:id="menuStackPane"
+      prefHeight="120.0">
+
+      <padding>
+        <Insets top="10.0" right="20.0" bottom="20.0" left="20.0"/>
+      </padding>
+
+      <!-- Main battle actions -->
+      <HBox
+        fx:id="actionMenu"
+        alignment="CENTER"
+        spacing="20.0">
+
+        <Button
+          text="Attack"
+          prefWidth="140.0"
+          onAction="#handleAttack"/>
+
+        <Button
+          text="Bag"
+          prefWidth="140.0"
+          onAction="#handleBag"/>
+
+        <Button
+          text="Run"
+          prefWidth="140.0"
+          onAction="#handleRun"/>
+
+      </HBox>
+
+      <!-- Attack selection menu -->
+      <VBox
+        fx:id="attackMenu"
+        alignment="CENTER"
+        spacing="8.0"
+        visible="false"
+        managed="false">
+
+        <Label text="Choose Attack"/>
+
+        <GridPane
+          hgap="10.0"
+          vgap="8.0"
+          alignment="CENTER">
+
+          <Button
+            fx:id="abilityButton1"
+            text="Ability 1"
+            prefWidth="150.0"
+            GridPane.columnIndex="0"
+            GridPane.rowIndex="0"
+            onAction="#handleAbilityOne"/>
+
+          <Button
+            fx:id="abilityButton2"
+            text="Ability 2"
+            prefWidth="150.0"
+            GridPane.columnIndex="1"
+            GridPane.rowIndex="0"
+            onAction="#handleAbilityTwo"/>
+
+          <Button
+            fx:id="abilityButton3"
+            text="Ability 3"
+            prefWidth="150.0"
+            GridPane.columnIndex="0"
+            GridPane.rowIndex="1"
+            onAction="#handleAbilityThree"/>
+
+          <Button
+            fx:id="abilityButton4"
+            text="Ability 4"
+            prefWidth="150.0"
+            GridPane.columnIndex="1"
+            GridPane.rowIndex="1"
+            onAction="#handleAbilityFour"/>
+
+        </GridPane>
+
+        <Button
+          text="Back"
+          prefWidth="100.0"
+          onAction="#handleAttackBack"/>
+
+      </VBox>
+
+      <!-- Bag menu placeholder -->
+      <VBox
+        fx:id="bagMenu"
+        alignment="CENTER"
+        spacing="8.0"
+        visible="false"
+        managed="false">
+
+        <Label text="Items"/>
+
+        <Label text="Inventory integration coming next"/>
+
+        <Button
+          text="Back"
+          onAction="#handleBagBack"/>
+
+      </VBox>
+
+    </StackPane>
+
+  </bottom>
+
+</BorderPane>
