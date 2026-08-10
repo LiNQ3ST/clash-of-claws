@@ -57,17 +57,6 @@ public class BattleEngine {
     return battleType;
   }
 
-  // TODO delete
-  public int getMaxHp(Cat cat) {
-    return switch (cat.getType()) {
-      case "Tabby" -> 100;
-      case "Sphinx" -> 90;
-      case "Maine Coon" -> 120;
-      case "Siamese" -> 95;
-      default -> 100;
-    };
-  }
-
   public boolean isBattleOver() {
     return battleResult != BattleResult.IN_PROGRESS;
   }
@@ -122,26 +111,6 @@ public class BattleEngine {
   }
 
   // TODO opponent attack logic (NPC AI)
-  /* TODO
-  private void attack(Cat target, int amount) {
-  if (amount < 0) {
-    throw new IllegalArgumentException(
-        "Damage amount cannot be negative.");
-  }
-
-  target.setCurrentHp(
-      target.getCurrentHp() - amount
-  );
-
-  if (target.getCurrentHp() == 0) {
-    if (target == opponentCat) {
-      battleResult = BattleResult.VICTORY;
-    } else if (target == playerCat) {
-      battleResult = BattleResult.DEFEAT;
-    }
-  }
-}
-   */
 
   // TODO make sure run button only visible in wild battles
   public boolean attemptRun(int roll) {
