@@ -47,7 +47,7 @@ public class BattleEngine {
       throw new IllegalStateException("Battle has already ended.");
     }
 
-    if (attacker.getHp() <= 0) {
+    if (attacker.getCurrentHp() <= 0) {
       throw new IllegalStateException("A defeated cat cannot act.");
     }
 
@@ -65,14 +65,14 @@ public class BattleEngine {
     }
   }
   public void heal(Cat target, int amount) {
-    target.setHp(target.getHp() + amount);
+    target.setCurrentHp(target.getCurrentHp() + amount);
   }
 
   private void attack(Cat target, int amount) {
-    int newHp = target.getHp() - amount;
+    int newHp = target.getCurrentHp() - amount;
 
     if (newHp <= 0) {
-      target.setHp(0);
+      target.setCurrentHp(0);
 
       if (target == opponentCat) {
         battleWon = true;
@@ -80,7 +80,7 @@ public class BattleEngine {
         battleLost = true;
       }
     } else {
-      target.setHp(newHp);
+      target.setCurrentHp(newHp);
     }
   }
 
