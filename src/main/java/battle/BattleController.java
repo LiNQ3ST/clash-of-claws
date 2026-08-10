@@ -118,16 +118,16 @@ public class BattleController {
   private void updateHealthLabels() {
     playerHealthLabel.setText(
         "HP: "
-            + battleEngine.getPlayerCat().getHp()
+            + battleEngine.getPlayerCat().getCurrentHp()
             + "/"
-            + battleEngine.getMaxHp(battleEngine.getPlayerCat())
+            + battleEngine.getPlayerCat().getMaxHp()
     );
 
     opponentHealthLabel.setText(
         "HP: "
-            + battleEngine.getOpponentCat().getHp()
+            + battleEngine.getOpponentCat().getCurrentHp()
             + "/"
-            + battleEngine.getMaxHp(battleEngine.getOpponentCat())
+            + battleEngine.getOpponentCat().getMaxHp()
     );
   }
 
