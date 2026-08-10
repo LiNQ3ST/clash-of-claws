@@ -1,0 +1,6 @@
+# one possible generated cat type per line
+Tabby
+Sphynx
+Maine Coon
+Siamese
+Calico
