@@ -10,69 +10,78 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 /**
+ * Saves, reads, updates, and deletes Cat data in SQLite.
  *
- * This class saves, reads, updates, and deletes Cat data in SQLite.
- * Each cat is stored as one long String in the cat_data column.
+ * The cats table is created by database/schema.sql.
+ *
+ * Each cat belongs to one player using player_id.
+ * Most of the cat's information is stored as one String
+ * in the cat_data column.
  */
 public class CatDAO {
 
 
-    //Creates the cats table if it does not already exist.
-    private static final String CREATE_TABLE_SQL =
-            "CREATE TABLE IF NOT EXISTS cats ("
-                    + "cat_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    + "cat_data TEXT NOT NULL UNIQUE"
-                    + ")";
+    /**
+     * CREATE:
+     * Saves a cat for a specific player
+     * and gives the Cat its database ID.
+     */
+    public Cat insert(
+            Cat cat,
+            int playerId
+    ) {
 
-
-    public void initializeTable() {
-        try {
-            Connection connection = DatabaseManager.getInstance().getConnection();
-            Statement statement = connection.createStatement();
-
-            statement.execute(CREATE_TABLE_SQL);
-
-            statement.close();
-            connection.close();
-
-        } catch (SQLException exception) {
-            throw new RuntimeException(
-                    "Could not create cats table",
-                    exception
-            );
-        }
-    }
-
-
-      //CREATE: saves a cat and gives it its database ID.
-
-    public Cat insert(Cat cat) {
         String sql =
-                "INSERT INTO cats (cat_data) VALUES (?)";
+                "INSERT INTO cats (player_id, cat_data) VALUES (?, ?)";
 
         try {
-            Connection connection = DatabaseManager.getInstance().getConnection();
-            PreparedStatement statement = connection.prepareStatement(
-                    sql,
-                    Statement.RETURN_GENERATED_KEYS
+
+            Connection connection =
+                    DatabaseManager.getInstance().getConnection();
+
+            PreparedStatement statement =
+                    connection.prepareStatement(
+                            sql,
+                            Statement.RETURN_GENERATED_KEYS
+                    );
+
+
+            statement.setInt(
+                    1,
+                    playerId
             );
 
-            statement.setString(1, cat.toStorageString());
+            statement.setString(
+                    2,
+                    cat.toStorageString()
+            );
+
+
             statement.executeUpdate();
 
-            ResultSet generatedKeys = statement.getGeneratedKeys();
+
+            ResultSet generatedKeys =
+                    statement.getGeneratedKeys();
+
 
             if (generatedKeys.next()) {
-                cat.setId(generatedKeys.getInt(1));
+
+                cat.setId(
+                        generatedKeys.getInt(1)
+                );
             }
+
 
             generatedKeys.close();
             statement.close();
             connection.close();
 
+
             return cat;
 
+
         } catch (SQLException exception) {
+
             throw new RuntimeException(
                     "Could not insert cat",
                     exception
@@ -80,36 +89,81 @@ public class CatDAO {
         }
     }
 
+
     /**
-     * READ: loads one cat by database ID.
-     * Returns null when the ID is not found.
+     * READ:
+     * Loads one cat by its database ID.
+     *
+     * The player ID is also checked so that one player
+     * cannot load another player's cat.
+     *
+     * Returns null if the cat is not found.
      */
-    public Cat findById(int catId) {
+    public Cat findById(
+            int catId,
+            int playerId
+    ) {
+
         String sql =
-                "SELECT cat_data FROM cats WHERE cat_id = ?";
+                "SELECT cat_data "
+                        + "FROM cats "
+                        + "WHERE cat_id = ? "
+                        + "AND player_id = ?";
+
 
         try {
-            Connection connection = DatabaseManager.getInstance().getConnection();
+
+            Connection connection =
+                    DatabaseManager.getInstance().getConnection();
+
             PreparedStatement statement =
                     connection.prepareStatement(sql);
 
-            statement.setInt(1, catId);
 
-            ResultSet resultSet = statement.executeQuery();
+            statement.setInt(
+                    1,
+                    catId
+            );
+
+            statement.setInt(
+                    2,
+                    playerId
+            );
+
+
+            ResultSet resultSet =
+                    statement.executeQuery();
+
+
             Cat cat = null;
 
+
             if (resultSet.next()) {
-                String storedText = resultSet.getString("cat_data");
-                cat = Cat.fromStorageString(catId, storedText);
+
+                String storedText =
+                        resultSet.getString(
+                                "cat_data"
+                        );
+
+
+                cat =
+                        Cat.fromStorageString(
+                                catId,
+                                storedText
+                        );
             }
+
 
             resultSet.close();
             statement.close();
             connection.close();
 
+
             return cat;
 
+
         } catch (SQLException exception) {
+
             throw new RuntimeException(
                     "Could not read cat",
                     exception
@@ -117,37 +171,79 @@ public class CatDAO {
         }
     }
 
-    /**
-     * READ: loads every stored cat.
-     */
-    public ArrayList<Cat> findAll() {
-        String sql =
-                "SELECT cat_id, cat_data FROM cats ORDER BY cat_id";
 
-        ArrayList<Cat> cats = new ArrayList<Cat>();
+    /**
+     * READ:
+     * Loads all cats belonging to one player.
+     */
+    public ArrayList<Cat> findAll(
+            int playerId
+    ) {
+
+        String sql =
+                "SELECT cat_id, cat_data "
+                        + "FROM cats "
+                        + "WHERE player_id = ? "
+                        + "ORDER BY cat_id";
+
+
+        ArrayList<Cat> cats =
+                new ArrayList<Cat>();
+
 
         try {
-            Connection connection = DatabaseManager.getInstance().getConnection();
+
+            Connection connection =
+                    DatabaseManager.getInstance().getConnection();
+
             PreparedStatement statement =
                     connection.prepareStatement(sql);
 
-            ResultSet resultSet = statement.executeQuery();
+
+            statement.setInt(
+                    1,
+                    playerId
+            );
+
+
+            ResultSet resultSet =
+                    statement.executeQuery();
+
 
             while (resultSet.next()) {
-                int catId = resultSet.getInt("cat_id");
-                String storedText = resultSet.getString("cat_data");
 
-                Cat cat = Cat.fromStorageString(catId, storedText);
+                int catId =
+                        resultSet.getInt(
+                                "cat_id"
+                        );
+
+                String storedText =
+                        resultSet.getString(
+                                "cat_data"
+                        );
+
+
+                Cat cat =
+                        Cat.fromStorageString(
+                                catId,
+                                storedText
+                        );
+
+
                 cats.add(cat);
             }
+
 
             resultSet.close();
             statement.close();
             connection.close();
 
+
             return cats;
 
+
         } catch (SQLException exception) {
+
             throw new RuntimeException(
                     "Could not read cats",
                     exception
@@ -155,29 +251,61 @@ public class CatDAO {
         }
     }
 
+
     /**
-     * UPDATE: replaces the stored String for an existing cat.
+     * UPDATE:
+     * Replaces the stored cat String for an existing cat.
      */
-    public boolean update(Cat cat) {
+    public boolean update(
+            Cat cat,
+            int playerId
+    ) {
+
         String sql =
-                "UPDATE cats SET cat_data = ? WHERE cat_id = ?";
+                "UPDATE cats "
+                        + "SET cat_data = ? "
+                        + "WHERE cat_id = ? "
+                        + "AND player_id = ?";
+
 
         try {
-            Connection connection = DatabaseManager.getInstance().getConnection();
+
+            Connection connection =
+                    DatabaseManager.getInstance().getConnection();
+
             PreparedStatement statement =
                     connection.prepareStatement(sql);
 
-            statement.setString(1, cat.toStorageString());
-            statement.setInt(2, cat.getId());
 
-            int changedRows = statement.executeUpdate();
+            statement.setString(
+                    1,
+                    cat.toStorageString()
+            );
+
+            statement.setInt(
+                    2,
+                    cat.getId()
+            );
+
+            statement.setInt(
+                    3,
+                    playerId
+            );
+
+
+            int changedRows =
+                    statement.executeUpdate();
+
 
             statement.close();
             connection.close();
 
+
             return changedRows == 1;
 
+
         } catch (SQLException exception) {
+
             throw new RuntimeException(
                     "Could not update cat",
                     exception
@@ -185,28 +313,55 @@ public class CatDAO {
         }
     }
 
+
     /**
-     * DELETE: removes a cat using its database ID.
+     * DELETE:
+     * Removes one cat belonging to a player.
      */
-    public boolean delete(int catId) {
+    public boolean delete(
+            int catId,
+            int playerId
+    ) {
+
         String sql =
-                "DELETE FROM cats WHERE cat_id = ?";
+                "DELETE FROM cats "
+                        + "WHERE cat_id = ? "
+                        + "AND player_id = ?";
+
 
         try {
-            Connection connection = DatabaseManager.getInstance().getConnection();
+
+            Connection connection =
+                    DatabaseManager.getInstance().getConnection();
+
             PreparedStatement statement =
                     connection.prepareStatement(sql);
 
-            statement.setInt(1, catId);
 
-            int changedRows = statement.executeUpdate();
+            statement.setInt(
+                    1,
+                    catId
+            );
+
+            statement.setInt(
+                    2,
+                    playerId
+            );
+
+
+            int changedRows =
+                    statement.executeUpdate();
+
 
             statement.close();
             connection.close();
 
+
             return changedRows == 1;
 
+
         } catch (SQLException exception) {
+
             throw new RuntimeException(
                     "Could not delete cat",
                     exception
@@ -214,34 +369,123 @@ public class CatDAO {
         }
     }
 
+
     /**
-     * Checks whether the exact stored cat String already exists.
+     * Checks whether this exact cat already exists
+     * for this player.
      */
-    public boolean exists(Cat cat) {
+    public boolean exists(
+            Cat cat,
+            int playerId
+    ) {
+
         String sql =
-                "SELECT cat_id FROM cats WHERE cat_data = ?";
+                "SELECT cat_id "
+                        + "FROM cats "
+                        + "WHERE player_id = ? "
+                        + "AND cat_data = ?";
+
 
         try {
-            Connection connection = DatabaseManager.getInstance().getConnection();
+
+            Connection connection =
+                    DatabaseManager.getInstance().getConnection();
+
             PreparedStatement statement =
                     connection.prepareStatement(sql);
 
-            statement.setString(1, cat.toStorageString());
 
-            ResultSet resultSet = statement.executeQuery();
-            boolean found = resultSet.next();
+            statement.setInt(
+                    1,
+                    playerId
+            );
+
+            statement.setString(
+                    2,
+                    cat.toStorageString()
+            );
+
+
+            ResultSet resultSet =
+                    statement.executeQuery();
+
+
+            boolean found =
+                    resultSet.next();
+
 
             resultSet.close();
             statement.close();
             connection.close();
 
+
             return found;
 
+
         } catch (SQLException exception) {
+
             throw new RuntimeException(
                     "Could not check for duplicate cat",
                     exception
             );
         }
+    }
+
+
+    /**
+     * Returns the player's cats that are currently
+     * in the active party.
+     */
+    public ArrayList<Cat> findPartyCats(
+            int playerId
+    ) {
+
+        ArrayList<Cat> allCats =
+                findAll(playerId);
+
+        ArrayList<Cat> partyCats =
+                new ArrayList<Cat>();
+
+
+        for (Cat cat : allCats) {
+
+            if (cat.isPlayerCat()
+                    && cat.isInParty()) {
+
+                partyCats.add(cat);
+            }
+        }
+
+
+        return partyCats;
+    }
+
+
+    /**
+     * Returns the player's owned cats that are
+     * currently in storage.
+     */
+    public ArrayList<Cat> findStoredCats(
+            int playerId
+    ) {
+
+        ArrayList<Cat> allCats =
+                findAll(playerId);
+
+        ArrayList<Cat> storedCats =
+                new ArrayList<Cat>();
+
+
+        for (Cat cat : allCats) {
+
+            if (cat.isPlayerCat()
+                    && !cat.isInParty()) {
+
+                storedCats.add(cat);
+            }
+        }
+
+
+        return storedCats;
     }
 }

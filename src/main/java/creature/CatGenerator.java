@@ -23,9 +23,9 @@ public class CatGenerator {
      */
     public CatGenerator() {
 
-        names = loadTextFile("/app/cat_names.txt");
-        types = loadTextFile("/app/cat_types.txt");
-        abilities = loadTextFile("/app/ability_ids.txt");
+        names = loadTextFile("/creature/cat_names.txt");
+        types = loadTextFile("/creature/cat_types.txt");
+        abilities = loadTextFile("/creature/ability_ids.txt");
 
         random = new Random();
     }
@@ -113,7 +113,8 @@ public class CatGenerator {
      * and returns the saved Cat.
      */
     public Cat generateAndSaveCat(
-            CatDAO catDAO
+            CatDAO catDAO,
+            int playerId
     ) {
 
         for (int attempt = 0; attempt < 1000; attempt++) {
@@ -122,9 +123,15 @@ public class CatGenerator {
                     generateCat();
 
 
-            if (!catDAO.exists(cat)) {
+            if (!catDAO.exists(
+                    cat,
+                    playerId
+            )) {
 
-                return catDAO.insert(cat);
+                return catDAO.insert(
+                        cat,
+                        playerId
+                );
             }
         }
 
@@ -146,7 +153,8 @@ public class CatGenerator {
             String type,
             int hp,
             ArrayList<String> chosenAbilities,
-            CatDAO catDAO
+            CatDAO catDAO,
+            int playerId
     ) {
 
         Cat playerCat =
@@ -160,7 +168,10 @@ public class CatGenerator {
                 );
 
 
-        return catDAO.insert(playerCat);
+        return catDAO.insert(
+                playerCat,
+                playerId
+        );
     }
 
 

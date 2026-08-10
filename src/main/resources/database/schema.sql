@@ -40,7 +40,18 @@ CREATE TABLE IF NOT EXISTS battle (
     status TEXT NOT NULL
 );
 
+-- ============================================================================
+-- slice 5 - Creature Generation / CatDex
+-- ============================================================================
 
+CREATE TABLE IF NOT EXISTS cats (
+    cat_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    player_id INTEGER NOT NULL,
+    cat_data TEXT NOT NULL,
+
+    FOREIGN KEY (player_id)
+        REFERENCES player(player_id)
+);
 -- TODO battle_turn
 -- TODO battle_participant
 -- TODO capture
