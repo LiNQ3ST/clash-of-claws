@@ -7,7 +7,7 @@ import java.util.ArrayList;
  *
  * Cat data is stored as one String in the database.
  *
- * format:
+ * Current format:
  * name|type|maxHp|currentHp|abilities|playerCat|inParty
  *
  * Example:
@@ -19,10 +19,11 @@ public class Cat {
     private String name;
     private String type;
 
-    // hp is the cat's maximum HP.
-    private int hp;
+    // The cat's maximum HP.
+    private int maxHp;
 
-    // currentHp can change during battles.
+    // The cat's current HP.
+    // This can change during battles.
     private int currentHp;
 
     private ArrayList<String> abilities;
@@ -41,18 +42,22 @@ public class Cat {
     public Cat(
             String name,
             String type,
-            int hp,
+            int maxHp,
             ArrayList<String> abilities,
             boolean playerCat,
             boolean inParty
     ) {
+
         this.id = 0;
         this.name = name;
         this.type = type;
-        this.hp = hp;
-        this.currentHp = hp;
+
+        setMaxHp(maxHp);
+        setCurrentHp(maxHp);
+
         this.abilities =
                 new ArrayList<String>(abilities);
+
         this.playerCat = playerCat;
         this.inParty = inParty;
     }
@@ -65,19 +70,23 @@ public class Cat {
             int id,
             String name,
             String type,
-            int hp,
+            int maxHp,
             int currentHp,
             ArrayList<String> abilities,
             boolean playerCat,
             boolean inParty
     ) {
+
         this.id = id;
         this.name = name;
         this.type = type;
-        this.hp = hp;
-        this.currentHp = currentHp;
+
+        setMaxHp(maxHp);
+        setCurrentHp(currentHp);
+
         this.abilities =
                 new ArrayList<String>(abilities);
+
         this.playerCat = playerCat;
         this.inParty = inParty;
     }
@@ -86,6 +95,7 @@ public class Cat {
     public int getId() {
         return id;
     }
+
 
     public void setId(int id) {
         this.id = id;
@@ -96,6 +106,7 @@ public class Cat {
         return name;
     }
 
+
     public void setName(String name) {
         this.name = name;
     }
@@ -105,64 +116,126 @@ public class Cat {
         return type;
     }
 
+
     public void setType(String type) {
         this.type = type;
     }
 
 
     /**
-     * Returns maximum HP.
+     * Returns the cat's maximum HP.
+     *
+     * This should be preferred over getHp().
      */
-    public int getHp() {
-        return hp;
-    }
-
     public int getMaxHp() {
-        return hp;
+        return maxHp;
     }
 
-    public void setHp(int hp) {
-        this.hp = hp;
 
-        if (currentHp > hp) {
-            currentHp = hp;
+    /**
+     * Sets the cat's maximum HP.
+     *
+     * Maximum HP must always be greater than 0.
+     * If the new maximum is below the current HP,
+     * current HP is lowered to match the new maximum.
+     */
+    public void setMaxHp(int maxHp) {
+
+        if (maxHp <= 0) {
+
+            throw new IllegalArgumentException(
+                    "Max HP must be greater than 0"
+            );
+        }
+
+
+        this.maxHp = maxHp;
+
+
+        if (currentHp > maxHp) {
+            currentHp = maxHp;
         }
     }
 
 
+    /**
+     * Older method name kept so existing code
+     * does not immediately break.
+     *
+     * New code should use getMaxHp().
+     */
+    @Deprecated
+    public int getHp() {
+        return getMaxHp();
+    }
+
+
+    /**
+     * Older method name kept so existing code
+     * does not immediately break.
+     *
+     * New code should use setMaxHp().
+     */
+    @Deprecated
+    public void setHp(int hp) {
+        setMaxHp(hp);
+    }
+
+
+    /**
+     * Returns the cat's current battle HP.
+     */
     public int getCurrentHp() {
         return currentHp;
     }
 
+
+    /**
+     * Sets the cat's current HP.
+     *
+     * Current HP cannot go below 0
+     * or above maximum HP.
+     */
     public void setCurrentHp(int currentHp) {
 
         if (currentHp < 0) {
+
             this.currentHp = 0;
 
-        } else if (currentHp > hp) {
-            this.currentHp = hp;
+        } else if (currentHp > maxHp) {
+
+            this.currentHp = maxHp;
 
         } else {
+
             this.currentHp = currentHp;
         }
     }
 
 
     public ArrayList<String> getAbilities() {
-        return new ArrayList<String>(abilities);
+
+        return new ArrayList<String>(
+                abilities
+        );
     }
+
 
     public void setAbilities(
             ArrayList<String> abilities
     ) {
+
         this.abilities =
-                new ArrayList<String>(abilities);
+                new ArrayList<String>(
+                        abilities
+                );
     }
 
 
     public boolean isPlayerCat() {
         return playerCat;
     }
+
 
     public void setPlayerCat(
             boolean playerCat
@@ -175,6 +248,7 @@ public class Cat {
         return inParty;
     }
 
+
     public void setInParty(
             boolean inParty
     ) {
@@ -185,6 +259,9 @@ public class Cat {
     /**
      * Converts this Cat into one String for the database.
      *
+     * Current format:
+     * name|type|maxHp|currentHp|abilities|playerCat|inParty
+     *
      * Example:
      * Mochi|Tabby|100|75|SCRATCH;POUNCE|true|true
      */
@@ -192,14 +269,18 @@ public class Cat {
 
         String abilityText = "";
 
+
         for (int i = 0;
              i < abilities.size();
              i++) {
 
             abilityText =
-                    abilityText + abilities.get(i);
+                    abilityText
+                            + abilities.get(i);
+
 
             if (i < abilities.size() - 1) {
+
                 abilityText =
                         abilityText + ";";
             }
@@ -208,7 +289,7 @@ public class Cat {
 
         return name
                 + "|" + type
-                + "|" + hp
+                + "|" + maxHp
                 + "|" + currentHp
                 + "|" + abilityText
                 + "|" + playerCat
@@ -219,8 +300,16 @@ public class Cat {
     /**
      * Converts database text back into a Cat.
      *
-     * This also supports the older 6-part format.
-     * Old cats are loaded at full HP.
+     * Supports all three formats used during development.
+     *
+     * 5 parts:
+     * name|type|maxHp|abilities|playerCat
+     *
+     * 6 parts:
+     * name|type|maxHp|abilities|playerCat|inParty
+     *
+     * 7 parts:
+     * name|type|maxHp|currentHp|abilities|playerCat|inParty
      */
     public static Cat fromStorageString(
             int id,
@@ -231,7 +320,8 @@ public class Cat {
                 storedText.split("\\|", -1);
 
 
-        if (parts.length != 6
+        if (parts.length != 5
+                && parts.length != 6
                 && parts.length != 7) {
 
             throw new IllegalArgumentException(
@@ -243,40 +333,89 @@ public class Cat {
         String name =
                 parts[0];
 
+
         String type =
                 parts[1];
 
-        int hp =
-                Integer.parseInt(parts[2]);
+
+        int maxHp =
+                Integer.parseInt(
+                        parts[2]
+                );
 
 
         int currentHp;
 
         int abilityIndex;
         int playerCatIndex;
-        int inPartyIndex;
+
+        boolean inParty;
 
 
         /*
-         * Older saved cats did not have current HP.
-         * They are treated as being at full health.
+         * Oldest format:
+         *
+         * name|type|maxHp|abilities|playerCat
+         *
+         * These records did not store current HP
+         * or party status.
          */
-        if (parts.length == 6) {
+        if (parts.length == 5) {
 
-            currentHp = hp;
+            currentHp = maxHp;
 
             abilityIndex = 3;
             playerCatIndex = 4;
-            inPartyIndex = 5;
 
-        } else {
+            /*
+             * Since the old data does not tell us
+             * whether the cat was in the party,
+             * it defaults to not being in the party.
+             */
+            inParty = false;
+        }
+
+
+        /*
+         * Previous format:
+         *
+         * name|type|maxHp|abilities|playerCat|inParty
+         *
+         * These records did not store current HP.
+         */
+        else if (parts.length == 6) {
+
+            currentHp = maxHp;
+
+            abilityIndex = 3;
+            playerCatIndex = 4;
+
+            inParty =
+                    Boolean.parseBoolean(
+                            parts[5]
+                    );
+        }
+
+
+        /*
+         * Current format:
+         *
+         * name|type|maxHp|currentHp|abilities|playerCat|inParty
+         */
+        else {
 
             currentHp =
-                    Integer.parseInt(parts[3]);
+                    Integer.parseInt(
+                            parts[3]
+                    );
 
             abilityIndex = 4;
             playerCatIndex = 5;
-            inPartyIndex = 6;
+
+            inParty =
+                    Boolean.parseBoolean(
+                            parts[6]
+                    );
         }
 
 
@@ -287,12 +426,15 @@ public class Cat {
         if (!parts[abilityIndex].isEmpty()) {
 
             String[] abilityParts =
-                    parts[abilityIndex].split(";");
+                    parts[abilityIndex]
+                            .split(";");
 
-            for (String ability
-                    : abilityParts) {
 
-                abilities.add(ability);
+            for (String ability : abilityParts) {
+
+                abilities.add(
+                        ability
+                );
             }
         }
 
@@ -302,17 +444,12 @@ public class Cat {
                         parts[playerCatIndex]
                 );
 
-        boolean inParty =
-                Boolean.parseBoolean(
-                        parts[inPartyIndex]
-                );
-
 
         return new Cat(
                 id,
                 name,
                 type,
-                hp,
+                maxHp,
                 currentHp,
                 abilities,
                 playerCat,
@@ -329,20 +466,29 @@ public class Cat {
 
         String category;
 
+
         if (playerCat) {
 
             if (inParty) {
-                category = "Party Cat";
+
+                category =
+                        "Party Cat";
+
             } else {
-                category = "Stored Cat";
+
+                category =
+                        "Stored Cat";
             }
 
         } else {
-            category = "Opponent";
+
+            category =
+                    "Opponent";
         }
 
 
         String abilitiesText = "";
+
 
         for (int i = 0;
              i < abilities.size();
@@ -351,6 +497,7 @@ public class Cat {
             abilitiesText =
                     abilitiesText
                             + abilities.get(i);
+
 
             if (i < abilities.size() - 1) {
 
@@ -368,7 +515,7 @@ public class Cat {
                 + " | HP: "
                 + currentHp
                 + "/"
-                + hp
+                + maxHp
                 + " | Abilities: "
                 + abilitiesText;
     }
