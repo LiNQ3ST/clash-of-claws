@@ -5,40 +5,44 @@ import java.util.ArrayList;
 /**
  * Represents one cat in the program.
  *
- * A Cat object exists in Java memory.
- * CatDAO can turn it into one String and save that String in the database.
+ * Cat data is stored as one String in the database.
  *
- * Example stored cat:
- * Mittens|Tabby|100|SCRATCH;TAIL_WAG|true|true
+ * format:
+ * name|type|maxHp|currentHp|abilities|playerCat|inParty
  *
- * The last two values mean:
- * playerCat = true
- * inParty = true
+ * Example:
+ * Mittens|Tabby|100|75|SCRATCH;POUNCE|true|true
  */
 public class Cat {
 
     private int id;
     private String name;
     private String type;
+
+    // hp is the cat's maximum HP.
     private int hp;
-    private ArrayList abilities;
+
+    // currentHp can change during battles.
+    private int currentHp;
+
+    private ArrayList<String> abilities;
 
     // true if the player owns this cat
     private boolean playerCat;
 
-    // true if this cat is currently in the player's active party
+    // true if the cat is currently in the player's party
     private boolean inParty;
 
 
     /**
-     * Constructor for a new cat that has not been saved yet.
-     * Its database ID starts at 0.
+     * Constructor for a new cat.
+     * New cats start at full HP.
      */
     public Cat(
             String name,
             String type,
             int hp,
-            ArrayList abilities,
+            ArrayList<String> abilities,
             boolean playerCat,
             boolean inParty
     ) {
@@ -46,7 +50,9 @@ public class Cat {
         this.name = name;
         this.type = type;
         this.hp = hp;
-        this.abilities = new ArrayList(abilities);
+        this.currentHp = hp;
+        this.abilities =
+                new ArrayList<String>(abilities);
         this.playerCat = playerCat;
         this.inParty = inParty;
     }
@@ -60,7 +66,8 @@ public class Cat {
             String name,
             String type,
             int hp,
-            ArrayList abilities,
+            int currentHp,
+            ArrayList<String> abilities,
             boolean playerCat,
             boolean inParty
     ) {
@@ -68,7 +75,9 @@ public class Cat {
         this.name = name;
         this.type = type;
         this.hp = hp;
-        this.abilities = new ArrayList(abilities);
+        this.currentHp = currentHp;
+        this.abilities =
+                new ArrayList<String>(abilities);
         this.playerCat = playerCat;
         this.inParty = inParty;
     }
@@ -101,21 +110,53 @@ public class Cat {
     }
 
 
+    /**
+     * Returns maximum HP.
+     */
     public int getHp() {
+        return hp;
+    }
+
+    public int getMaxHp() {
         return hp;
     }
 
     public void setHp(int hp) {
         this.hp = hp;
+
+        if (currentHp > hp) {
+            currentHp = hp;
+        }
     }
 
 
-    public ArrayList getAbilities() {
-        return new ArrayList(abilities);
+    public int getCurrentHp() {
+        return currentHp;
     }
 
-    public void setAbilities(ArrayList abilities) {
-        this.abilities = new ArrayList(abilities);
+    public void setCurrentHp(int currentHp) {
+
+        if (currentHp < 0) {
+            this.currentHp = 0;
+
+        } else if (currentHp > hp) {
+            this.currentHp = hp;
+
+        } else {
+            this.currentHp = currentHp;
+        }
+    }
+
+
+    public ArrayList<String> getAbilities() {
+        return new ArrayList<String>(abilities);
+    }
+
+    public void setAbilities(
+            ArrayList<String> abilities
+    ) {
+        this.abilities =
+                new ArrayList<String>(abilities);
     }
 
 
@@ -123,7 +164,9 @@ public class Cat {
         return playerCat;
     }
 
-    public void setPlayerCat(boolean playerCat) {
+    public void setPlayerCat(
+            boolean playerCat
+    ) {
         this.playerCat = playerCat;
     }
 
@@ -132,7 +175,9 @@ public class Cat {
         return inParty;
     }
 
-    public void setInParty(boolean inParty) {
+    public void setInParty(
+            boolean inParty
+    ) {
         this.inParty = inParty;
     }
 
@@ -141,24 +186,30 @@ public class Cat {
      * Converts this Cat into one String for the database.
      *
      * Example:
-     * Mochi|Tabby|95|SCRATCH;POUNCE|true|true
+     * Mochi|Tabby|100|75|SCRATCH;POUNCE|true|true
      */
     public String toStorageString() {
 
         String abilityText = "";
 
-        for (int i = 0; i < abilities.size(); i++) {
+        for (int i = 0;
+             i < abilities.size();
+             i++) {
 
-            abilityText = abilityText + abilities.get(i);
+            abilityText =
+                    abilityText + abilities.get(i);
 
             if (i < abilities.size() - 1) {
-                abilityText = abilityText + ";";
+                abilityText =
+                        abilityText + ";";
             }
         }
+
 
         return name
                 + "|" + type
                 + "|" + hp
+                + "|" + currentHp
                 + "|" + abilityText
                 + "|" + playerCat
                 + "|" + inParty;
@@ -166,48 +217,95 @@ public class Cat {
 
 
     /**
-     * Converts a stored database String back into a Cat object.
+     * Converts database text back into a Cat.
+     *
+     * This also supports the older 6-part format.
+     * Old cats are loaded at full HP.
      */
     public static Cat fromStorageString(
             int id,
             String storedText
     ) {
 
-        String[] parts = storedText.split("\\|", -1);
+        String[] parts =
+                storedText.split("\\|", -1);
 
-        if (parts.length != 6) {
+
+        if (parts.length != 6
+                && parts.length != 7) {
+
             throw new IllegalArgumentException(
                     "Stored cat data is not in the expected format"
             );
         }
 
-        String name = parts[0];
 
-        String type = parts[1];
+        String name =
+                parts[0];
+
+        String type =
+                parts[1];
 
         int hp =
                 Integer.parseInt(parts[2]);
 
 
-        ArrayList abilities =
-                new ArrayList();
+        int currentHp;
 
-        if (!parts[3].isEmpty()) {
+        int abilityIndex;
+        int playerCatIndex;
+        int inPartyIndex;
+
+
+        /*
+         * Older saved cats did not have current HP.
+         * They are treated as being at full health.
+         */
+        if (parts.length == 6) {
+
+            currentHp = hp;
+
+            abilityIndex = 3;
+            playerCatIndex = 4;
+            inPartyIndex = 5;
+
+        } else {
+
+            currentHp =
+                    Integer.parseInt(parts[3]);
+
+            abilityIndex = 4;
+            playerCatIndex = 5;
+            inPartyIndex = 6;
+        }
+
+
+        ArrayList<String> abilities =
+                new ArrayList<String>();
+
+
+        if (!parts[abilityIndex].isEmpty()) {
 
             String[] abilityParts =
-                    parts[3].split(";");
+                    parts[abilityIndex].split(";");
 
-            for (String ability : abilityParts) {
+            for (String ability
+                    : abilityParts) {
+
                 abilities.add(ability);
             }
         }
 
 
         boolean playerCat =
-                Boolean.parseBoolean(parts[4]);
+                Boolean.parseBoolean(
+                        parts[playerCatIndex]
+                );
 
         boolean inParty =
-                Boolean.parseBoolean(parts[5]);
+                Boolean.parseBoolean(
+                        parts[inPartyIndex]
+                );
 
 
         return new Cat(
@@ -215,6 +313,7 @@ public class Cat {
                 name,
                 type,
                 hp,
+                currentHp,
                 abilities,
                 playerCat,
                 inParty
@@ -223,7 +322,7 @@ public class Cat {
 
 
     /**
-     * Controls how a Cat appears when printed.
+     * Controls how the cat appears in lists.
      */
     @Override
     public String toString() {
@@ -245,12 +344,16 @@ public class Cat {
 
         String abilitiesText = "";
 
-        for (int i = 0; i < abilities.size(); i++) {
+        for (int i = 0;
+             i < abilities.size();
+             i++) {
 
             abilitiesText =
-                    abilitiesText + abilities.get(i);
+                    abilitiesText
+                            + abilities.get(i);
 
             if (i < abilities.size() - 1) {
+
                 abilitiesText =
                         abilitiesText + ", ";
             }
@@ -262,9 +365,10 @@ public class Cat {
                 + name
                 + " | "
                 + type
-                + " | "
+                + " | HP: "
+                + currentHp
+                + "/"
                 + hp
-                + " HP"
                 + " | Abilities: "
                 + abilitiesText;
     }

@@ -488,4 +488,119 @@ public class CatDAO {
 
         return storedCats;
     }
+    /**
+     * Returns the number of cats currently in the party.
+     */
+    public int countPartyCats(
+            int playerId
+    ) {
+
+        return findPartyCats(
+                playerId
+        ).size();
+    }
+
+
+    /**
+     * Moves a stored cat into the party.
+     *
+     * Returns false if the party already has 4 cats.
+     */
+    public boolean moveToParty(
+            Cat cat,
+            int playerId
+    ) {
+
+        if (!cat.isPlayerCat()) {
+            return false;
+        }
+
+
+        if (cat.isInParty()) {
+            return true;
+        }
+
+
+        if (countPartyCats(playerId) >= 4) {
+            return false;
+        }
+
+
+        cat.setInParty(true);
+
+        return update(
+                cat,
+                playerId
+        );
+    }
+
+
+    /**
+     * Moves a party cat into storage.
+     */
+    public boolean moveToStorage(
+            Cat cat,
+            int playerId
+    ) {
+
+        if (!cat.isPlayerCat()) {
+            return false;
+        }
+
+
+        cat.setInParty(false);
+
+        return update(
+                cat,
+                playerId
+        );
+    }
+
+
+    /**
+     * Swaps one party cat with one stored cat.
+     */
+    public boolean swapCats(
+            Cat partyCat,
+            Cat storedCat,
+            int playerId
+    ) {
+
+        if (!partyCat.isPlayerCat()
+                || !storedCat.isPlayerCat()) {
+
+            return false;
+        }
+
+
+        if (!partyCat.isInParty()) {
+            return false;
+        }
+
+
+        if (storedCat.isInParty()) {
+            return false;
+        }
+
+
+        partyCat.setInParty(false);
+        storedCat.setInParty(true);
+
+
+        boolean firstUpdate =
+                update(
+                        partyCat,
+                        playerId
+                );
+
+        boolean secondUpdate =
+                update(
+                        storedCat,
+                        playerId
+                );
+
+
+        return firstUpdate
+                && secondUpdate;
+    }
 }

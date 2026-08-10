@@ -29,4 +29,12 @@ public class MainController {
     private void handleCatDex() {
         SceneFactory.show(SceneType.CAT_DEX);
     }
+    @FXML
+    private void handleParty() {
+        SceneFactory.show(SceneType.PARTY);
+    }
+    @FXML
+    private void handleStorage() {
+        SceneFactory.show(SceneType.STORAGE);
+    }
 }

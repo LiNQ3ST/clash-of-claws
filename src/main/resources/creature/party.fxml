@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="creature.PartyController"
+      spacing="15"
+      prefWidth="900"
+      prefHeight="550"
+      style="-fx-padding: 20;">
+
+    <Label text="Current Party"
+           style="-fx-font-size: 28px; -fx-font-weight: bold;" />
+
+    <Label fx:id="partyCountLabel"
+           text="Party: 0 / 4"
+           style="-fx-font-size: 18px;" />
+
+    <ListView fx:id="partyListView"
+              VBox.vgrow="ALWAYS" />
+
+    <Label fx:id="statusLabel"
+           text="Loading party..." />
+
+    <HBox spacing="10">
+
+        <Button text="Manage Storage"
+                onAction="#handleStorage" />
+
+        <Button text="Back to Town"
+                onAction="#handleBack" />
+
+    </HBox>
+
+</VBox>
