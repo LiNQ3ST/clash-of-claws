@@ -1,146 +1,428 @@
 package creature;
 
+import account.Player;
+import account.PlayerDAO;
+import database.DatabaseManager;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Tests the CatDAO database operations.
+ *
+ * A temporary player is created before each test because
+ * every cat must belong to a valid player_id.
+ *
+ * Test cats and the temporary player are deleted afterward.
+ */
 class CatDAOTest {
 
     private CatDAO catDAO;
-    private final ArrayList<Integer> testCatIds = new ArrayList<>();
+    private PlayerDAO playerDAO;
 
+    private int playerId;
+
+
+    /**
+     * Creates the database tables and a temporary player
+     * before each test.
+     */
     @BeforeEach
-    void setUp() {
-        catDAO = new CatDAO();
-        catDAO.initializeTable();
+    void setUp() throws SQLException {
+
+        DatabaseManager
+                .getInstance()
+                .initializeDatabase();
+
+
+        catDAO =
+                new CatDAO();
+
+        playerDAO =
+                new PlayerDAO();
+
+
+        Player testPlayer =
+                new Player(
+                        "cat-dao-test-"
+                                + System.nanoTime(),
+                        "test-password-hash"
+                );
+
+
+        playerDAO.create(
+                testPlayer
+        );
+
+
+        playerId =
+                testPlayer.getPlayerId();
     }
 
+
+    /**
+     * Deletes all cats created for the test player,
+     * then deletes the temporary player.
+     */
     @AfterEach
-    void tearDown() {
-        for (int catId : testCatIds) {
-            catDAO.delete(catId);
+    void tearDown() throws SQLException {
+
+        if (playerId > 0) {
+
+            ArrayList<Cat> cats =
+                    catDAO.findAll(
+                            playerId
+                    );
+
+
+            for (Cat cat : cats) {
+
+                catDAO.delete(
+                        cat.getId(),
+                        playerId
+                );
+            }
+
+
+            playerDAO.delete(
+                    playerId
+            );
         }
-
-        testCatIds.clear();
     }
 
-    /*
-     * CREATE
-     *
-     * Verifies that a Cat can be inserted into the database
-     * and receives a valid database ID.
+
+    /**
+     * Tests inserting a Cat and loading it again.
      */
     @Test
-    void insertCat() {
-        Cat testCat = createTestCat("Create Test Cat");
+    void insertAndFindCat() {
 
-        Cat savedCat = catDAO.insert(testCat);
-        testCatIds.add(savedCat.getId());
+        ArrayList<String> abilities =
+                new ArrayList<String>();
 
-        assertNotNull(savedCat);
-        assertTrue(savedCat.getId() > 0);
-    }
+        abilities.add(
+                "SCRATCH"
+        );
 
-    /*
-     * READ
-     *
-     * Verifies that an inserted Cat can be retrieved by its ID
-     * without its data being changed.
-     */
-    @Test
-    void findCatById() {
-        Cat testCat = createTestCat("Read Test Cat");
+        abilities.add(
+                "POUNCE"
+        );
 
-        Cat savedCat = catDAO.insert(testCat);
-        testCatIds.add(savedCat.getId());
 
-        Cat loadedCat = catDAO.findById(savedCat.getId());
+        Cat testCat =
+                new Cat(
+                        "Test Cat",
+                        "Tabby",
+                        100,
+                        abilities,
+                        true,
+                        true
+                );
 
-        assertNotNull(loadedCat);
-        assertEquals(savedCat.getId(), loadedCat.getId());
+
+        testCat.setCurrentHp(
+                75
+        );
+
+
+        Cat savedCat =
+                catDAO.insert(
+                        testCat,
+                        playerId
+                );
+
+
+        assertTrue(
+                savedCat.getId() > 0
+        );
+
+
+        Cat loadedCat =
+                catDAO.findById(
+                        savedCat.getId(),
+                        playerId
+                );
+
+
+        assertNotNull(
+                loadedCat
+        );
+
+
         assertEquals(
-                savedCat.toStorageString(),
-                loadedCat.toStorageString()
+                "Test Cat",
+                loadedCat.getName()
+        );
+
+        assertEquals(
+                "Tabby",
+                loadedCat.getType()
+        );
+
+        assertEquals(
+                100,
+                loadedCat.getMaxHp()
+        );
+
+        assertEquals(
+                75,
+                loadedCat.getCurrentHp()
+        );
+
+        assertEquals(
+                abilities,
+                loadedCat.getAbilities()
+        );
+
+        assertTrue(
+                loadedCat.isPlayerCat()
+        );
+
+        assertTrue(
+                loadedCat.isInParty()
         );
     }
 
-    /*
-     * UPDATE
-     *
-     * Verifies that an existing Cat can be changed and that
-     * the updated information is stored in the database.
+
+    /**
+     * Tests updating a stored Cat.
      */
     @Test
     void updateCat() {
-        Cat testCat = createTestCat("Original Cat");
 
-        Cat savedCat = catDAO.insert(testCat);
-        testCatIds.add(savedCat.getId());
+        ArrayList<String> abilities =
+                new ArrayList<String>();
 
-        ArrayList<String> updatedAbilities = new ArrayList<>();
-        updatedAbilities.add("BITE");
-        updatedAbilities.add("CLIMB");
+        abilities.add(
+                "SCRATCH"
+        );
 
-        savedCat.setName("Updated Cat");
-        savedCat.setType("Siamese");
-        savedCat.setHp(150);
-        savedCat.setAbilities(updatedAbilities);
 
-        catDAO.update(savedCat);
+        Cat testCat =
+                new Cat(
+                        "Update Cat",
+                        "Siamese",
+                        100,
+                        abilities,
+                        true,
+                        true
+                );
 
-        Cat updatedCat = catDAO.findById(savedCat.getId());
 
-        assertNotNull(updatedCat);
-        assertEquals(savedCat.getId(), updatedCat.getId());
+        catDAO.insert(
+                testCat,
+                playerId
+        );
+
+
+        /*
+         * Simulate the cat taking damage
+         * and being moved into storage.
+         */
+        testCat.setCurrentHp(
+                40
+        );
+
+        testCat.setInParty(
+                false
+        );
+
+
+        boolean updated =
+                catDAO.update(
+                        testCat,
+                        playerId
+                );
+
+
+        assertTrue(
+                updated
+        );
+
+
+        Cat loadedCat =
+                catDAO.findById(
+                        testCat.getId(),
+                        playerId
+                );
+
+
+        assertNotNull(
+                loadedCat
+        );
+
         assertEquals(
-                savedCat.toStorageString(),
-                updatedCat.toStorageString()
+                40,
+                loadedCat.getCurrentHp()
+        );
+
+        assertFalse(
+                loadedCat.isInParty()
         );
     }
 
-    /*
-     * DELETE
-     *
-     * Verifies that a Cat is no longer present after it
-     * has been deleted from the database.
+
+    /**
+     * Tests that party cats and stored cats
+     * are separated correctly.
+     */
+    @Test
+    void findPartyAndStoredCats() {
+
+        ArrayList<String> abilities =
+                new ArrayList<String>();
+
+        abilities.add(
+                "SCRATCH"
+        );
+
+
+        Cat partyCat =
+                new Cat(
+                        "Party Cat",
+                        "Tabby",
+                        100,
+                        abilities,
+                        true,
+                        true
+                );
+
+
+        Cat storedCat =
+                new Cat(
+                        "Stored Cat",
+                        "Calico",
+                        110,
+                        abilities,
+                        true,
+                        false
+                );
+
+
+        Cat opponentCat =
+                new Cat(
+                        "Opponent Cat",
+                        "Sphynx",
+                        80,
+                        abilities,
+                        false,
+                        false
+                );
+
+
+        catDAO.insert(
+                partyCat,
+                playerId
+        );
+
+        catDAO.insert(
+                storedCat,
+                playerId
+        );
+
+        catDAO.insert(
+                opponentCat,
+                playerId
+        );
+
+
+        ArrayList<Cat> partyCats =
+                catDAO.findPartyCats(
+                        playerId
+                );
+
+
+        ArrayList<Cat> storedCats =
+                catDAO.findStoredCats(
+                        playerId
+                );
+
+
+        assertEquals(
+                1,
+                partyCats.size()
+        );
+
+        assertEquals(
+                "Party Cat",
+                partyCats.get(0).getName()
+        );
+
+
+        assertEquals(
+                1,
+                storedCats.size()
+        );
+
+        assertEquals(
+                "Stored Cat",
+                storedCats.get(0).getName()
+        );
+    }
+
+
+    /**
+     * Tests deleting a Cat.
      */
     @Test
     void deleteCat() {
-        Cat testCat = createTestCat("Delete Test Cat");
 
-        Cat savedCat = catDAO.insert(testCat);
-        int savedCatId = savedCat.getId();
+        ArrayList<String> abilities =
+                new ArrayList<String>();
 
-        assertNotNull(catDAO.findById(savedCatId));
+        abilities.add(
+                "POUNCE"
+        );
 
-        catDAO.delete(savedCatId);
 
-        Cat deletedCat = catDAO.findById(savedCatId);
+        Cat testCat =
+                new Cat(
+                        "Delete Cat",
+                        "Maine Coon",
+                        130,
+                        abilities,
+                        true,
+                        false
+                );
 
-        assertNull(deletedCat);
-    }
 
-    /*
-     * Helper method used to create a unique Cat for each test.
-     */
-    private Cat createTestCat(String name) {
-        ArrayList<String> abilities = new ArrayList<>();
-        abilities.add("SCRATCH");
-        abilities.add("POUNCE");
+        catDAO.insert(
+                testCat,
+                playerId
+        );
 
-        return new Cat(
-                name + " " + System.nanoTime(),
-                "Tabby",
-                100,
-                abilities,
-                false
+
+        boolean deleted =
+                catDAO.delete(
+                        testCat.getId(),
+                        playerId
+                );
+
+
+        assertTrue(
+                deleted
+        );
+
+
+        Cat loadedCat =
+                catDAO.findById(
+                        testCat.getId(),
+                        playerId
+                );
+
+
+        assertNull(
+                loadedCat
         );
     }
 }

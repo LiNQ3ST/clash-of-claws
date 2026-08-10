@@ -49,6 +49,19 @@
 
     <Button
             prefWidth="240.0"
+            prefHeight="46.0"
+            text="View Party"
+            onAction="#handleParty"
+            style="-fx-font-size: 20px;"/>
+
+    <Button
+            prefWidth="240.0"
+            prefHeight="46.0"
+            text="Cat Storage"
+            onAction="#handleStorage"
+            style="-fx-font-size: 20px;"/>
+    <Button
+            prefWidth="240.0"
             text="Log Out"
             onAction="#handleBackToLogin"/>
 

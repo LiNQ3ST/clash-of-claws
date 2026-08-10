@@ -13,7 +13,9 @@ public enum SceneType {
     BATTLE("/battle/battle.fxml"),
     TRADER("/marketplace/trader-view.fxml"),
     ARENA("/adminarena/arena-admin.fxml"),
-    CAT_DEX("/app/cat-dex.fxml"),
+    CAT_DEX("/creature/cat-dex.fxml"),
+    PARTY("/creature/party.fxml"),
+    STORAGE("/creature/storage.fxml"),
     MAIN("/app/main-view.fxml");
 
   private final String fxmlPath;

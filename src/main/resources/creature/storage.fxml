@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="creature.StorageController"
+      spacing="15"
+      prefWidth="900"
+      prefHeight="550"
+      style="-fx-padding: 20;">
+
+    <Label text="Cat Storage"
+           style="-fx-font-size: 28px; -fx-font-weight: bold;" />
+
+    <Label text="Select cats below to manage your party." />
+
+    <HBox spacing="20"
+          VBox.vgrow="ALWAYS">
+
+        <VBox spacing="10"
+              prefWidth="430">
+
+            <Label fx:id="partyCountLabel"
+                   text="Party: 0 / 4"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+            <ListView fx:id="partyListView"
+                      VBox.vgrow="ALWAYS" />
+
+        </VBox>
+
+
+        <VBox spacing="10"
+              prefWidth="430">
+
+            <Label fx:id="storageCountLabel"
+                   text="Storage: 0"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+            <ListView fx:id="storageListView"
+                      VBox.vgrow="ALWAYS" />
+
+        </VBox>
+
+    </HBox>
+
+
+    <HBox spacing="10">
+
+        <Button text="Swap Selected Cats"
+                onAction="#handleSwap" />
+
+        <Button text="Move to Party"
+                onAction="#handleMoveToParty" />
+
+        <Button text="Move to Storage"
+                onAction="#handleMoveToStorage" />
+
+    </HBox>
+
+
+    <Label fx:id="statusLabel"
+           text="Select a cat." />
+
+
+    <HBox spacing="10">
+
+        <Button text="View Party"
+                onAction="#handleParty" />
+
+        <Button text="Back to Town"
+                onAction="#handleBack" />
+
+    </HBox>
+
+</VBox>

@@ -1,5 +1,8 @@
 package creature;
 
+import account.AccountService;
+import account.Player;
+
 import java.util.ArrayList;
 
 import javafx.fxml.FXML;
@@ -14,24 +17,61 @@ public class CatDexController {
     @FXML
     private Label statusLabel;
 
+
     @FXML
     private void initialize() {
 
-        CatDAO catDAO = new CatDAO();
+        Player player =
+                AccountService
+                        .getInstance()
+                        .getCurrentPlayer()
+                        .orElse(null);
 
-        // Creates the table only if it does not already exist.
-        catDAO.initializeTable();
 
-        // Reads every cat from the database.
-        ArrayList<Cat> cats = catDAO.findAll();
+        if (player == null
+                || player.getPlayerId() == null) {
 
-        // Adds each cat to the visible list.
+            statusLabel.setText(
+                    "No player is logged in"
+            );
+
+            return;
+        }
+
+
+        int playerId =
+                player.getPlayerId();
+
+
+        CatDAO catDAO =
+                new CatDAO();
+
+
+        ArrayList<Cat> cats =
+                catDAO.findAll(
+                        playerId
+                );
+
+
         for (Cat cat : cats) {
-            catListView.getItems().add(cat.toString());        }
 
-        statusLabel.setText("Cats stored: " + cats.size());
+            catListView
+                    .getItems()
+                    .add(
+                            cat.toString()
+                    );
+        }
 
-        // Temporary console check.
-        System.out.println("Cats loaded: " + cats.size());
+
+        statusLabel.setText(
+                "Cats stored: "
+                        + cats.size()
+        );
+
+
+        System.out.println(
+                "Cats loaded: "
+                        + cats.size()
+        );
     }
 }
