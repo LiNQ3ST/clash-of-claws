@@ -4,12 +4,16 @@ import java.util.ArrayList;
 
 /**
  * Represents one cat in the program.
- * A Cat object exists in Java memory. CatDAO can turn it into one String
- * and save that String in the database.
- * example cat:
- * mittens|tabby|100|Scratch;TailWag|0
- * this is how the data will be stored in sql
- * the info will need to be interpreted in arena
+ *
+ * A Cat object exists in Java memory.
+ * CatDAO can turn it into one String and save that String in the database.
+ *
+ * Example stored cat:
+ * Mittens|Tabby|100|SCRATCH;TAIL_WAG|true|true
+ *
+ * The last two values mean:
+ * playerCat = true
+ * inParty = true
  */
 public class Cat {
 
@@ -17,8 +21,14 @@ public class Cat {
     private String name;
     private String type;
     private int hp;
-    private ArrayList<String> abilities;
+    private ArrayList abilities;
+
+    // true if the player owns this cat
     private boolean playerCat;
+
+    // true if this cat is currently in the player's active party
+    private boolean inParty;
+
 
     /**
      * Constructor for a new cat that has not been saved yet.
@@ -28,16 +38,19 @@ public class Cat {
             String name,
             String type,
             int hp,
-            ArrayList<String> abilities,
-            boolean playerCat
+            ArrayList abilities,
+            boolean playerCat,
+            boolean inParty
     ) {
         this.id = 0;
         this.name = name;
         this.type = type;
         this.hp = hp;
-        this.abilities = new ArrayList<String>(abilities);
+        this.abilities = new ArrayList(abilities);
         this.playerCat = playerCat;
+        this.inParty = inParty;
     }
+
 
     /**
      * Constructor for a cat loaded from the database.
@@ -47,16 +60,19 @@ public class Cat {
             String name,
             String type,
             int hp,
-            ArrayList<String> abilities,
-            boolean playerCat
+            ArrayList abilities,
+            boolean playerCat,
+            boolean inParty
     ) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.hp = hp;
-        this.abilities = new ArrayList<String>(abilities);
+        this.abilities = new ArrayList(abilities);
         this.playerCat = playerCat;
+        this.inParty = inParty;
     }
+
 
     public int getId() {
         return id;
@@ -66,6 +82,7 @@ public class Cat {
         this.id = id;
     }
 
+
     public String getName() {
         return name;
     }
@@ -73,6 +90,7 @@ public class Cat {
     public void setName(String name) {
         this.name = name;
     }
+
 
     public String getType() {
         return type;
@@ -82,6 +100,7 @@ public class Cat {
         this.type = type;
     }
 
+
     public int getHp() {
         return hp;
     }
@@ -90,13 +109,15 @@ public class Cat {
         this.hp = hp;
     }
 
-    public ArrayList<String> getAbilities() {
-        return new ArrayList<String>(abilities);
+
+    public ArrayList getAbilities() {
+        return new ArrayList(abilities);
     }
 
-    public void setAbilities(ArrayList<String> abilities) {
-        this.abilities = new ArrayList<String>(abilities);
+    public void setAbilities(ArrayList abilities) {
+        this.abilities = new ArrayList(abilities);
     }
+
 
     public boolean isPlayerCat() {
         return playerCat;
@@ -106,20 +127,32 @@ public class Cat {
         this.playerCat = playerCat;
     }
 
+
+    public boolean isInParty() {
+        return inParty;
+    }
+
+    public void setInParty(boolean inParty) {
+        this.inParty = inParty;
+    }
+
+
     /**
      * Converts this Cat into one String for the database.
      *
      * Example:
-     * Mochi|Tabby|95|SCRATCH;POUNCE|false
+     * Mochi|Tabby|95|SCRATCH;POUNCE|true|true
      */
     public String toStorageString() {
+
         String abilityText = "";
 
         for (int i = 0; i < abilities.size(); i++) {
+
             abilityText = abilityText + abilities.get(i);
 
             if (i < abilities.size() - 1) {
-                abilityText = abilityText + ";"; // adds a semicolon between abilites so that when read later is can discern them.
+                abilityText = abilityText + ";";
             }
         }
 
@@ -127,36 +160,55 @@ public class Cat {
                 + "|" + type
                 + "|" + hp
                 + "|" + abilityText
-                + "|" + playerCat;
+                + "|" + playerCat
+                + "|" + inParty;
     }
+
 
     /**
      * Converts a stored database String back into a Cat object.
      */
-    public static Cat fromStorageString(int id, String storedText) {
+    public static Cat fromStorageString(
+            int id,
+            String storedText
+    ) {
+
         String[] parts = storedText.split("\\|", -1);
 
-        if (parts.length != 5) {
+        if (parts.length != 6) {
             throw new IllegalArgumentException(
                     "Stored cat data is not in the expected format"
             );
         }
 
         String name = parts[0];
-        String type = parts[1];
-        int hp = Integer.parseInt(parts[2]);
 
-        ArrayList<String> abilities = new ArrayList<String>();
+        String type = parts[1];
+
+        int hp =
+                Integer.parseInt(parts[2]);
+
+
+        ArrayList abilities =
+                new ArrayList();
 
         if (!parts[3].isEmpty()) {
-            String[] abilityParts = parts[3].split(";");
+
+            String[] abilityParts =
+                    parts[3].split(";");
 
             for (String ability : abilityParts) {
                 abilities.add(ability);
             }
         }
 
-        boolean playerCat = Boolean.parseBoolean(parts[4]);
+
+        boolean playerCat =
+                Boolean.parseBoolean(parts[4]);
+
+        boolean inParty =
+                Boolean.parseBoolean(parts[5]);
+
 
         return new Cat(
                 id,
@@ -164,32 +216,46 @@ public class Cat {
                 type,
                 hp,
                 abilities,
-                playerCat
+                playerCat,
+                inParty
         );
     }
+
 
     /**
      * Controls how a Cat appears when printed.
      */
     @Override
     public String toString() {
+
         String category;
 
         if (playerCat) {
-            category = "Player Cat";
+
+            if (inParty) {
+                category = "Party Cat";
+            } else {
+                category = "Stored Cat";
+            }
+
         } else {
             category = "Opponent";
         }
 
+
         String abilitiesText = "";
 
         for (int i = 0; i < abilities.size(); i++) {
-            abilitiesText = abilitiesText + abilities.get(i);
+
+            abilitiesText =
+                    abilitiesText + abilities.get(i);
 
             if (i < abilities.size() - 1) {
-                abilitiesText = abilitiesText + ", ";
+                abilitiesText =
+                        abilitiesText + ", ";
             }
         }
+
 
         return category
                 + " | "
