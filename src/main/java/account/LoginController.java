@@ -66,7 +66,7 @@ public class LoginController {
 
     private void routePlayer(Player player) {
         if (player.getActiveCatId() == null) {
-            SceneFactory.show(SceneType.CAT_DEX);
+            SceneFactory.show(SceneType.STARTER);
         } else {
             SceneFactory.show(SceneType.MAIN);
         }
