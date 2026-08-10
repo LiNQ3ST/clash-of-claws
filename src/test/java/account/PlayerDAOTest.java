@@ -28,7 +28,7 @@ class PlayerDAOTest {
         Path databasePath = tempDirectory.resolve("player-test.db");
         databaseUrl = "jdbc:sqlite:" + databasePath;
 
-        DatabaseManager.initializeDatabase(databaseUrl);
+        DatabaseManager.getInstance().initializeDatabase(databaseUrl);
 
         playerDAO = new PlayerDAO(databaseUrl);
         player = new Player(USERNAME, PASSWORD_HASH);
@@ -50,14 +50,10 @@ class PlayerDAOTest {
     void findById() throws SQLException {
         Player createdPlayer = playerDAO.create(player);
 
-        Optional<Player> result =
-                playerDAO.findById(createdPlayer.getPlayerId());
+        Optional<Player> result = playerDAO.findById(createdPlayer.getPlayerId());
 
         assertTrue(result.isPresent());
-        assertEquals(
-                createdPlayer.getPlayerId(),
-                result.get().getPlayerId()
-        );
+        assertEquals(createdPlayer.getPlayerId(), result.get().getPlayerId());
         assertEquals(USERNAME, result.get().getUsername());
     }
 
@@ -65,14 +61,10 @@ class PlayerDAOTest {
     void findByUsername() throws SQLException {
         Player createdPlayer = playerDAO.create(player);
 
-        Optional<Player> result =
-                playerDAO.findByUsername(USERNAME);
+        Optional<Player> result = playerDAO.findByUsername(USERNAME);
 
         assertTrue(result.isPresent());
-        assertEquals(
-                createdPlayer.getPlayerId(),
-                result.get().getPlayerId()
-        );
+        assertEquals(createdPlayer.getPlayerId(), result.get().getPlayerId());
         assertEquals(USERNAME, result.get().getUsername());
     }
 
@@ -90,9 +82,7 @@ class PlayerDAOTest {
 
         assertTrue(updated);
 
-        Player storedPlayer = playerDAO
-                .findById(createdPlayer.getPlayerId())
-                .orElseThrow();
+        Player storedPlayer = playerDAO.findById(createdPlayer.getPlayerId()).orElseThrow();
 
         assertEquals("UpdatedUsername", storedPlayer.getUsername());
         assertEquals("updated-hash", storedPlayer.getPasswordHash());
@@ -105,50 +95,35 @@ class PlayerDAOTest {
     void delete() throws SQLException {
         Player createdPlayer = playerDAO.create(player);
 
-        boolean deleted =
-                playerDAO.delete(createdPlayer.getPlayerId());
+        boolean deleted = playerDAO.delete(createdPlayer.getPlayerId());
 
         assertTrue(deleted);
-        assertTrue(
-                playerDAO.findById(createdPlayer.getPlayerId()).isEmpty()
-        );
+        assertTrue(playerDAO.findById(createdPlayer.getPlayerId()).isEmpty());
     }
 
     @Test
     void duplicateUsername() throws SQLException {
         playerDAO.create(player);
 
-        Player duplicatePlayer =
-                new Player(USERNAME, "different-hash");
+        Player duplicatePlayer = new Player(USERNAME, "different-hash");
 
-        assertThrows(
-                SQLException.class,
-                () -> playerDAO.create(duplicatePlayer)
-        );
+        assertThrows(SQLException.class, () -> playerDAO.create(duplicatePlayer));
     }
 
     @Test
     void nullUsername() {
-        Player invalidPlayer =
-                new Player(null, PASSWORD_HASH);
+        Player invalidPlayer = new Player(null, PASSWORD_HASH);
 
-        assertThrows(
-                SQLException.class,
-                () -> playerDAO.create(invalidPlayer)
-        );
+        assertThrows(SQLException.class, () -> playerDAO.create(invalidPlayer));
     }
 
     @Test
     void persistence() throws SQLException {
         Player createdPlayer = playerDAO.create(player);
 
-        PlayerDAO reconnectedDAO =
-                new PlayerDAO(databaseUrl);
+        PlayerDAO reconnectedDAO = new PlayerDAO(databaseUrl);
 
-        Optional<Player> result =
-                reconnectedDAO.findById(
-                        createdPlayer.getPlayerId()
-                );
+        Optional<Player> result = reconnectedDAO.findById(createdPlayer.getPlayerId());
 
         assertTrue(result.isPresent());
         assertEquals(USERNAME, result.get().getUsername());

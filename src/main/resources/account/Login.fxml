@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<BorderPane
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="account.LoginController"
+        prefWidth="960.0"
+        prefHeight="540.0">
+
+    <center>
+        <VBox
+                alignment="CENTER"
+                spacing="16.0"
+                style="-fx-padding: 18px 40px 22px 40px;">
+
+            <Label
+                    text="CLASH OF CLAWS"
+                    style="-fx-font-size: 58px;"/>
+
+            <Label
+                    text="Welcome back, feisty feline!"
+                    style="-fx-font-size: 34px;"/>
+
+            <fx:include
+                    fx:id="credentialFields"
+                    source="CredentialFields.fxml"/>
+
+            <Label
+                    fx:id="errorLabel"
+                    minHeight="24.0"
+                    wrapText="true"
+                    style="-fx-font-size: 18px;-fx-text-fill: #9b0303;"/>
+
+            <Button
+                    text="Log in"
+                    prefWidth="220.0"
+                    prefHeight="46.0"
+                    onAction="#handleLogin"
+                    style="-fx-font-size: 22px;"/>
+
+            <Label
+                    text="New to the arena?"
+                    style="-fx-font-size: 30px;"/>
+
+            <Button
+                    text="Create Account"
+                    prefWidth="200.0"
+                    prefHeight="46.0"
+                    onAction="#handleCreateAccount"
+                    style="-fx-font-size: 22px;"/>
+
+        </VBox>
+    </center>
+
+</BorderPane>

@@ -16,13 +16,13 @@ and PRs. Replace every <placeholder> and delete this comment before you submit.
 CST 338 Project 2 — Team **L!NQ3ST**.
 
 ## Team & Slice Ownership
-| Slice | Owner | GitHub username | Issues | Branch(es) | PR(s) | Enhancement chosen | Status |
-|-------|-------|-----------------|--------|------------|-------|--------------------|--------|
-| 1 — Accounts | Sahtra Green | SahtraRG | | | | Custom reusable FXML component | planned |
-| 2 — Admin & Arenas| Nabiha Fatima|nfatima-csumb | | | | Confirmation and Validation Dialogs | planned |
-| 3 — Battle Engine | Quinton Nisonger| QuintonScripts | | | | Extra TestFX scene tests | planned |
-| 4 — Marketplace & Trading | Todd Gonzales | toddgonzales-xg | | | | Notifications / alerts | planned |
-| 5- Creature Roster|Luke McCormick  |lumccormick-collab | 3 |luke/creature-skeleton | 1 | Data binding | in-progress |
+| Slice | Owner        | GitHub username | Issues         | Branch(es)                                      | PR(s) | Enhancement chosen | Status |
+|-------|--------------|-----------------|----------------|-------------------------------------------------|-----|--------------------|--------|
+| 1 — Accounts | Sahtra Green | SahtraRG | #5, #6, #7, #8 | `sahtra/player-data`, `sahtra/account-scenes`, `sahtra/account-auth` | [#23](https://github.com/LiNQ3ST/clash-of-claws/pull/23), [#26](https://github.com/LiNQ3ST/clash-of-claws/pull/26), [#32](https://github.com/LiNQ3ST/clash-of-claws/pull/32) | Custom reusable FXML component | in-progress |
+| 2 — Admin & Arenas| Nabiha Fatima |nfatima-csumb | #13, #14, #15, #16 | `nabiha/admin-arena-skeleton`                   | [#29](https://github.com/LiNQ3ST/clash-of-claws/pull/29) | Confirmation and Validation Dialogs | in-progress |
+| 3 — Battle Engine | Quinton Nisonger | QuintonScripts | #1, #2, #3, #4 | `quinton/battle-skeleton`                       | [#27](https://github.com/LiNQ3ST/clash-of-claws/pull/27) | Extra TestFX scene tests | in-progress |
+| 4 — Marketplace & Trading | Todd Gonzales | toddgonzales-xg | #9, #10, #11, #12 | `todd/trader`                                   | [#25](https://github.com/LiNQ3ST/clash-of-claws/pull/25) | Notifications / alerts | in-progress|
+| 5- Creature Roster| Luke McCormick |lumccormick-collab | #17, #18, #19  | `luke/creature-skeleton`                        | [#28](https://github.com/LiNQ3ST/clash-of-claws/pull/28) | Data binding | in-progress |
 
 
 _Status values: planned · in-progress · complete_
@@ -38,12 +38,15 @@ Issue if the team later decides to attempt it for extra credit._
 - <Slice 5>: Luke McCormick, Creature Roster: Building Evolutions - out of scope.
 
 ## Code Review Log
-| PR  | Author  | Human reviewer(s) | AI review (link) | Outcome |
-|-----|---------|-------------------|------------------|---------|
-| #12 |         |                   | <link or commit> | merged |
-| #27 | Quinton Nisonger | Sahtra Green      | -                | merged |
-| #17 | Luke McCormick | Todd Gonzales     | -                | merged |
-
+| PR  | Author           | Human reviewer(s)               | AI review (link) | Outcome   |
+|-----|------------------|---------------------------------|------------------|-----------|
+| #27 | Quinton Nisonger | Sahtra Green                    | -                | merged    |
+| #28 | Luke McCormick   | Todd Gonzales                   | -                | merged    |
+| #23 | Sahtra Green     | Quinton Nisonger                | -                | merged    |
+| #25 | Todd Gonzales    | Luke McCormick                  | -                | merged    |
+| #26 | Sahtra Green     | Nabiha Fatima, Quinton Nisonger | -                | merged    |
+| #29 | Nabiha Fatima    | Todd Gonzales                   | -                | merged    |
+| #32 | Sahtra Green     | Quinton Nisonger                | -                | in review |
 ## AI Usage Log
 - **AI-drafted tests:** <link to TESTING.md / commit> — per owner.
 - **AI code reviews:** <PR link + adjudication note> — per owner.

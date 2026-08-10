@@ -27,7 +27,7 @@ public class CatDAO {
 
     public void initializeTable() {
         try {
-            Connection connection = DatabaseManager.getConnection();
+            Connection connection = DatabaseManager.getInstance().getConnection();
             Statement statement = connection.createStatement();
 
             statement.execute(CREATE_TABLE_SQL);
@@ -51,7 +51,7 @@ public class CatDAO {
                 "INSERT INTO cats (cat_data) VALUES (?)";
 
         try {
-            Connection connection = DatabaseManager.getConnection();
+            Connection connection = DatabaseManager.getInstance().getConnection();
             PreparedStatement statement = connection.prepareStatement(
                     sql,
                     Statement.RETURN_GENERATED_KEYS
@@ -89,7 +89,7 @@ public class CatDAO {
                 "SELECT cat_data FROM cats WHERE cat_id = ?";
 
         try {
-            Connection connection = DatabaseManager.getConnection();
+            Connection connection = DatabaseManager.getInstance().getConnection();
             PreparedStatement statement =
                     connection.prepareStatement(sql);
 
@@ -127,7 +127,7 @@ public class CatDAO {
         ArrayList<Cat> cats = new ArrayList<Cat>();
 
         try {
-            Connection connection = DatabaseManager.getConnection();
+            Connection connection = DatabaseManager.getInstance().getConnection();
             PreparedStatement statement =
                     connection.prepareStatement(sql);
 
@@ -163,7 +163,7 @@ public class CatDAO {
                 "UPDATE cats SET cat_data = ? WHERE cat_id = ?";
 
         try {
-            Connection connection = DatabaseManager.getConnection();
+            Connection connection = DatabaseManager.getInstance().getConnection();
             PreparedStatement statement =
                     connection.prepareStatement(sql);
 
@@ -193,7 +193,7 @@ public class CatDAO {
                 "DELETE FROM cats WHERE cat_id = ?";
 
         try {
-            Connection connection = DatabaseManager.getConnection();
+            Connection connection = DatabaseManager.getInstance().getConnection();
             PreparedStatement statement =
                     connection.prepareStatement(sql);
 
@@ -222,7 +222,7 @@ public class CatDAO {
                 "SELECT cat_id FROM cats WHERE cat_data = ?";
 
         try {
-            Connection connection = DatabaseManager.getConnection();
+            Connection connection = DatabaseManager.getInstance().getConnection();
             PreparedStatement statement =
                     connection.prepareStatement(sql);
 

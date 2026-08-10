@@ -14,11 +14,42 @@
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <Label text="Clash of Claws!!!"
+    <Label text="Clash of Claws!!"
            style="-fx-font-size: 64px; -fx-font-weight: bold;"/>
 
-    <Label text="Project is up and running!"/>
+    <Label text="Welcome to what will become the Town!"/>
 
-    <Button text="Open Cat Dex"
-            onAction="#openCatDex"/>
+    <Button
+            prefWidth="240.0"
+            prefHeight="46.0"
+            text="Enter the Wilds"
+            onAction="#handleBattle"
+            style="-fx-font-size: 20px;"/>
+
+    <Button
+            prefWidth="240.0"
+            prefHeight="46.0"
+            text="Battle the Arena"
+            onAction="#handleArena"
+            style="-fx-font-size: 20px;"/>
+
+    <Button
+            prefWidth="240.0"
+            prefHeight="46.0"
+            text="Visit the Trader"
+            onAction="#handleTrader"
+            style="-fx-font-size: 20px;"/>
+
+    <Button
+            prefWidth="240.0"
+            text="View CatDex"
+            prefHeight="46.0"
+            onAction="#handleCatDex"
+            style="-fx-font-size: 20px;"/>
+
+    <Button
+            prefWidth="240.0"
+            text="Log Out"
+            onAction="#handleBackToLogin"/>
+
 </VBox>

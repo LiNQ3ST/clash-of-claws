@@ -3,14 +3,18 @@ package app;
 /**
  * desc...
  *
- * @author Quinton Nisonger
- * @version 0.1.0
- * @since 8/3/2026
+ * @author Quinton Nisonger, Sahtra Green
+ * @version 0.1.1
+ * @since 8/5/2026
  */
-
 public enum SceneType {
-  MAIN("/app/main-view.fxml"),
-  BATTLE("/battle/battle.fxml");
+    LOGIN("/account/Login.fxml"),
+    REGISTER("/account/Register.fxml"),
+    BATTLE("/battle/battle.fxml"),
+    TRADER("/marketplace/trader-view.fxml"),
+    ARENA("/adminarena/arena-admin.fxml"),
+    CAT_DEX("/app/cat-dex.fxml"),
+    MAIN("/app/main-view.fxml");
 
   private final String fxmlPath;
 
