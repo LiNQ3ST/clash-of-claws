@@ -84,17 +84,9 @@ public class BattleEngine {
 
     validateBattleActive();
 
-    //TODO delete
-    if (attacker.getHp() <= 0) {
+    if (attacker.getCurrentHp() <= 0) {
       throw new IllegalStateException("A defeated cat cannot act.");
     }
-
-    /* TODO
-    if (attacker.getCurrentHp() <= 0) {
-      throw new IllegalStateException(
-          "A defeated cat cannot act.");
-    }
-     */
 
     switch (abilityName) {
       case "SCRATCH" -> attack(target, 10);
@@ -109,34 +101,15 @@ public class BattleEngine {
           "Unknown ability: " + abilityName);
     }
   }
-
-  // TODO delete
   public void heal(Cat target, int amount) {
-    int maxHp = getMaxHp(target);
-    int healedHp = target.getHp() + amount;
-
-    target.setHp(Math.min(healedHp, maxHp));
+    target.setCurrentHp(target.getCurrentHp() + amount);
   }
 
-  /* TODO
-  private void heal(Cat target, int amount) {
-  if (amount < 0) {
-    throw new IllegalArgumentException(
-        "Healing amount cannot be negative.");
-  }
-
-  target.setCurrentHp(
-      target.getCurrentHp() + amount
-  );
-}
-   */
-
-  // TODO delete
   private void attack(Cat target, int amount) {
-    int newHp = target.getHp() - amount;
+    int newHp = target.getCurrentHp() - amount;
 
     if (newHp <= 0) {
-      target.setHp(0);
+      target.setCurrentHp(0);
 
       if (target == opponentCat) {
         battleResult = BattleResult.VICTORY;
@@ -144,7 +117,7 @@ public class BattleEngine {
         battleResult = BattleResult.DEFEAT;
       }
     } else {
-      target.setHp(newHp);
+      target.setCurrentHp(newHp);
     }
   }
 
