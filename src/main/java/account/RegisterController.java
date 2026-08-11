@@ -58,9 +58,6 @@ public class RegisterController {
             );
 
             showAccountCreatedAlert();
-            SceneFactory.show(
-                    SceneType.STARTER
-            );
 
         } catch (IllegalArgumentException exception) {
             errorLabel.setText(exception.getMessage());

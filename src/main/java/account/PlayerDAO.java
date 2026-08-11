@@ -1,6 +1,7 @@
 package account;
 
 import database.DatabaseManager;
+import java.sql.DriverManager;
 
 import java.time.LocalDateTime;
 import java.sql.Connection;
@@ -213,13 +214,10 @@ public class PlayerDAO {
     }
 
     private Connection getConnection() throws SQLException {
-        DatabaseManager databaseManager =
-                DatabaseManager.getInstance();
-
         if (databaseUrl == null) {
-            return databaseManager.getConnection();
+            return DatabaseManager.getInstance().getConnection();
         }
 
-        return databaseManager.getConnection(databaseUrl);
+        return DriverManager.getConnection(databaseUrl);
     }
 }

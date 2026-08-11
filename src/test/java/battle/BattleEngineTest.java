@@ -37,7 +37,8 @@ class BattleEngineTest {
         "Tabby",
         100,
         playerAbilities,
-        true
+        true,
+            true
     );
 
     opponentCat = new Cat(
@@ -45,7 +46,8 @@ class BattleEngineTest {
         "Sphinx",
         100,
         opponentAbilities,
-        false
+        false,
+            false
     );
 
     battleEngine = new BattleEngine(playerCat, opponentCat);
@@ -76,7 +78,7 @@ class BattleEngineTest {
         "Scratch"
     );
 
-    assertEquals(90, opponentCat.getHp());
+    assertEquals(90, opponentCat.getCurrentHp());
   }
 
   @Test
@@ -87,7 +89,7 @@ class BattleEngineTest {
         "Pounce"
     );
 
-    assertEquals(85, opponentCat.getHp());
+    assertEquals(85, opponentCat.getCurrentHp());
   }
 
   @Test
@@ -98,12 +100,12 @@ class BattleEngineTest {
         "Pounce"
     );
 
-    assertEquals(85, playerCat.getHp());
+    assertEquals(85, playerCat.getCurrentHp());
   }
 
   @Test
   void healingPurrHealsAttacker() {
-    playerCat.setHp(50);
+    playerCat.setCurrentHp(50);
 
     battleEngine.ability(
         playerCat,
@@ -111,22 +113,22 @@ class BattleEngineTest {
         "Healing Purr"
     );
 
-    assertEquals(70, playerCat.getHp());
-    assertEquals(100, opponentCat.getHp());
+    assertEquals(70, playerCat.getCurrentHp());
+    assertEquals(100, opponentCat.getCurrentHp());
   }
 
   @Test
   void healIncreasesTargetHp() {
-    playerCat.setHp(40);
+    playerCat.setCurrentHp(40);
 
     battleEngine.heal(playerCat, 20);
 
-    assertEquals(60, playerCat.getHp());
+    assertEquals(60, playerCat.getCurrentHp());
   }
 
   @Test
   void damageCannotReduceHpBelowZero() {
-    opponentCat.setHp(5);
+    opponentCat.setCurrentHp(5);
 
     battleEngine.ability(
         playerCat,
@@ -134,12 +136,12 @@ class BattleEngineTest {
         "Scratch"
     );
 
-    assertEquals(0, opponentCat.getHp());
+    assertEquals(0, opponentCat.getCurrentHp());
   }
 
   @Test
   void defeatingOpponentSetsBattleWon() {
-    opponentCat.setHp(10);
+    opponentCat.setCurrentHp(10);
 
     battleEngine.ability(
         playerCat,
@@ -163,7 +165,7 @@ class BattleEngineTest {
 
   @Test
   void defeatingPlayerSetsBattleLost() {
-    playerCat.setHp(10);
+    playerCat.setCurrentHp(10);
 
     battleEngine.ability(
         opponentCat,
@@ -202,7 +204,7 @@ class BattleEngineTest {
     String usedAbility = battleEngine.opponentTurn();
 
     assertEquals("Pounce", usedAbility);
-    assertEquals(85, playerCat.getHp());
+    assertEquals(85, playerCat.getCurrentHp());
   }
 
   @Test
@@ -210,12 +212,12 @@ class BattleEngineTest {
     String usedAbility = battleEngine.playerTurn("Scratch");
 
     assertEquals("Scratch", usedAbility);
-    assertEquals(90, opponentCat.getHp());
+    assertEquals(90, opponentCat.getCurrentHp());
   }
 
   @Test
   void opponentCannotActAfterBattleEnds() {
-    opponentCat.setHp(10);
+    opponentCat.setCurrentHp(10);
 
     battleEngine.ability(
         playerCat,
@@ -233,7 +235,7 @@ class BattleEngineTest {
 
   @Test
   void playerCannotActAfterBattleEnds() {
-    playerCat.setHp(10);
+    playerCat.setCurrentHp(10);
 
     battleEngine.ability(
         opponentCat,
@@ -251,7 +253,7 @@ class BattleEngineTest {
 
   @Test
   void defeatedCatCannotUseAbility() {
-    playerCat.setHp(0);
+    playerCat.setCurrentHp(0);
 
     assertThrows(
         IllegalStateException.class,
@@ -265,7 +267,7 @@ class BattleEngineTest {
 
   @Test
   void abilityCannotBeUsedAfterBattleEnds() {
-    opponentCat.setHp(10);
+    opponentCat.setCurrentHp(10);
 
     battleEngine.ability(
         playerCat,
