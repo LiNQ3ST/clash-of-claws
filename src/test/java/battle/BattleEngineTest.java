@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @version 0.1.0
  * @since 8/9/2026
  */
+
 class BattleEngineTest {
 
   private Cat playerCat;
@@ -26,18 +27,19 @@ class BattleEngineTest {
   @BeforeEach
   void setUp() {
     ArrayList<String> playerAbilities = new ArrayList<>();
-    playerAbilities.add("Scratch");
-    playerAbilities.add("Healing Purr");
+    playerAbilities.add("SCRATCH");
+    playerAbilities.add("HEALING_PURR");
 
     ArrayList<String> opponentAbilities = new ArrayList<>();
-    opponentAbilities.add("Pounce");
-    opponentAbilities.add("Tail Whip");
+    opponentAbilities.add("POUNCE");
+    opponentAbilities.add("TAIL_WHIP");
 
     playerCat = new Cat(
         "Whiskers",
         "Tabby",
         100,
         playerAbilities,
+        true,
         true
     );
 
@@ -46,6 +48,7 @@ class BattleEngineTest {
         "Sphinx",
         100,
         opponentAbilities,
+        false,
         false
     );
 
@@ -63,15 +66,46 @@ class BattleEngineTest {
   }
 
   @Test
-  void getPlayerCat() {
-    assertSame(
-        playerCat,
-        wildBattleEngine.getPlayerCat()
+  void constructorRejectsNullPlayerCat() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new BattleEngine(null, opponentCat, BattleType.WILD)
     );
   }
 
   @Test
-  void getOpponentCat() {
+  void constructorRejectsNullOpponentCat() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new BattleEngine(playerCat, null, BattleType.WILD)
+    );
+  }
+
+  @Test
+  void constructorRejectsNullBattleType() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new BattleEngine(playerCat, opponentCat, null)
+    );
+  }
+
+  @Test
+  void newBattleStartsInProgress() {
+    assertEquals(
+        BattleResult.IN_PROGRESS,
+        wildBattleEngine.getBattleResult()
+    );
+
+    assertFalse(wildBattleEngine.isBattleOver());
+  }
+
+  @Test
+  void exposesBattleParticipants() {
+    assertSame(
+        playerCat,
+        wildBattleEngine.getPlayerCat()
+    );
+
     assertSame(
         opponentCat,
         wildBattleEngine.getOpponentCat()
@@ -79,25 +113,31 @@ class BattleEngineTest {
   }
 
   @Test
-  void scratchDamagesOpponent() {
+  void scratchDamagesOpponentCurrentHp() {
     wildBattleEngine.ability(
         playerCat,
         opponentCat,
-        "Scratch"
+        "SCRATCH"
     );
 
-    assertEquals(90, opponentCat.getHp());
+    assertEquals(
+        90,
+        opponentCat.getCurrentHp()
+    );
   }
 
   @Test
-  void pounceDamagesOpponent() {
+  void pounceDamagesOpponentCurrentHp() {
     wildBattleEngine.ability(
         playerCat,
         opponentCat,
-        "Pounce"
+        "POUNCE"
     );
 
-    assertEquals(85, opponentCat.getHp());
+    assertEquals(
+        85,
+        opponentCat.getCurrentHp()
+    );
   }
 
   @Test
@@ -105,94 +145,103 @@ class BattleEngineTest {
     wildBattleEngine.ability(
         opponentCat,
         playerCat,
-        "Pounce"
+        "POUNCE"
     );
 
-    assertEquals(85, playerCat.getHp());
+    assertEquals(
+        85,
+        playerCat.getCurrentHp()
+    );
   }
 
   @Test
   void healingPurrHealsAttacker() {
-    playerCat.setHp(50);
+    playerCat.setCurrentHp(50);
 
     wildBattleEngine.ability(
         playerCat,
         opponentCat,
-        "Healing Purr"
+        "HEALING_PURR"
     );
 
-    assertEquals(70, playerCat.getHp());
-    assertEquals(100, opponentCat.getHp());
+    assertEquals(
+        70,
+        playerCat.getCurrentHp()
+    );
+
+    assertEquals(
+        100,
+        opponentCat.getCurrentHp()
+    );
   }
 
   @Test
-  void healIncreasesTargetHp() {
-    playerCat.setHp(40);
+  void healDoesNotExceedMaximumHp() {
+    playerCat.setCurrentHp(95);
 
-    wildBattleEngine.heal(playerCat, 20);
+    wildBattleEngine.heal(
+        playerCat,
+        20
+    );
 
-    assertEquals(60, playerCat.getHp());
+    assertEquals(
+        100,
+        playerCat.getCurrentHp()
+    );
   }
 
   @Test
   void damageCannotReduceHpBelowZero() {
-    opponentCat.setHp(5);
+    opponentCat.setCurrentHp(5);
 
     wildBattleEngine.ability(
         playerCat,
         opponentCat,
-        "Scratch"
+        "SCRATCH"
     );
 
-    assertEquals(0, opponentCat.getHp());
+    assertEquals(
+        0,
+        opponentCat.getCurrentHp()
+    );
   }
 
   @Test
-  void defeatingOpponentSetsBattleWon() {
-    opponentCat.setHp(10);
+  void defeatingOpponentSetsVictory() {
+    opponentCat.setCurrentHp(10);
 
     wildBattleEngine.ability(
         playerCat,
         opponentCat,
-        "Scratch"
+        "SCRATCH"
     );
 
     assertTrue(wildBattleEngine.isBattleWon());
-  }
+    assertTrue(wildBattleEngine.isBattleOver());
 
-  @Test
-  void battleIsNotWonWhenOpponentStillHasHp() {
-    wildBattleEngine.ability(
-        playerCat,
-        opponentCat,
-        "Scratch"
+    assertEquals(
+        BattleResult.VICTORY,
+        wildBattleEngine.getBattleResult()
     );
-
-    assertFalse(wildBattleEngine.isBattleWon());
   }
 
   @Test
-  void defeatingPlayerSetsBattleLost() {
-    playerCat.setHp(10);
+  void defeatingPlayerSetsDefeat() {
+    playerCat.setCurrentHp(10);
 
     wildBattleEngine.ability(
         opponentCat,
         playerCat,
-        "Scratch"
+        "SCRATCH"
     );
 
     assertTrue(wildBattleEngine.isBattleLost());
-  }
+    assertTrue(wildBattleEngine.isBattleOver());
 
-  @Test
-  void battleIsNotLostWhenPlayerStillHasHp() {
-    wildBattleEngine.ability(
-        opponentCat,
-        playerCat,
-        "Scratch"
+    assertEquals(
+        BattleResult.DEFEAT,
+        wildBattleEngine.getBattleResult()
     );
-
-    assertFalse(wildBattleEngine.isBattleLost());
   }
 
   @Test
@@ -202,98 +251,42 @@ class BattleEngineTest {
         () -> wildBattleEngine.ability(
             playerCat,
             opponentCat,
-            "Laser Eyes"
+            "LASER_EYES"
         )
     );
   }
 
   @Test
-  void opponentTurnUsesOpponentAbility() {
+  void opponentTurnUsesFirstOpponentAbility() {
     String usedAbility =
         wildBattleEngine.opponentTurn();
 
-    assertEquals("Pounce", usedAbility);
-    assertEquals(85, playerCat.getHp());
+    assertEquals(
+        "POUNCE",
+        usedAbility
+    );
+
+    assertEquals(
+        85,
+        playerCat.getCurrentHp()
+    );
   }
 
   @Test
-  void playerTurnUsesPlayerAbility() {
+  void playerTurnUsesOwnedAbility() {
     String usedAbility =
-        wildBattleEngine.playerTurn("Scratch");
+        wildBattleEngine.playerTurn(
+            "SCRATCH"
+        );
 
-    assertEquals("Scratch", usedAbility);
-    assertEquals(90, opponentCat.getHp());
-  }
-
-  @Test
-  void opponentCannotActAfterBattleEnds() {
-    opponentCat.setHp(10);
-
-    wildBattleEngine.ability(
-        playerCat,
-        opponentCat,
-        "Scratch"
+    assertEquals(
+        "SCRATCH",
+        usedAbility
     );
 
-    assertTrue(wildBattleEngine.isBattleWon());
-
-    assertThrows(
-        IllegalStateException.class,
-        wildBattleEngine::opponentTurn
-    );
-  }
-
-  @Test
-  void playerCannotActAfterBattleEnds() {
-    playerCat.setHp(10);
-
-    wildBattleEngine.ability(
-        opponentCat,
-        playerCat,
-        "Scratch"
-    );
-
-    assertTrue(wildBattleEngine.isBattleLost());
-
-    assertThrows(
-        IllegalStateException.class,
-        () -> wildBattleEngine.playerTurn("Scratch")
-    );
-  }
-
-  @Test
-  void defeatedCatCannotUseAbility() {
-    playerCat.setHp(0);
-
-    assertThrows(
-        IllegalStateException.class,
-        () -> wildBattleEngine.ability(
-            playerCat,
-            opponentCat,
-            "Scratch"
-        )
-    );
-  }
-
-  @Test
-  void abilityCannotBeUsedAfterBattleEnds() {
-    opponentCat.setHp(10);
-
-    wildBattleEngine.ability(
-        playerCat,
-        opponentCat,
-        "Scratch"
-    );
-
-    assertTrue(wildBattleEngine.isBattleWon());
-
-    assertThrows(
-        IllegalStateException.class,
-        () -> wildBattleEngine.ability(
-            playerCat,
-            opponentCat,
-            "Scratch"
-        )
+    assertEquals(
+        90,
+        opponentCat.getCurrentHp()
     );
   }
 
@@ -301,20 +294,59 @@ class BattleEngineTest {
   void playerCannotUseAbilityTheyDoNotHave() {
     assertThrows(
         IllegalArgumentException.class,
-        () -> wildBattleEngine.playerTurn("Flame Paw")
+        () -> wildBattleEngine.playerTurn(
+            "FLAME_PAW"
+        )
     );
   }
 
   @Test
-  void wildBattleHasWildBattleType() {
+  void defeatedCatCannotAct() {
+    playerCat.setCurrentHp(0);
+
+    assertThrows(
+        IllegalStateException.class,
+        () -> wildBattleEngine.ability(
+            playerCat,
+            opponentCat,
+            "SCRATCH"
+        )
+    );
+  }
+
+  @Test
+  void noActionsAllowedAfterVictory() {
+    opponentCat.setCurrentHp(10);
+
+    wildBattleEngine.playerTurn(
+        "SCRATCH"
+    );
+
+    assertEquals(
+        BattleResult.VICTORY,
+        wildBattleEngine.getBattleResult()
+    );
+
+    assertThrows(
+        IllegalStateException.class,
+        wildBattleEngine::opponentTurn
+    );
+
+    assertThrows(
+        IllegalStateException.class,
+        () -> wildBattleEngine.playerTurn(
+            "SCRATCH"
+        )
+    );
+  }
+
+  @Test
+  void battleTypesAreStoredCorrectly() {
     assertEquals(
         BattleType.WILD,
         wildBattleEngine.getBattleType()
     );
-  }
 
-  @Test
-  void arenaBattleHasArenaBattleType() {
     assertEquals(
         BattleType.ARENA,
         arenaBattleEngine.getBattleType()
@@ -322,9 +354,9 @@ class BattleEngineTest {
   }
 
   @Test
-  void wildBattleCanRunSuccessfully() {
+  void wildBattleEscapesAtBoundaryRoll() {
     boolean escaped =
-        wildBattleEngine.attemptRun(75);
+        wildBattleEngine.attemptRun(50);
 
     assertTrue(escaped);
 
@@ -335,9 +367,9 @@ class BattleEngineTest {
   }
 
   @Test
-  void wildBattleCanFailToRun() {
+  void wildBattleFailsEscapeBelowBoundary() {
     boolean escaped =
-        wildBattleEngine.attemptRun(25);
+        wildBattleEngine.attemptRun(49);
 
     assertFalse(escaped);
 
@@ -348,10 +380,47 @@ class BattleEngineTest {
   }
 
   @Test
+  void escapeRollMustBeBetweenZeroAndNinetyNine() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> wildBattleEngine.attemptRun(-1)
+    );
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> wildBattleEngine.attemptRun(100)
+    );
+  }
+
+  @Test
   void arenaBattleCannotRun() {
     assertThrows(
         IllegalStateException.class,
         () -> arenaBattleEngine.attemptRun(75)
+    );
+  }
+
+  @Test
+  void noActionsAllowedAfterSuccessfulEscape() {
+    assertTrue(
+        wildBattleEngine.attemptRun(75)
+    );
+
+    assertThrows(
+        IllegalStateException.class,
+        () -> wildBattleEngine.playerTurn(
+            "SCRATCH"
+        )
+    );
+
+    assertThrows(
+        IllegalStateException.class,
+        wildBattleEngine::opponentTurn
+    );
+
+    assertThrows(
+        IllegalStateException.class,
+        () -> wildBattleEngine.attemptRun(75)
     );
   }
 }
