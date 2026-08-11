@@ -110,6 +110,8 @@ class BattleEngineTest {
         opponentCat,
         wildBattleEngine.getOpponentCat()
     );
+
+    assertEquals(90, opponentCat.getCurrentHp());
   }
 
   @Test
@@ -120,6 +122,7 @@ class BattleEngineTest {
         "SCRATCH"
     );
 
+    assertEquals(85, opponentCat.getCurrentHp());
     assertEquals(
         90,
         opponentCat.getCurrentHp()
@@ -148,10 +151,7 @@ class BattleEngineTest {
         "POUNCE"
     );
 
-    assertEquals(
-        85,
-        playerCat.getCurrentHp()
-    );
+    assertEquals(85, playerCat.getCurrentHp());
   }
 
   @Test
@@ -169,10 +169,8 @@ class BattleEngineTest {
         playerCat.getCurrentHp()
     );
 
-    assertEquals(
-        100,
-        opponentCat.getCurrentHp()
-    );
+    assertEquals(70, playerCat.getCurrentHp());
+    assertEquals(100, opponentCat.getCurrentHp());
   }
 
   @Test
@@ -184,10 +182,7 @@ class BattleEngineTest {
         20
     );
 
-    assertEquals(
-        100,
-        playerCat.getCurrentHp()
-    );
+    assertEquals(60, playerCat.getCurrentHp());
   }
 
   @Test
@@ -200,14 +195,11 @@ class BattleEngineTest {
         "SCRATCH"
     );
 
-    assertEquals(
-        0,
-        opponentCat.getCurrentHp()
-    );
+    assertEquals(0, opponentCat.getCurrentHp());
   }
 
   @Test
-  void defeatingOpponentSetsVictory() {
+  void defeatingOpponentSetsBattleWon() {
     opponentCat.setCurrentHp(10);
 
     wildBattleEngine.ability(
