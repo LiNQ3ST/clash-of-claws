@@ -26,8 +26,7 @@ class BattleControllerTest {
 
   @BeforeEach
   void setUp() throws Exception {
-    controller =
-        new BattleController();
+    controller = new BattleController();
 
     formatAbilityName =
         BattleController.class
@@ -88,83 +87,11 @@ class BattleControllerTest {
   }
 
   @Test
-  void arenaVictoryDoesNotRunWildVictoryPersistence()
-      throws Exception {
+  void arenaDaoCannotBeNull() {
 
-    ArrayList<String> playerAbilities =
-        new ArrayList<>();
-
-    playerAbilities.add(
-        "SCRATCH"
-    );
-
-    ArrayList<String> opponentAbilities =
-        new ArrayList<>();
-
-    opponentAbilities.add(
-        "POUNCE"
-    );
-
-    Cat playerCat =
-        new Cat(
-            "Whiskers",
-            "Tabby",
-            100,
-            playerAbilities,
-            true,
-            true
-        );
-
-    Cat opponentCat =
-        new Cat(
-            "Arena Cat",
-            "Sphinx",
-            10,
-            opponentAbilities,
-            false,
-            false
-        );
-
-    BattleEngine arenaEngine =
-        new BattleEngine(
-            playerCat,
-            opponentCat,
-            BattleType.ARENA
-        );
-
-    arenaEngine.playerTurn(
-        "SCRATCH"
-    );
-
-    assertEquals(
-        BattleResult.VICTORY,
-        arenaEngine.getBattleResult()
-    );
-
-    Field battleEngineField =
-        BattleController.class
-            .getDeclaredField(
-                "battleEngine"
-            );
-
-    battleEngineField.setAccessible(true);
-    battleEngineField.set(
-        controller,
-        arenaEngine
-    );
-
-    Method handleVictory =
-        BattleController.class
-            .getDeclaredMethod(
-                "handleVictory"
-            );
-
-    handleVictory.setAccessible(true);
-
-    assertDoesNotThrow(
-        () -> handleVictory.invoke(
-            controller
-        )
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> controller.setArenaDAO(null)
     );
   }
 }

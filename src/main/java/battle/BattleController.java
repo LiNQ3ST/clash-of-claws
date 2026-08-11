@@ -1,5 +1,7 @@
 package battle;
 
+import adminarena.Arena;
+import adminarena.ArenaDAO;
 import creature.CatGenerator;
 import javafx.event.ActionEvent;
 import account.AccountService;
@@ -101,6 +103,7 @@ public class BattleController {
   private final BattleDAO battleDAO = new BattleDAO();
   private final PlayerDAO playerDAO = new PlayerDAO();
   private final CatDAO catDAO = new CatDAO();
+  private ArenaDAO arenaDAO;
 
   private Timeline messageTimeline;
   private String fullMessage = "";
@@ -211,6 +214,17 @@ public class BattleController {
             + "!",
         this::showActionMenu
     );
+  }
+
+  public void setArenaDAO(ArenaDAO arenaDAO) {
+
+    if (arenaDAO == null) {
+      throw new IllegalArgumentException(
+          "Arena DAO cannot be null."
+      );
+    }
+
+    this.arenaDAO = arenaDAO;
   }
 
   private void persistPlayerCat() {
@@ -764,7 +778,7 @@ private void useCatchingItem(...) {
       return;
     }
 
-    // Arena victory integration will go here later.
+    handleArenaVictory();
   }
 
   private void handleWildVictory() {
@@ -805,6 +819,88 @@ private void useCatchingItem(...) {
     );
   }
 
+  private void handleArenaVictory() {
+
+    persistPlayerCat();
+
+    Integer arenaId =
+        battleRecord.getArenaId();
+
+    if (arenaId == null) {
+      throw new IllegalStateException(
+          "Arena battle is missing its arena ID."
+      );
+    }
+
+    if (arenaDAO == null) {
+      throw new IllegalStateException(
+          "Arena DAO has not been configured."
+      );
+    }
+
+    Arena arena;
+
+    try {
+
+      arena =
+          arenaDAO.findById(arenaId)
+              .orElseThrow(
+                  () -> new IllegalStateException(
+                      "Arena could not be found."
+                  )
+              );
+
+    } catch (SQLException exception) {
+
+      throw new IllegalStateException(
+          "Arena could not be loaded.",
+          exception
+      );
+    }
+
+    int currencyReward =
+        arena.getRewardAmount();
+
+    currentPlayer.setCurrencyBalance(
+        currentPlayer.getCurrencyBalance()
+            + currencyReward
+    );
+
+    try {
+
+      boolean updated =
+          playerDAO.update(currentPlayer);
+
+      if (!updated) {
+        throw new IllegalStateException(
+            "Arena reward could not be saved."
+        );
+      }
+
+    } catch (SQLException exception) {
+
+      throw new IllegalStateException(
+          "Arena reward could not be saved.",
+          exception
+      );
+    }
+
+
+
+    battleRecord.setStatus(
+        BattleResult.VICTORY.name()
+    );
+
+    battleDAO.update(battleRecord);
+
+    showMessage(
+        "Arena victory! You earned "
+            + currencyReward
+            + " coins.",
+        () -> SceneFactory.show(SceneType.MAIN)
+    );
+  }
+
   private void handleDefeat() {
 
     if (battleEngine.getBattleType() == BattleType.WILD) {
@@ -812,7 +908,7 @@ private void useCatchingItem(...) {
       return;
     }
 
-    // Arena defeat integration will go here later.
+    handleArenaDefeat();
   }
 
   private void handleWildDefeat() {
@@ -857,6 +953,22 @@ private void useCatchingItem(...) {
         "You were defeated. You lost "
             + penalty
             + " coins.",
+        () -> SceneFactory.show(SceneType.MAIN)
+    );
+  }
+
+  private void handleArenaDefeat() {
+
+    persistPlayerCat();
+
+    battleRecord.setStatus(
+        BattleResult.DEFEAT.name()
+    );
+
+    battleDAO.update(battleRecord);
+
+    showMessage(
+        "You were defeated in the arena.",
         () -> SceneFactory.show(SceneType.MAIN)
     );
   }

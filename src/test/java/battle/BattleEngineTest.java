@@ -423,4 +423,63 @@ class BattleEngineTest {
         () -> wildBattleEngine.attemptRun(75)
     );
   }
+
+  @Test
+  void returnsCorrectScratchAmount() {
+    assertEquals(
+        10,
+        wildBattleEngine.getAbilityAmount("SCRATCH")
+    );
+  }
+
+  @Test
+  void returnsCorrectHealingPurrAmount() {
+    assertEquals(
+        20,
+        wildBattleEngine.getAbilityAmount("HEALING_PURR")
+    );
+  }
+
+  @Test
+  void returnsCorrectAbilityAmounts() {
+    assertEquals(
+        15,
+        wildBattleEngine.getAbilityAmount("POUNCE")
+    );
+
+    assertEquals(
+        8,
+        wildBattleEngine.getAbilityAmount("HAIRBALL")
+    );
+
+    assertEquals(
+        18,
+        wildBattleEngine.getAbilityAmount("NIGHT_CLAW")
+    );
+
+    assertEquals(
+        20,
+        wildBattleEngine.getAbilityAmount("FLAME_PAW")
+    );
+
+    assertEquals(
+        12,
+        wildBattleEngine.getAbilityAmount("TAIL_WHIP")
+    );
+
+    assertEquals(
+        4,
+        wildBattleEngine.getAbilityAmount("ZOOMIES")
+    );
+  }
+
+  @Test
+  void getAbilityAmountRejectsUnknownAbility() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> wildBattleEngine.getAbilityAmount(
+            "LASER_EYES"
+        )
+    );
+  }
 }
