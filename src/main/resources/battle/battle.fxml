@@ -166,7 +166,10 @@
             onAction="#handleAbilityFour"/>
         </GridPane>
 
-        <Button text="Back" prefWidth="100.0" onAction="#handleAttackBack"/>
+        <Button fx:id="attackBackButton"
+          text="Back"
+          prefWidth="100.0"
+          onAction="#handleAttackBack"/>
       </VBox>
 
       <VBox
@@ -183,7 +186,10 @@
         <Button fx:id="itemButton4" onAction="#handleItem"/>
         <Button fx:id="itemButton5" onAction="#handleItem"/>
         <Button fx:id="itemButton6" onAction="#handleItem"/>
-        <Button text="Back" prefWidth="100.0" onAction="#handleBagBack"/>
+        <Button fx:id="bagBackButton"
+          text="Back"
+          prefWidth="100.0"
+          onAction="#handleBagBack"/>
       </VBox>
 
       <VBox fx:id="wildVictoryMenu"
