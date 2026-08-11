@@ -16,6 +16,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
+import java.util.Objects;
 
 
 /**
@@ -54,6 +59,15 @@ public class StarterController {
 
     @FXML
     private Button chooseButton;
+
+    @FXML
+    private ImageView catOneImage;
+
+    @FXML
+    private ImageView catTwoImage;
+
+    @FXML
+    private ImageView catThreeImage;
 
 
     private Cat catOne;
@@ -157,6 +171,24 @@ public class StarterController {
         catThreeDetails.setText(
                 formatCat(catThree)
         );
+
+        setCatSprite(
+                catOneImage,
+                catOne,
+                0
+        );
+
+        setCatSprite(
+                catTwoImage,
+                catTwo,
+                0
+        );
+
+        setCatSprite(
+                catThreeImage,
+                catThree,
+                0
+        );
     }
 
 
@@ -231,6 +263,43 @@ public class StarterController {
 
 
         return null;
+    }
+
+    private void setCatSprite(
+            ImageView imageView,
+            Cat cat,
+            int frameIndex
+    ) {
+
+        Image spriteSheet =
+                new Image(
+                        Objects.requireNonNull(
+                                getClass().getResourceAsStream(
+                                        cat.getSpriteSheetPath()
+                                )
+                        )
+                );
+
+
+        double frameWidth =
+                spriteSheet.getWidth() / 3;
+
+
+        imageView.setImage(
+                spriteSheet
+        );
+
+        imageView.setViewport(
+                new Rectangle2D(
+                        frameWidth * frameIndex,
+                        0,
+                        frameWidth,
+                        spriteSheet.getHeight()
+                )
+        );
+
+        imageView.setPreserveRatio(true);
+        imageView.setSmooth(false);
     }
 
 
