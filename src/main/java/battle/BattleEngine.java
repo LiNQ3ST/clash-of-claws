@@ -90,6 +90,24 @@ public class BattleEngine {
           "Unknown ability: " + abilityName);
     }
   }
+
+  public int getAbilityAmount(String abilityName) {
+
+    return switch (abilityName) {
+      case "SCRATCH" -> 10;
+      case "POUNCE" -> 15;
+      case "HAIRBALL" -> 8;
+      case "HEALING_PURR" -> 20;
+      case "NIGHT_CLAW" -> 18;
+      case "FLAME_PAW" -> 20;
+      case "TAIL_WHIP" -> 12;
+      case "ZOOMIES" -> 4;
+      default -> throw new IllegalArgumentException(
+          "Unknown ability: " + abilityName
+      );
+    };
+  }
+
   public void heal(Cat target, int amount) {
     target.setCurrentHp(target.getCurrentHp() + amount);
   }

@@ -185,6 +185,22 @@
         <Button fx:id="itemButton6" onAction="#handleItem"/>
         <Button text="Back" prefWidth="100.0" onAction="#handleBagBack"/>
       </VBox>
+
+      <VBox fx:id="wildVictoryMenu"
+        visible="false"
+        managed="false"
+        spacing="8">
+
+        <Label text="Would you like to continue exploring the Wilds?"/>
+
+        <Button text="Continue Exploring"
+          onAction="#handleContinueWilds"/>
+
+        <Button text="Return to Town"
+          onAction="#handleReturnToTown"/>
+
+      </VBox>
+
     </StackPane>
   </bottom>
 </BorderPane>

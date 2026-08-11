@@ -1,5 +1,6 @@
 package battle;
 
+import creature.CatGenerator;
 import javafx.event.ActionEvent;
 import account.AccountService;
 import account.Player;
@@ -90,6 +91,8 @@ public class BattleController {
   @FXML
   private Button runButton;
 
+  @FXML
+  private VBox wildVictoryMenu;
 
   private BattleEngine battleEngine;
   private Player currentPlayer;
@@ -102,13 +105,29 @@ public class BattleController {
   private Timeline messageTimeline;
   private String fullMessage = "";
   private int messageCharacterIndex;
+
   private Runnable messageAdvanceAction;
   private boolean messageTyping;
+  private boolean continuingWilds;
 
   public void startBattle(
       Cat playerCat,
       Cat opponentCat,
       BattleType battleType) {
+
+    startBattle(
+        playerCat,
+        opponentCat,
+        battleType,
+        null
+    );
+  }
+
+  public void startBattle(
+      Cat playerCat,
+      Cat opponentCat,
+      BattleType battleType,
+      Integer arenaId) {
 
     currentPlayer =
         AccountService.getInstance()
@@ -123,6 +142,17 @@ public class BattleController {
       );
     }
 
+    wildVictoryMenu.setVisible(false);
+    wildVictoryMenu.setManaged(false);
+
+    if (battleType == BattleType.ARENA
+        && arenaId == null) {
+
+      throw new IllegalArgumentException(
+          "Arena battles require an arena ID."
+      );
+    }
+
     battleEngine =
         new BattleEngine(
             playerCat,
@@ -134,7 +164,7 @@ public class BattleController {
         new Battle(
             currentPlayer.getPlayerId(),
             battleType.name(),
-            null,
+            arenaId,
             BattleResult.IN_PROGRESS.name()
         );
 
@@ -147,12 +177,39 @@ public class BattleController {
     loadAbilityButtons();
     configureBattleActions();
 
+    if (battleType == BattleType.WILD) {
+
+      String openingMessage;
+
+      if (continuingWilds) {
+        openingMessage =
+            "You continue deeper into the Wilds...";
+      } else {
+        openingMessage =
+            "Welcome to the Wilds!";
+      }
+
+      continuingWilds = false;
+
+      showMessage(
+          openingMessage,
+          () -> showMessage(
+              "A wild "
+                  + opponentCat.getName()
+                  + " appeared!",
+              this::showActionMenu
+          )
+      );
+
+      return;
+    }
+
     showMessage(
         playerCat.getName()
             + " is battling "
             + opponentCat.getName()
             + "!",
-        null
+        this::showActionMenu
     );
   }
 
@@ -184,9 +241,26 @@ public class BattleController {
     for (int i = 0; i < buttons.length; i++) {
       if (i < abilities.size()) {
         String abilityId = abilities.get(i);
+        int amount =
+            battleEngine.getAbilityAmount(abilityId);
 
         buttons[i].setUserData(abilityId);
-        buttons[i].setText(formatAbilityName(abilityId));
+
+        if (abilityId.equals("HEALING_PURR")) {
+          buttons[i].setText(
+              formatAbilityName(abilityId)
+                  + " - Heal "
+                  + amount
+          );
+        } else {
+          buttons[i].setText(
+              formatAbilityName(abilityId)
+                  + " - "
+                  + amount
+                  + " Damage"
+          );
+        }
+
         buttons[i].setVisible(true);
         buttons[i].setManaged(true);
       } else {
@@ -325,7 +399,6 @@ private void useCatchingItem(...) {
     );
 }
    */
-
 
 
   private String formatAbilityName(String abilityId) {
@@ -658,6 +731,32 @@ private void useCatchingItem(...) {
     useAbility(abilityButton4);
   }
 
+  @FXML
+  private void handleReturnToTown() {
+    SceneFactory.show(SceneType.MAIN);
+  }
+
+  @FXML
+  private void handleContinueWilds() {
+
+    wildVictoryMenu.setVisible(false);
+    wildVictoryMenu.setManaged(false);
+
+    Cat playerCat =
+        battleEngine.getPlayerCat();
+    Cat opponentCat =
+        new CatGenerator().generateCat();
+
+    continuingWilds = true;
+
+    startBattle(
+        playerCat,
+        opponentCat,
+        BattleType.WILD
+    );
+
+  }
+
   private void handleVictory() {
 
     if (battleEngine.getBattleType() == BattleType.WILD) {
@@ -701,8 +800,8 @@ private void useCatchingItem(...) {
     battleDAO.update(battleRecord);
 
     showMessage(
-        "Victory! You earned rewards.",
-        () -> SceneFactory.show(SceneType.MAIN)
+        "Victory! You earned 10 coins.",
+        this::showWildVictoryMenu
     );
   }
 
@@ -759,6 +858,26 @@ private void useCatchingItem(...) {
             + penalty
             + " coins.",
         () -> SceneFactory.show(SceneType.MAIN)
+    );
+  }
+
+  private void showWildVictoryMenu() {
+
+    actionMenu.setVisible(false);
+    actionMenu.setManaged(false);
+
+    attackMenu.setVisible(false);
+    attackMenu.setManaged(false);
+
+    bagMenu.setVisible(false);
+    bagMenu.setManaged(false);
+
+    wildVictoryMenu.setVisible(true);
+    wildVictoryMenu.setManaged(true);
+
+    showMessage(
+        "Would you like to continue exploring the Wilds?",
+        null
     );
   }
 
