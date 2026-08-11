@@ -1,12 +1,17 @@
 package battle;
 
+import app.SceneFactory;
+import app.SceneType;
 import creature.Cat;
-import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import java.util.ArrayList;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 /**
  * Controls the basic Battle Engine scene.
@@ -17,8 +22,13 @@ import javafx.scene.layout.VBox;
  */
 public class BattleController {
 
+  private static final Duration LETTER_DELAY = Duration.millis(28);
+
   @FXML
   private Label battleMessageLabel;
+
+  @FXML
+  private Label messageAdvanceIndicator;
 
   // Player
   @FXML
@@ -54,15 +64,33 @@ public class BattleController {
   private Button abilityButton4;
 
   @FXML
-  private Button healItemButton;
+  private Button itemButton1;
 
   @FXML
-  private Button catchItemButton;
+  private Button itemButton2;
+
+  @FXML
+  private Button itemButton3;
+
+  @FXML
+  private Button itemButton4;
+
+  @FXML
+  private Button itemButton5;
+
+  @FXML
+  private Button itemButton6;
 
   @FXML
   private Button runButton;
 
+
   private BattleEngine battleEngine;
+  private Timeline messageTimeline;
+  private String fullMessage = "";
+  private int messageCharacterIndex;
+  private Runnable messageAdvanceAction;
+  private boolean messageTyping;
 
   public void startBattle(
       Cat playerCat,
@@ -84,11 +112,12 @@ public class BattleController {
     loadAbilityButtons();
     configureBattleActions();
 
-    battleMessageLabel.setText(
+    showMessage(
         playerCat.getName()
             + " is battling "
             + opponentCat.getName()
-            + "!"
+            + "!",
+        null
     );
   }
 
@@ -105,15 +134,50 @@ public class BattleController {
 
     for (int i = 0; i < buttons.length; i++) {
       if (i < abilities.size()) {
-        buttons[i].setText(abilities.get(i));
+        String abilityId = abilities.get(i);
+
+        buttons[i].setUserData(abilityId);
+        buttons[i].setText(formatAbilityName(abilityId));
         buttons[i].setVisible(true);
         buttons[i].setManaged(true);
       } else {
+        buttons[i].setUserData(null);
         buttons[i].setVisible(false);
         buttons[i].setManaged(false);
       }
     }
   }
+
+  private void loadItemButtons() {
+
+    Button[] itemButtons = {
+        itemButton1,
+        itemButton2,
+        itemButton3,
+        itemButton4,
+        itemButton5,
+        itemButton6
+    };
+
+    // We'll populate these from inventory next.
+  }
+
+  private String formatAbilityName(String abilityId) {
+    String[] words = abilityId.toLowerCase().split("_");
+    StringBuilder formatted = new StringBuilder();
+
+    for (String word : words) {
+      if (!formatted.isEmpty()) {
+        formatted.append(' ');
+      }
+
+      formatted.append(Character.toUpperCase(word.charAt(0)))
+          .append(word.substring(1));
+    }
+
+    return formatted.toString();
+  }
+
 
   private void updateHealthLabels() {
     playerHealthLabel.setText(
@@ -132,69 +196,187 @@ public class BattleController {
   }
 
   private void useAbility(Button button) {
-    String abilityName = button.getText();
+    String abilityId = (String) button.getUserData();
 
-    battleEngine.playerTurn(abilityName);
-
-    updateHealthLabels();
-
-    if (battleEngine.isBattleWon()) {
-      battleMessageLabel.setText(
-          battleEngine.getPlayerCat().getName()
-              + " used "
-              + abilityName
-              + ". Victory!"
-      );
-
-      attackMenu.setVisible(false);
-      attackMenu.setManaged(false);
+    if (abilityId == null) {
       return;
     }
 
-    String opponentAbility = battleEngine.opponentTurn();
+    String abilityDisplayName = formatAbilityName(abilityId);
+
+    battleEngine.playerTurn(abilityId);
+    updateHealthLabels();
+
+    attackMenu.setVisible(false);
+    attackMenu.setManaged(false);
+    actionMenu.setVisible(false);
+    actionMenu.setManaged(false);
+
+    if (battleEngine.isBattleWon()) {
+      showMessage(
+          battleEngine.getPlayerCat().getName()
+              + " used "
+              + abilityDisplayName
+              + "!",
+          () -> showMessage("Victory!", null)
+      );
+      return;
+    }
+
+    showMessage(
+        battleEngine.getPlayerCat().getName()
+            + " used "
+            + abilityDisplayName
+            + "!",
+        this::performOpponentTurn
+    );
+  }
+
+  private void performOpponentTurn() {
+    String opponentAbilityId = battleEngine.opponentTurn();
+    String opponentAbilityName = formatAbilityName(opponentAbilityId);
 
     updateHealthLabels();
 
     if (battleEngine.isBattleLost()) {
-      battleMessageLabel.setText(
+      showMessage(
           battleEngine.getOpponentCat().getName()
               + " used "
-              + opponentAbility
-              + ". You were defeated."
+              + opponentAbilityName
+              + "!",
+          () -> showMessage("You were defeated.", null)
       );
-
-      attackMenu.setVisible(false);
-      attackMenu.setManaged(false);
       return;
     }
 
-    battleMessageLabel.setText(
-        battleEngine.getPlayerCat().getName()
+    showMessage(
+        battleEngine.getOpponentCat().getName()
             + " used "
-            + abilityName
-            + ". "
-            + battleEngine.getOpponentCat().getName()
-            + " used "
-            + opponentAbility
-            + "."
+            + opponentAbilityName
+            + "!",
+        this::showActionMenu
     );
+  }
 
-    attackMenu.setVisible(false);
-    attackMenu.setManaged(false);
-
+  private void showActionMenu() {
     actionMenu.setVisible(true);
     actionMenu.setManaged(true);
+    showMessage("Choose an action.", null);
   }
 
   private void configureBattleActions() {
     boolean wildBattle =
         battleEngine.getBattleType() == BattleType.WILD;
 
-    catchItemButton.setVisible(wildBattle);
-    catchItemButton.setManaged(wildBattle);
-
     runButton.setVisible(wildBattle);
     runButton.setManaged(wildBattle);
+  }
+
+  private void showMessage(String message, Runnable advanceAction) {
+    if (messageTimeline != null) {
+      messageTimeline.stop();
+    }
+
+    fullMessage = message;
+    messageCharacterIndex = 0;
+    messageAdvanceAction = advanceAction;
+    messageTyping = true;
+
+    battleMessageLabel.setText("");
+    messageAdvanceIndicator.setVisible(false);
+
+    messageTimeline = new Timeline(
+        new KeyFrame(
+            LETTER_DELAY,
+            event -> typeNextCharacter()
+        )
+    );
+
+    messageTimeline.setCycleCount(message.length());
+    messageTimeline.play();
+  }
+
+  private void typeNextCharacter() {
+    if (messageCharacterIndex >= fullMessage.length()) {
+      finishTyping();
+      return;
+    }
+
+    messageCharacterIndex++;
+    battleMessageLabel.setText(
+        fullMessage.substring(0, messageCharacterIndex)
+    );
+
+    if (messageCharacterIndex >= fullMessage.length()) {
+      finishTyping();
+    }
+  }
+
+  private void finishTyping() {
+    if (messageTimeline != null) {
+      messageTimeline.stop();
+    }
+
+    battleMessageLabel.setText(fullMessage);
+    messageCharacterIndex = fullMessage.length();
+    messageTyping = false;
+
+    if (messageAdvanceAction != null) {
+      messageAdvanceIndicator.setVisible(true);
+      startAdvanceIndicatorBlink();
+    } else {
+      messageAdvanceIndicator.setVisible(false);
+    }
+  }
+
+  private void startAdvanceIndicatorBlink() {
+    Timeline blinkTimeline = new Timeline(
+        new KeyFrame(
+            Duration.ZERO,
+            event -> messageAdvanceIndicator.setOpacity(1.0)
+        ),
+        new KeyFrame(
+            Duration.millis(450),
+            event -> messageAdvanceIndicator.setOpacity(0.15)
+        ),
+        new KeyFrame(
+            Duration.millis(900),
+            event -> messageAdvanceIndicator.setOpacity(1.0)
+        )
+    );
+
+    blinkTimeline.setCycleCount(Timeline.INDEFINITE);
+    blinkTimeline.play();
+
+    messageAdvanceIndicator.getProperties().put("blinkTimeline", blinkTimeline);
+  }
+
+  private void stopAdvanceIndicatorBlink() {
+    Object value = messageAdvanceIndicator.getProperties().remove("blinkTimeline");
+
+    if (value instanceof Timeline blinkTimeline) {
+      blinkTimeline.stop();
+    }
+
+    messageAdvanceIndicator.setOpacity(1.0);
+    messageAdvanceIndicator.setVisible(false);
+  }
+
+  @FXML
+  private void handleMessageClick() {
+    if (messageTyping) {
+      finishTyping();
+      return;
+    }
+
+    if (messageAdvanceAction == null) {
+      return;
+    }
+
+    Runnable action = messageAdvanceAction;
+    messageAdvanceAction = null;
+    stopAdvanceIndicatorBlink();
+    action.run();
   }
 
   @FXML
@@ -210,48 +392,22 @@ public class BattleController {
 
   @FXML
   private void handleRun() {
-
     int roll = (int) (Math.random() * 100);
     boolean escaped = battleEngine.attemptRun(roll);
 
+    actionMenu.setVisible(false);
+    actionMenu.setManaged(false);
+
     if (escaped) {
-      battleMessageLabel.setText(
-          "You escaped successfully."); //TODO replace fxml "you" with username
-
-      actionMenu.setVisible(false);
-      actionMenu.setManaged(false);
-
-      return;
-    }
-
-    String opponentAbility = battleEngine.opponentTurn();
-
-    updateHealthLabels();
-
-    if (battleEngine.isBattleLost()) {
-      battleMessageLabel.setText(
-          battleEngine.getOpponentCat().getName()
-              + " used "
-              + opponentAbility
-              + ". You were defeated."
+      showMessage("You escaped successfully.", () -> SceneFactory.show(SceneType.MAIN)
       );
-
-      actionMenu.setVisible(false);
-      actionMenu.setManaged(false);
-
       return;
     }
 
-    battleMessageLabel.setText(
-        "You failed to escape. "
-            + battleEngine.getOpponentCat().getName()
-            + " used "
-            + opponentAbility
-            + "."
+    showMessage(
+        "You failed to escape.",
+        this::performOpponentTurn
     );
-
-    actionMenu.setVisible(true);
-    actionMenu.setManaged(true);
   }
 
   @FXML
@@ -262,7 +418,7 @@ public class BattleController {
     bagMenu.setVisible(true);
     bagMenu.setManaged(true);
 
-    battleMessageLabel.setText("Choose an item.");
+    showMessage("Choose an item.", null);
   }
 
   @FXML
@@ -273,7 +429,7 @@ public class BattleController {
     actionMenu.setVisible(true);
     actionMenu.setManaged(true);
 
-    battleMessageLabel.setText("Choose an action.");
+    showMessage("Choose an action.", null);
   }
 
   @FXML
@@ -284,7 +440,7 @@ public class BattleController {
     actionMenu.setVisible(true);
     actionMenu.setManaged(true);
 
-    battleMessageLabel.setText("Choose an action.");
+    showMessage("Choose an action.", null);
   }
 
   @FXML
