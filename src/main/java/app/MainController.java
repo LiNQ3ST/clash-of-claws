@@ -6,6 +6,11 @@ import javafx.fxml.FXML;
 public class MainController {
 
     @FXML
+    private void openTrader() {
+        SceneFactory.showTraderScene();
+    }
+
+    @FXML
     private void handleBackToLogin() {
         SceneFactory.show(SceneType.LOGIN);
     }
