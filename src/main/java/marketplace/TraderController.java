@@ -1,7 +1,10 @@
 package marketplace;
-/*
- */
+
+import account.AccountService;
+import account.Player;
 import app.SceneFactory;
+import creature.Cat;
+import creature.CatDAO;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -16,7 +19,15 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
+/**
+ * Controller for the simple Trader scene.
+ *
+ * Issue #10 is UI-focused. The Buy and Sell buttons are present and validate
+ * that something is selected, but the actual transaction logic belongs to
+ * Issue #11 (TraderService).
+ */
 public class TraderController {
 
     @FXML
@@ -56,42 +67,73 @@ public class TraderController {
     private Spinner<Integer> quantitySpinner;
 
     @FXML
-    private ListView<String> creatureListView;
+    private ListView<Cat> creatureListView;
+
+    @FXML
+    private Label creatureNameLabel;
+
+    @FXML
+    private Label creatureTypeLabel;
+
+    @FXML
+    private Label creatureHpLabel;
+
+    @FXML
+    private Label creatureSaleValueLabel;
 
     @FXML
     private Button sellCreatureButton;
 
     private final TraderItemDAO traderItemDAO = new TraderItemDAO();
+    private final CatDAO catDAO = new CatDAO();
+    private final AccountService accountService = AccountService.getInstance();
+
+    private Player currentPlayer;
 
     @FXML
     private void initialize() {
+        configureItemTable();
+        configureQuantitySpinner();
+        configureSelections();
+        refreshAll();
+    }
+
+    private void configureItemTable() {
         itemNameColumn.setCellValueFactory(data ->
                 new ReadOnlyStringWrapper(data.getValue().getItemName()));
+
         itemTypeColumn.setCellValueFactory(data ->
                 new ReadOnlyStringWrapper(data.getValue().getItemType()));
+
         priceColumn.setCellValueFactory(data ->
                 new ReadOnlyIntegerWrapper(data.getValue().getPrice()).asObject());
+
         stockColumn.setCellValueFactory(data ->
                 new ReadOnlyIntegerWrapper(data.getValue().getStockQuantity()).asObject());
+    }
 
+    private void configureQuantitySpinner() {
         quantitySpinner.setValueFactory(
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 99, 1)
         );
+    }
 
+    private void configureSelections() {
         traderItemsTable.getSelectionModel()
                 .selectedItemProperty()
                 .addListener((observable, oldItem, newItem) -> showItemDetails(newItem));
 
-        coinBalanceLabel.setText("Your Coins: -- (Accounts integration pending)");
-        creatureListView.setPlaceholder(
-                new Label("Creature roster integration is planned for Milestone 2.")
-        );
-        sellCreatureButton.setDisable(true);
-
-        refreshItems();
+        creatureListView.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, oldCat, newCat) -> showCreatureDetails(newCat));
     }
 
     @FXML
+    private void refreshAll() {
+        refreshItems();
+        refreshPlayerAndCreatures();
+    }
+
     private void refreshItems() {
         try {
             traderItemsTable.setItems(FXCollections.observableArrayList(
@@ -108,33 +150,50 @@ public class TraderController {
         }
     }
 
-    @FXML
-    private void buyItem() {
-        TraderItem selectedItem = traderItemsTable.getSelectionModel().getSelectedItem();
+    private void refreshPlayerAndCreatures() {
+        currentPlayer = accountService.getCurrentPlayer().orElse(null);
 
-        if (selectedItem == null) {
-            showAlert(
-                    Alert.AlertType.WARNING,
-                    "No Item Selected",
-                    "Select an item before clicking Buy Item.",
-                    null
-            );
+        if (currentPlayer == null || currentPlayer.getPlayerId() == null) {
+            coinBalanceLabel.setText("Your Coins: --");
+            creatureListView.setItems(FXCollections.observableArrayList());
+            creatureListView.setPlaceholder(new Label("Log in to view your creatures."));
+            sellCreatureButton.setDisable(true);
+            clearCreatureDetails();
             return;
         }
 
-        int quantity = quantitySpinner.getValue();
-        showAlert(
-                Alert.AlertType.INFORMATION,
-                "Milestone 1 Trader",
-                "Trader scene and database connection are working.",
-                "Selected " + quantity + " x " + selectedItem.getItemName()
-                        + ". Purchase logic will be implemented in Milestone 2."
-        );
-    }
+        coinBalanceLabel.setText("Your Coins: " + currentPlayer.getCurrencyBalance());
 
-    @FXML
-    private void returnToMainMenu() {
-        SceneFactory.showMainScene();
+        try {
+            ArrayList<Cat> cats = catDAO.findAll(currentPlayer.getPlayerId());
+
+            ArrayList<Cat> ownedCats = new ArrayList<>();
+
+            for (Cat cat : cats) {
+                if (cat.isPlayerCat()) {
+                    ownedCats.add(cat);
+                }
+            }
+
+            creatureListView.setItems(
+                    FXCollections.observableArrayList(ownedCats)
+            );
+            creatureListView.setPlaceholder(new Label("You do not have any owned creatures yet."));
+            sellCreatureButton.setDisable(true);
+            clearCreatureDetails();
+        } catch (RuntimeException exception) {
+            creatureListView.setItems(FXCollections.observableArrayList());
+            creatureListView.setPlaceholder(new Label("Creatures could not be loaded."));
+            sellCreatureButton.setDisable(true);
+            clearCreatureDetails();
+
+            showAlert(
+                    Alert.AlertType.ERROR,
+                    "Creature Error",
+                    "Your creatures could not be loaded.",
+                    exception.getMessage()
+            );
+        }
     }
 
     private void showItemDetails(TraderItem item) {
@@ -148,6 +207,11 @@ public class TraderController {
         selectedDescriptionLabel.setText(item.getDescription());
         selectedPriceLabel.setText(item.getPrice() + " coins");
         selectedStockLabel.setText(String.valueOf(item.getStockQuantity()));
+
+        int maximum = Math.max(1, item.getStockQuantity());
+        quantitySpinner.setValueFactory(
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, maximum, 1)
+        );
     }
 
     private void clearItemDetails() {
@@ -156,6 +220,89 @@ public class TraderController {
         selectedDescriptionLabel.setText("Select an item from the table.");
         selectedPriceLabel.setText("-");
         selectedStockLabel.setText("-");
+    }
+
+    private void showCreatureDetails(Cat cat) {
+        if (cat == null) {
+            clearCreatureDetails();
+            sellCreatureButton.setDisable(true);
+            return;
+        }
+
+        creatureNameLabel.setText(cat.getName());
+        creatureTypeLabel.setText(cat.getType());
+        creatureHpLabel.setText(cat.getCurrentHp() + "/" + cat.getMaxHp());
+        creatureSaleValueLabel.setText(calculateDisplaySaleValue(cat) + " coins");
+        sellCreatureButton.setDisable(false);
+    }
+
+    private void clearCreatureDetails() {
+        creatureNameLabel.setText("-");
+        creatureTypeLabel.setText("-");
+        creatureHpLabel.setText("-");
+        creatureSaleValueLabel.setText("-");
+    }
+
+    /**
+     * Temporary UI-only value for Issue #10.
+     * Issue #11 should move the final pricing rule into TraderService.
+     */
+    private int calculateDisplaySaleValue(Cat cat) {
+        return cat.getMaxHp();
+    }
+
+    @FXML
+    private void buyItem() {
+        TraderItem selectedItem = traderItemsTable.getSelectionModel().getSelectedItem();
+
+        if (selectedItem == null) {
+            showAlert(
+                    Alert.AlertType.WARNING,
+                    "No Item Selected",
+                    "Select an item first.",
+                    "Choose a potion or catching item from the table."
+            );
+            return;
+        }
+
+        int quantity = quantitySpinner.getValue();
+
+        showAlert(
+                Alert.AlertType.INFORMATION,
+                "Trader",
+                "Item selected",
+                quantity + " x " + selectedItem.getItemName()
+                        + " selected. Purchase logic will be implemented in Issue #11."
+        );
+    }
+
+    @FXML
+    private void sellCreature() {
+        Cat selectedCat = creatureListView.getSelectionModel().getSelectedItem();
+
+        if (selectedCat == null) {
+            showAlert(
+                    Alert.AlertType.WARNING,
+                    "No Creature Selected",
+                    "Select a creature first.",
+                    null
+            );
+            return;
+        }
+
+        showAlert(
+                Alert.AlertType.INFORMATION,
+                "Trader",
+                "Creature selected",
+                selectedCat.getName() + " has a displayed sale value of "
+                        + calculateDisplaySaleValue(selectedCat)
+                        + " coins. Selling logic will be implemented in Issue #11."
+        );
+    }
+
+    @FXML
+    private void returnToMainMenu() {
+        SceneFactory.showMainScene();
     }
 
     private static void showAlert(
@@ -171,4 +318,5 @@ public class TraderController {
         alert.showAndWait();
     }
 }
+
 
