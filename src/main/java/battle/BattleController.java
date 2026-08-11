@@ -1,8 +1,13 @@
 package battle;
 
+import account.AccountService;
+import account.Player;
+import account.PlayerDAO;
+import creature.CatDAO;
 import app.SceneFactory;
 import app.SceneType;
 import creature.Cat;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -86,6 +91,13 @@ public class BattleController {
 
 
   private BattleEngine battleEngine;
+  private Player currentPlayer;
+  private Battle battleRecord;
+
+  private final BattleDAO battleDAO = new BattleDAO();
+  private final PlayerDAO playerDAO = new PlayerDAO();
+  private final CatDAO catDAO = new CatDAO();
+
   private Timeline messageTimeline;
   private String fullMessage = "";
   private int messageCharacterIndex;
@@ -97,6 +109,18 @@ public class BattleController {
       Cat opponentCat,
       BattleType battleType) {
 
+    currentPlayer =
+        AccountService.getInstance()
+            .getCurrentPlayer()
+            .orElse(null);
+
+    if (currentPlayer == null
+        || currentPlayer.getPlayerId() == null) {
+
+      throw new IllegalStateException(
+          "A logged-in player is required to start a battle."
+      );
+    }
 
     battleEngine =
         new BattleEngine(
@@ -104,6 +128,16 @@ public class BattleController {
             opponentCat,
             battleType
         );
+
+    battleRecord =
+        new Battle(
+            currentPlayer.getPlayerId(),
+            battleType.name(),
+            null,
+            BattleResult.IN_PROGRESS.name()
+        );
+
+    battleDAO.insert(battleRecord);
 
     playerNameLabel.setText(playerCat.getName());
     opponentNameLabel.setText(opponentCat.getName());
@@ -119,6 +153,20 @@ public class BattleController {
             + "!",
         null
     );
+  }
+
+  private void persistPlayerCat() {
+    boolean updated =
+        catDAO.update(
+            battleEngine.getPlayerCat(),
+            currentPlayer.getPlayerId()
+        );
+
+    if (!updated) {
+      throw new IllegalStateException(
+          "Player cat health could not be saved."
+      );
+    }
   }
 
   private void loadAbilityButtons() {
@@ -213,13 +261,16 @@ public class BattleController {
     actionMenu.setManaged(false);
 
     if (battleEngine.isBattleWon()) {
+      updateHealthLabels();
+
       showMessage(
           battleEngine.getPlayerCat().getName()
               + " used "
               + abilityDisplayName
               + "!",
-          () -> showMessage("Victory!", null)
+          this::handleVictory
       );
+
       return;
     }
 
@@ -244,7 +295,7 @@ public class BattleController {
               + " used "
               + opponentAbilityName
               + "!",
-          () -> showMessage("You were defeated.", null)
+          this::handleWildDefeat
       );
       return;
     }
@@ -399,7 +450,15 @@ public class BattleController {
     actionMenu.setManaged(false);
 
     if (escaped) {
-      showMessage("You escaped successfully.", () -> SceneFactory.show(SceneType.MAIN)
+      persistPlayerCat();
+
+      battleRecord.setStatus(
+          BattleResult.ESCAPED.name()
+      );
+      battleDAO.update(battleRecord);
+
+      showMessage("You escaped successfully.",
+          () -> SceneFactory.show(SceneType.MAIN)
       );
       return;
     }
@@ -461,6 +520,100 @@ public class BattleController {
   @FXML
   private void handleAbilityFour() {
     useAbility(abilityButton4);
+  }
+
+  private void handleVictory() {
+
+    if (battleEngine.getBattleType() == BattleType.WILD) {
+      handleWildVictory();
+      return;
+    }
+
+    // Arena victory integration will go here later.
+  }
+
+  private void handleWildVictory() {
+    persistPlayerCat();
+
+    int currencyReward = 10;
+
+    currentPlayer.setCurrencyBalance(
+        currentPlayer.getCurrencyBalance()
+            + currencyReward
+    );
+
+    try {
+      boolean updated =
+          playerDAO.update(currentPlayer);
+
+      if (!updated) {
+        throw new IllegalStateException(
+            "Player rewards could not be saved."
+        );
+      }
+
+    } catch (SQLException exception) {
+      throw new IllegalStateException(
+          "Player rewards could not be saved.",
+          exception
+      );
+    }
+
+    battleRecord.setStatus(
+        BattleResult.VICTORY.name()
+    );
+    battleDAO.update(battleRecord);
+
+    showMessage(
+        "Victory! You earned rewards.",
+        () -> SceneFactory.show(SceneType.MAIN)
+    );
+  }
+
+  private void handleWildDefeat() {
+    persistPlayerCat();
+
+    int currentCurrency =
+        currentPlayer.getCurrencyBalance();
+
+    int penalty =
+        currentCurrency / 10;
+
+    int remainingCurrency =
+        currentCurrency - penalty;
+
+    currentPlayer.setCurrencyBalance(
+        remainingCurrency
+    );
+
+    try {
+      boolean updated =
+          playerDAO.update(currentPlayer);
+
+      if (!updated) {
+        throw new IllegalStateException(
+            "Player defeat penalty could not be saved."
+        );
+      }
+
+    } catch (SQLException exception) {
+      throw new IllegalStateException(
+          "Player defeat penalty could not be saved.",
+          exception
+      );
+    }
+
+    battleRecord.setStatus(
+        BattleResult.DEFEAT.name()
+    );
+    battleDAO.update(battleRecord);
+
+    showMessage(
+        "You were defeated. You lost "
+            + penalty
+            + " coins.",
+        () -> SceneFactory.show(SceneType.MAIN)
+    );
   }
 
 }
