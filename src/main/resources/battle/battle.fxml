@@ -177,12 +177,12 @@
         managed="false">
 
         <Label text="Items"/>
-        <Button fx:id="itemButton1" onAction="#handleItemOne"/>
-        <Button fx:id="itemButton2" onAction="#handleItemTwo"/>
-        <Button fx:id="itemButton3" onAction="#handleItemThree"/>
-        <Button fx:id="itemButton4" onAction="#handleItemFour"/>
-        <Button fx:id="itemButton5" onAction="#handleItemFive"/>
-        <Button fx:id="itemButton6" onAction="#handleItemSix"/>
+        <Button fx:id="itemButton1" onAction="#handleItem"/>
+        <Button fx:id="itemButton2" onAction="#handleItem"/>
+        <Button fx:id="itemButton3" onAction="#handleItem"/>
+        <Button fx:id="itemButton4" onAction="#handleItem"/>
+        <Button fx:id="itemButton5" onAction="#handleItem"/>
+        <Button fx:id="itemButton6" onAction="#handleItem"/>
         <Button text="Back" prefWidth="100.0" onAction="#handleBagBack"/>
       </VBox>
     </StackPane>

@@ -1,5 +1,6 @@
 package battle;
 
+import javafx.event.ActionEvent;
 import account.AccountService;
 import account.Player;
 import account.PlayerDAO;
@@ -207,8 +208,125 @@ public class BattleController {
         itemButton6
     };
 
-    // We'll populate these from inventory next.
+    for (Button button : itemButtons) {
+      button.setUserData(null);
+      button.setText("");
+      button.setVisible(false);
+      button.setManaged(false);
+    }
+
+    /*
+    // get player's owned items from Todd
+
+    for (int i = 0; i < buttons.length; i++) {
+
+        if (i < inventoryItems.size()) {
+
+            PlayerInventoryItem item =
+                inventoryItems.get(i);
+
+            buttons[i].setUserData(item);
+
+            buttons[i].setText(
+                item.getItemName()
+                    + " x"
+                    + item.getQuantity()
+            );
+
+            buttons[i].setVisible(true);
+            buttons[i].setManaged(true);
+
+        } else {
+
+            buttons[i].setUserData(null);
+            buttons[i].setVisible(false);
+            buttons[i].setManaged(false);
+        }
+    }
+     */
   }
+
+  /*
+  private void useItem(PlayerInventoryItem item) {
+
+    if (item.isPotion()) {
+        useHealingItem(item);
+        return;
+    }
+
+    if (item.isCatchingItem()) {
+        useCatchingItem(item);
+    }
+}
+
+private void useHealingItem(...) {
+
+    // 1. verify quantity > 0
+
+    // 2. get healing value
+
+    battleEngine.heal(
+        battleEngine.getPlayerCat(),
+        healingAmount
+    );
+
+    // 3. consume one from inventory
+
+    // 4. update HP display
+    updateHealthLabels();
+
+    // 5. close Bag
+    bagMenu.setVisible(false);
+    bagMenu.setManaged(false);
+
+    // 6. show message, then opponent attacks
+    showMessage(
+        battleEngine.getPlayerCat().getName()
+            + " recovered "
+            + healingAmount
+            + " HP!",
+        this::performOpponentTurn
+    );
+}
+
+private void useCatchingItem(...) {
+
+    // 1. verify this is a Wild battle
+
+    if (battleEngine.getBattleType() != BattleType.WILD) {
+        return;
+    }
+
+    // 2. consume one catching item
+
+    // 3. calculate capture success
+
+    if (captured) {
+
+        // Luke roster handoff here
+
+        battleRecord.setStatus("CAPTURED");
+        battleDAO.update(battleRecord);
+
+        persistPlayerCat();
+
+        showMessage(
+            battleEngine.getOpponentCat().getName()
+                + " was captured!",
+            () -> SceneFactory.show(SceneType.MAIN)
+        );
+
+        return;
+    }
+
+    showMessage(
+        "The cat broke free!",
+        this::performOpponentTurn
+    );
+}
+   */
+
+
 
   private String formatAbilityName(String abilityId) {
     String[] words = abilityId.toLowerCase().split("_");
@@ -295,7 +413,7 @@ public class BattleController {
               + " used "
               + opponentAbilityName
               + "!",
-          this::handleWildDefeat
+          this::handleDefeat
       );
       return;
     }
@@ -474,10 +592,28 @@ public class BattleController {
     actionMenu.setVisible(false);
     actionMenu.setManaged(false);
 
+    loadItemButtons();
+
     bagMenu.setVisible(true);
     bagMenu.setManaged(true);
 
     showMessage("Choose an item.", null);
+  }
+
+  @FXML
+  private void handleItem(ActionEvent event) {
+
+    Button button =
+        (Button) event.getSource();
+
+    Object itemData =
+        button.getUserData();
+
+    if (itemData == null) {
+      return;
+    }
+
+    // inventory integration goes here.
   }
 
   @FXML
@@ -568,6 +704,16 @@ public class BattleController {
         "Victory! You earned rewards.",
         () -> SceneFactory.show(SceneType.MAIN)
     );
+  }
+
+  private void handleDefeat() {
+
+    if (battleEngine.getBattleType() == BattleType.WILD) {
+      handleWildDefeat();
+      return;
+    }
+
+    // Arena defeat integration will go here later.
   }
 
   private void handleWildDefeat() {
