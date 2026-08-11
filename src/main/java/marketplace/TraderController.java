@@ -166,8 +166,19 @@ public class TraderController {
 
         try {
             ArrayList<Cat> cats = catDAO.findAll(currentPlayer.getPlayerId());
-            creatureListView.setItems(FXCollections.observableArrayList(cats));
-            creatureListView.setPlaceholder(new Label("You do not have any creatures yet."));
+
+            ArrayList<Cat> ownedCats = new ArrayList<>();
+
+            for (Cat cat : cats) {
+                if (cat.isPlayerCat()) {
+                    ownedCats.add(cat);
+                }
+            }
+
+            creatureListView.setItems(
+                    FXCollections.observableArrayList(ownedCats)
+            );
+            creatureListView.setPlaceholder(new Label("You do not have any owned creatures yet."));
             sellCreatureButton.setDisable(true);
             clearCreatureDetails();
         } catch (RuntimeException exception) {
