@@ -5,11 +5,15 @@ import account.Player;
 import app.SceneFactory;
 import app.SceneType;
 
+
 import java.util.ArrayList;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class StorageController {
 
@@ -28,6 +32,8 @@ public class StorageController {
     @FXML
     private Label statusLabel;
 
+    private ObservableList<Cat> partyCats; // data binding for partycats
+    private ObservableList<Cat> storedCats; // data binding for storagecat
 
     private CatDAO catDAO;
 
@@ -36,6 +42,12 @@ public class StorageController {
 
     @FXML
     private void initialize() {
+
+        partyCats =
+                FXCollections.observableArrayList();
+
+        storedCats =
+                FXCollections.observableArrayList();
 
         catDAO =
                 new CatDAO();
