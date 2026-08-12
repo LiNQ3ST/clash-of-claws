@@ -5,14 +5,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.io.IOException;
+import battle.BattleController;
+import creature.Cat;
 import java.net.URL;
 
 /**
  * Desc go here
  *
- * @author Quinton Nisonger, Sahtra Green, Todd Gonzales
+ * @author Quinton Nisonger, Sahtra Green, Todd Gonzales, Nabiha Fatima
  * @version 0.1.1
  * @since 8/5/2026
  */
@@ -79,6 +79,51 @@ public final class SceneFactory {
 
     public static void showTraderScene() {
         show(SceneType.TRADER);
+    }
+
+    public static void showBattle(
+            Cat playerCat,
+            Cat opponentCat
+    ) {
+        ensureInitialized();
+
+        URL resource = SceneFactory.class.getResource(
+                SceneType.BATTLE.getFxmlPath()
+        );
+
+        if (resource == null) {
+            throw new IllegalStateException(
+                    "Battle FXML resource was not found."
+            );
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(resource);
+
+            Parent root = loader.load();
+
+            BattleController controller = loader.getController();
+
+            controller.startBattle(
+                    playerCat,
+                    opponentCat
+            );
+
+            Scene scene = new Scene(
+                    root,
+                    WINDOW_WIDTH,
+                    WINDOW_HEIGHT
+            );
+
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+        } catch (IOException exception) {
+            throw new IllegalStateException(
+                    "Unable to load battle scene.",
+                    exception
+            );
+        }
     }
 
     private static void ensureInitialized() {
