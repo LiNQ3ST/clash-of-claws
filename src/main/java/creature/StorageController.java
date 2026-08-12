@@ -320,12 +320,23 @@ public class StorageController {
 
         if (moved) {
 
+            /*
+             * Move the Cat between
+             * the observable lists.
+             */
+            partyCats.remove(
+                    partyCat
+            );
+
+            storedCats.add(
+                    partyCat
+            );
+
+
             statusLabel.setText(
                     partyCat.getName()
                             + " was moved to storage."
             );
-
-            loadCats();
 
         } else {
 
@@ -337,8 +348,8 @@ public class StorageController {
 
 
     /**
-     * Checks whether this is the player's
-     * currently selected active cat.
+     * Checks whether the supplied Cat
+     * is the player's active cat.
      */
     private boolean isActiveCat(
             Cat cat
@@ -349,6 +360,7 @@ public class StorageController {
 
 
         if (activeCatId == null) {
+
             return false;
         }
 
@@ -359,6 +371,9 @@ public class StorageController {
     }
 
 
+    /**
+     * Opens the Party screen.
+     */
     @FXML
     private void handleParty() {
 
@@ -368,6 +383,9 @@ public class StorageController {
     }
 
 
+    /**
+     * Returns to the main menu.
+     */
     @FXML
     private void handleBack() {
 
