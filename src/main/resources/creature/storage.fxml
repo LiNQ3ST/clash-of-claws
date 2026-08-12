@@ -51,9 +51,6 @@
 
     <HBox spacing="10">
 
-        <Button text="Swap Selected Cats"
-                onAction="#handleSwap" />
-
         <Button text="Move to Party"
                 onAction="#handleMoveToParty" />
 
