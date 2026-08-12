@@ -5,15 +5,13 @@ import account.Player;
 import app.SceneFactory;
 import app.SceneType;
 
-
-import java.util.ArrayList;
-
-import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+
 
 public class StorageController {
 
@@ -32,9 +30,14 @@ public class StorageController {
     @FXML
     private Label statusLabel;
 
-    private ObservableList<Cat> partyCats; // data binding for partycats
 
-    private ObservableList<Cat> storedCats; // data binding for storagecat
+    /*
+     * These are the lists that the UI watches.
+     */
+    private ObservableList<Cat> partyCats;
+
+    private ObservableList<Cat> storedCats;
+
 
     private CatDAO catDAO;
 
@@ -44,11 +47,56 @@ public class StorageController {
     @FXML
     private void initialize() {
 
+        /*
+         * Create the observable lists.
+         */
         partyCats =
                 FXCollections.observableArrayList();
 
         storedCats =
                 FXCollections.observableArrayList();
+
+
+        /*
+         * Connect each ListView to its list.
+         *
+         * We only need to do this once.
+         */
+        partyListView.setItems(
+                partyCats
+        );
+
+        storageListView.setItems(
+                storedCats
+        );
+
+
+        /*
+         * Bind the labels to the list sizes.
+         *
+         * When a cat is added or removed,
+         * these labels update automatically.
+         */
+        partyCountLabel
+                .textProperty()
+                .bind(
+                        Bindings.concat(
+                                "Party: ",
+                                Bindings.size(partyCats),
+                                " / 4"
+                        )
+                );
+
+
+        storageCountLabel
+                .textProperty()
+                .bind(
+                        Bindings.concat(
+                                "Storage: ",
+                                Bindings.size(storedCats)
+                        )
+                );
+
 
         catDAO =
                 new CatDAO();
@@ -59,15 +107,6 @@ public class StorageController {
                         .getInstance()
                         .getCurrentPlayer()
                         .orElse(null);
-
-
-        partyListView.setItems(
-                partyCats
-        );
-
-        storageListView.setItems(
-                storedCats
-        );
 
 
         if (player == null
@@ -86,15 +125,22 @@ public class StorageController {
 
 
     /**
-     * Reloads both lists from the database.
+     * Loads the party and storage cats
+     * from the database.
      */
     private void loadCats() {
-
-
 
         int playerId =
                 player.getPlayerId();
 
+
+        /*
+         * setAll replaces everything currently
+         * in the ObservableList.
+         *
+         * Because the ListViews watch these lists,
+         * the screen updates automatically.
+         */
         partyCats.setAll(
                 catDAO.findPartyCats(
                         playerId
@@ -141,9 +187,8 @@ public class StorageController {
 
 
         /*
-         * Until active-cat behavior is agreed on with
-         * the account/battle system, don't allow the
-         * active cat to be placed into storage.
+         * Do not allow the active cat
+         * to be placed into storage.
          */
         if (isActiveCat(partyCat)) {
 
@@ -161,6 +206,7 @@ public class StorageController {
                         storedCat,
                         player.getPlayerId()
                 );
+
 
         if (swapped) {
 
@@ -203,8 +249,10 @@ public class StorageController {
         }
     }
 
+
     /**
-     * Moves a stored cat into an empty party slot.
+     * Moves a stored cat into
+     * an empty party slot.
      */
     @FXML
     private void handleMoveToParty() {
@@ -278,9 +326,9 @@ public class StorageController {
     }
 
 
-
     /**
-     * Moves a party cat into storage.
+     * Moves a party cat
+     * into storage.
      */
     @FXML
     private void handleMoveToStorage() {
