@@ -29,9 +29,6 @@ public class ArenaAdminController {
     private TableColumn<Arena, String> townColumn;
 
     @FXML
-    private TableColumn<Arena, Number> opponentColumn;
-
-    @FXML
     private TableColumn<Arena, String> difficultyColumn;
 
     @FXML
@@ -45,9 +42,6 @@ public class ArenaAdminController {
 
     @FXML
     private TextField townNameField;
-
-    @FXML
-    private TextField opponentCatIdField;
 
     @FXML
     private ComboBox<String> difficultyComboBox;
@@ -77,12 +71,6 @@ public class ArenaAdminController {
         townColumn.setCellValueFactory(data ->
                 new SimpleStringProperty(
                         data.getValue().getTownName()
-                )
-        );
-
-        opponentColumn.setCellValueFactory(data ->
-                new SimpleIntegerProperty(
-                        data.getValue().getOpponentCatId()
                 )
         );
 
@@ -243,18 +231,6 @@ public class ArenaAdminController {
             );
         }
 
-        int opponentCatId;
-
-        try {
-            opponentCatId = Integer.parseInt(
-                    opponentCatIdField.getText().trim()
-            );
-        } catch (NumberFormatException exception) {
-            throw new IllegalArgumentException(
-                    "Opponent cat ID must be a whole number."
-            );
-        }
-
         int reward;
 
         try {
@@ -277,7 +253,6 @@ public class ArenaAdminController {
                 arenaId,
                 arenaName,
                 townName,
-                opponentCatId,
                 difficulty,
                 reward,
                 activeCheckBox.isSelected()
@@ -287,10 +262,6 @@ public class ArenaAdminController {
     private void populateForm(Arena arena) {
         arenaNameField.setText(arena.getArenaName());
         townNameField.setText(arena.getTownName());
-
-        opponentCatIdField.setText(
-                String.valueOf(arena.getOpponentCatId())
-        );
 
         difficultyComboBox.setValue(
                 arena.getDifficulty()
@@ -323,7 +294,6 @@ public class ArenaAdminController {
         arenaTable.getSelectionModel().clearSelection();
         arenaNameField.clear();
         townNameField.clear();
-        opponentCatIdField.clear();
         difficultyComboBox.setValue(null);
         rewardField.clear();
         activeCheckBox.setSelected(true);

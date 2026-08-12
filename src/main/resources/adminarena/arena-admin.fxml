@@ -43,27 +43,23 @@
 
                 <TableColumn fx:id="nameColumn"
                              text="Arena Name"
-                             prefWidth="120.0"/>
+                             prefWidth="140.0"/>
 
                 <TableColumn fx:id="townColumn"
                              text="Town"
-                             prefWidth="110.0"/>
-
-                <TableColumn fx:id="opponentColumn"
-                             text="Opponent ID"
-                             prefWidth="100.0"/>
+                             prefWidth="130.0"/>
 
                 <TableColumn fx:id="difficultyColumn"
                              text="Difficulty"
-                             prefWidth="90.0"/>
+                             prefWidth="100.0"/>
 
                 <TableColumn fx:id="rewardColumn"
                              text="Reward"
-                             prefWidth="80.0"/>
+                             prefWidth="90.0"/>
 
                 <TableColumn fx:id="activeColumn"
                              text="Active"
-                             prefWidth="70.0"/>
+                             prefWidth="80.0"/>
             </columns>
 
             <BorderPane.margin>
@@ -94,10 +90,6 @@
             <Label text="Town Name"/>
             <TextField fx:id="townNameField"
                        promptText="Whiskerton"/>
-
-            <Label text="Opponent Cat ID"/>
-            <TextField fx:id="opponentCatIdField"
-                       promptText="1"/>
 
             <Label text="Difficulty"/>
             <ComboBox fx:id="difficultyComboBox"
