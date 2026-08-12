@@ -172,22 +172,22 @@ public class StarterController {
                 formatCat(catThree)
         );
 
-        setCatSprite(
+        CatSpriteRenderer.setSprite(
                 catOneImage,
                 catOne,
-                0
+                CatSpriteRenderer.IDLE
         );
 
-        setCatSprite(
+        CatSpriteRenderer.setSprite(
                 catTwoImage,
                 catTwo,
-                0
+                CatSpriteRenderer.IDLE
         );
 
-        setCatSprite(
+        CatSpriteRenderer.setSprite(
                 catThreeImage,
                 catThree,
-                0
+                CatSpriteRenderer.IDLE
         );
     }
 
@@ -264,44 +264,6 @@ public class StarterController {
 
         return null;
     }
-
-    private void setCatSprite(
-            ImageView imageView,
-            Cat cat,
-            int frameIndex
-    ) {
-
-        Image spriteSheet =
-                new Image(
-                        Objects.requireNonNull(
-                                getClass().getResourceAsStream(
-                                        cat.getSpriteSheetPath()
-                                )
-                        )
-                );
-
-
-        double frameWidth =
-                spriteSheet.getWidth() / 3;
-
-
-        imageView.setImage(
-                spriteSheet
-        );
-
-        imageView.setViewport(
-                new Rectangle2D(
-                        frameWidth * frameIndex,
-                        0,
-                        frameWidth,
-                        spriteSheet.getHeight()
-                )
-        );
-
-        imageView.setPreserveRatio(true);
-        imageView.setSmooth(false);
-    }
-
 
     /**
      * Saves the selected starter cat.
