@@ -33,6 +33,7 @@ public class StorageController {
     private Label statusLabel;
 
     private ObservableList<Cat> partyCats; // data binding for partycats
+
     private ObservableList<Cat> storedCats; // data binding for storagecat
 
     private CatDAO catDAO;
@@ -60,6 +61,15 @@ public class StorageController {
                         .orElse(null);
 
 
+        partyListView.setItems(
+                partyCats
+        );
+
+        storageListView.setItems(
+                storedCats
+        );
+
+
         if (player == null
                 || player.getPlayerId() == null) {
 
@@ -80,57 +90,22 @@ public class StorageController {
      */
     private void loadCats() {
 
-        partyListView
-                .getItems()
-                .clear();
-
-        storageListView
-                .getItems()
-                .clear();
 
 
         int playerId =
                 player.getPlayerId();
 
-
-        ArrayList<Cat> partyCats =
+        partyCats.setAll(
                 catDAO.findPartyCats(
                         playerId
-                );
-
-
-        ArrayList<Cat> storedCats =
-                catDAO.findStoredCats(
-                        playerId
-                );
-
-
-        for (Cat cat : partyCats) {
-
-            partyListView
-                    .getItems()
-                    .add(cat);
-        }
-
-
-        for (Cat cat : storedCats) {
-
-            storageListView
-                    .getItems()
-                    .add(cat);
-        }
-
-
-        partyCountLabel.setText(
-                "Party: "
-                        + partyCats.size()
-                        + " / 4"
+                )
         );
 
 
-        storageCountLabel.setText(
-                "Storage: "
-                        + storedCats.size()
+        storedCats.setAll(
+                catDAO.findStoredCats(
+                        playerId
+                )
         );
     }
 
@@ -187,8 +162,31 @@ public class StorageController {
                         player.getPlayerId()
                 );
 
-
         if (swapped) {
+
+            /*
+             * The DAO already saved the changes
+             * to the database.
+             *
+             * Now update our ObservableLists.
+             */
+            partyCats.remove(
+                    partyCat
+            );
+
+            storedCats.remove(
+                    storedCat
+            );
+
+
+            partyCats.add(
+                    storedCat
+            );
+
+            storedCats.add(
+                    partyCat
+            );
+
 
             statusLabel.setText(
                     partyCat.getName()
@@ -197,8 +195,6 @@ public class StorageController {
                             + "."
             );
 
-            loadCats();
-
         } else {
 
             statusLabel.setText(
@@ -206,7 +202,6 @@ public class StorageController {
             );
         }
     }
-
 
     /**
      * Moves a stored cat into an empty party slot.
