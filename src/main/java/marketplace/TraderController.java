@@ -22,11 +22,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
- * Controller for the simple Trader scene.
+ * Controller for the Trader scene.
  *
- * Issue #10 is UI-focused. The Buy and Sell buttons are present and validate
- * that something is selected, but the actual transaction logic belongs to
- * Issue #11 (TraderService).
+ * Issue #11 connects the existing Issue #10 UI to TraderService so that
+ * purchases and creature sales now change the database.
  */
 public class TraderController {
 
@@ -85,6 +84,7 @@ public class TraderController {
     private Button sellCreatureButton;
 
     private final TraderItemDAO traderItemDAO = new TraderItemDAO();
+    private final TraderService traderService = new TraderService();
     private final CatDAO catDAO = new CatDAO();
     private final AccountService accountService = AccountService.getInstance();
 
@@ -166,7 +166,6 @@ public class TraderController {
 
         try {
             ArrayList<Cat> cats = catDAO.findAll(currentPlayer.getPlayerId());
-
             ArrayList<Cat> ownedCats = new ArrayList<>();
 
             for (Cat cat : cats) {
@@ -175,12 +174,13 @@ public class TraderController {
                 }
             }
 
-            creatureListView.setItems(
-                    FXCollections.observableArrayList(ownedCats)
+            creatureListView.setItems(FXCollections.observableArrayList(ownedCats));
+            creatureListView.setPlaceholder(
+                    new Label("You do not have any owned creatures yet.")
             );
-            creatureListView.setPlaceholder(new Label("You do not have any owned creatures yet."));
             sellCreatureButton.setDisable(true);
             clearCreatureDetails();
+
         } catch (RuntimeException exception) {
             creatureListView.setItems(FXCollections.observableArrayList());
             creatureListView.setPlaceholder(new Label("Creatures could not be loaded."));
@@ -232,7 +232,9 @@ public class TraderController {
         creatureNameLabel.setText(cat.getName());
         creatureTypeLabel.setText(cat.getType());
         creatureHpLabel.setText(cat.getCurrentHp() + "/" + cat.getMaxHp());
-        creatureSaleValueLabel.setText(calculateDisplaySaleValue(cat) + " coins");
+        creatureSaleValueLabel.setText(
+                traderService.calculateSaleValue(cat) + " coins"
+        );
         sellCreatureButton.setDisable(false);
     }
 
@@ -243,17 +245,20 @@ public class TraderController {
         creatureSaleValueLabel.setText("-");
     }
 
-    /**
-     * Temporary UI-only value for Issue #10.
-     * Issue #11 should move the final pricing rule into TraderService.
-     */
-    private int calculateDisplaySaleValue(Cat cat) {
-        return cat.getMaxHp();
-    }
-
     @FXML
     private void buyItem() {
-        TraderItem selectedItem = traderItemsTable.getSelectionModel().getSelectedItem();
+        if (!hasLoggedInPlayer()) {
+            showAlert(
+                    Alert.AlertType.WARNING,
+                    "Login Required",
+                    "Log in before buying an item.",
+                    null
+            );
+            return;
+        }
+
+        TraderItem selectedItem =
+                traderItemsTable.getSelectionModel().getSelectedItem();
 
         if (selectedItem == null) {
             showAlert(
@@ -267,17 +272,55 @@ public class TraderController {
 
         int quantity = quantitySpinner.getValue();
 
-        showAlert(
-                Alert.AlertType.INFORMATION,
-                "Trader",
-                "Item selected",
-                quantity + " x " + selectedItem.getItemName()
-                        + " selected. Purchase logic will be implemented in Issue #11."
-        );
+        try {
+            TraderService.PurchaseResult result = traderService.purchaseItem(
+                    currentPlayer.getPlayerId(),
+                    selectedItem.getItemId(),
+                    quantity
+            );
+
+            currentPlayer.setCurrencyBalance(result.newBalance());
+
+            showAlert(
+                    Alert.AlertType.INFORMATION,
+                    "Purchase Complete",
+                    "Item purchased successfully.",
+                    quantity + " x " + selectedItem.getItemName()
+                            + " purchased for " + result.totalCost() + " coins."
+            );
+
+            refreshAll();
+
+        } catch (IllegalArgumentException | IllegalStateException exception) {
+            showAlert(
+                    Alert.AlertType.WARNING,
+                    "Purchase Failed",
+                    "The purchase could not be completed.",
+                    exception.getMessage()
+            );
+
+        } catch (SQLException exception) {
+            showAlert(
+                    Alert.AlertType.ERROR,
+                    "Database Error",
+                    "The purchase could not be saved.",
+                    exception.getMessage()
+            );
+        }
     }
 
     @FXML
     private void sellCreature() {
+        if (!hasLoggedInPlayer()) {
+            showAlert(
+                    Alert.AlertType.WARNING,
+                    "Login Required",
+                    "Log in before selling a creature.",
+                    null
+            );
+            return;
+        }
+
         Cat selectedCat = creatureListView.getSelectionModel().getSelectedItem();
 
         if (selectedCat == null) {
@@ -290,14 +333,43 @@ public class TraderController {
             return;
         }
 
-        showAlert(
-                Alert.AlertType.INFORMATION,
-                "Trader",
-                "Creature selected",
-                selectedCat.getName() + " has a displayed sale value of "
-                        + calculateDisplaySaleValue(selectedCat)
-                        + " coins. Selling logic will be implemented in Issue #11."
-        );
+        try {
+            TraderService.SaleResult result = traderService.sellCreature(
+                    currentPlayer.getPlayerId(),
+                    selectedCat.getId()
+            );
+
+            currentPlayer.setCurrencyBalance(result.newBalance());
+
+            showAlert(
+                    Alert.AlertType.INFORMATION,
+                    "Creature Sold",
+                    selectedCat.getName() + " was sold successfully.",
+                    "You received " + result.saleValue() + " coins."
+            );
+
+            refreshAll();
+
+        } catch (IllegalArgumentException | IllegalStateException exception) {
+            showAlert(
+                    Alert.AlertType.WARNING,
+                    "Sale Failed",
+                    "The creature could not be sold.",
+                    exception.getMessage()
+            );
+
+        } catch (SQLException exception) {
+            showAlert(
+                    Alert.AlertType.ERROR,
+                    "Database Error",
+                    "The creature sale could not be saved.",
+                    exception.getMessage()
+            );
+        }
+    }
+
+    private boolean hasLoggedInPlayer() {
+        return currentPlayer != null && currentPlayer.getPlayerId() != null;
     }
 
     @FXML
@@ -318,5 +390,6 @@ public class TraderController {
         alert.showAndWait();
     }
 }
+
 
 

@@ -55,3 +55,31 @@ CREATE TABLE IF NOT EXISTS cats (
 -- TODO battle_turn
 -- TODO battle_participant
 -- TODO capture
+
+-- ============================================================================
+-- Marketplace & Trading
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS trader_items (
+    item_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    item_name TEXT NOT NULL,
+    item_type TEXT NOT NULL,
+    description TEXT NOT NULL,
+    price INTEGER NOT NULL CHECK (price >= 0),
+    stock_quantity INTEGER NOT NULL CHECK (stock_quantity >= 0)
+    );
+
+CREATE TABLE IF NOT EXISTS player_inventory (
+    inventory_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    player_id INTEGER NOT NULL,
+    item_id INTEGER NOT NULL,
+    quantity INTEGER NOT NULL DEFAULT 0 CHECK (quantity >= 0),
+
+    UNIQUE (player_id, item_id),
+
+    FOREIGN KEY (player_id)
+    REFERENCES player(player_id),
+
+    FOREIGN KEY (item_id)
+    REFERENCES trader_items(item_id)
+    );
