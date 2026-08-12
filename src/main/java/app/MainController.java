@@ -1,6 +1,7 @@
 package app;
 
 
+import account.AccountService;
 import javafx.fxml.FXML;
 
 public class MainController {
@@ -12,6 +13,7 @@ public class MainController {
 
     @FXML
     private void handleBattle() {
+        AccountService.getInstance().logout();
         SceneFactory.show(SceneType.BATTLE);
     }
 

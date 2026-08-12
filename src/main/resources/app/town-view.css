@@ -1,0 +1,75 @@
+.town-root {
+    -fx-background-image: url("../images/town-view.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+    -fx-background-size: 100% 100%;
+}
+
+.map-hotspot {
+    -fx-background-color: rgba(0, 0, 0, 0.001);
+    -fx-cursor: hand;
+}
+
+.map-action-button {
+    -fx-opacity: 0;
+
+    -fx-background-color: rgba(42, 30, 20, 0.92);
+    -fx-background-radius: 8;
+
+    -fx-border-color: #d7a94b;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+
+    -fx-text-fill: #fff0bd;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+
+    -fx-padding: 10 16 10 16;
+
+    -fx-effect:
+            dropshadow(
+                    gaussian,
+                    rgba(0, 0, 0, 0.45),
+                    8,
+                    0.2,
+                    0,
+                    2
+            );
+}
+
+.map-hotspot:hover .map-action-button {
+    -fx-opacity: 1;
+}
+
+.map-action-button:hover {
+    -fx-background-color: rgba(67, 45, 25, 0.97);
+    -fx-border-color: #f1cf72;
+    -fx-text-fill: white;
+}
+
+.town-hud {
+    -fx-background-color: rgba(35, 26, 20, 0.72);
+    -fx-background-radius: 9;
+    -fx-padding: 5 8 5 8;
+}
+
+.hud-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 6;
+
+    -fx-border-color: rgba(255, 240, 189, 0.45);
+    -fx-border-radius: 6;
+
+    -fx-text-fill: #fff0bd;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+
+    -fx-padding: 6 10 6 10;
+    -fx-cursor: hand;
+}
+
+.hud-button:hover {
+    -fx-background-color: rgba(215, 169, 75, 0.26);
+    -fx-border-color: #f1cf72;
+    -fx-text-fill: white;
+}
