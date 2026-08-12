@@ -225,9 +225,11 @@ public class StorageController {
         }
 
 
-        if (catDAO.countPartyCats(
-                player.getPlayerId()
-        ) >= 4) {
+        /*
+         * We can use the size of our
+         * ObservableList here.
+         */
+        if (partyCats.size() >= 4) {
 
             statusLabel.setText(
                     "The party is already full."
@@ -246,12 +248,26 @@ public class StorageController {
 
         if (moved) {
 
+            /*
+             * Move the Cat between the two
+             * observable lists.
+             *
+             * The ListViews and count labels
+             * will update automatically.
+             */
+            storedCats.remove(
+                    storedCat
+            );
+
+            partyCats.add(
+                    storedCat
+            );
+
+
             statusLabel.setText(
                     storedCat.getName()
                             + " joined the party."
             );
-
-            loadCats();
 
         } else {
 
@@ -260,6 +276,7 @@ public class StorageController {
             );
         }
     }
+
 
 
     /**
