@@ -5,11 +5,13 @@ import account.Player;
 import app.SceneFactory;
 import app.SceneType;
 
-import java.util.ArrayList;
-
+import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+
 
 public class StorageController {
 
@@ -29,6 +31,14 @@ public class StorageController {
     private Label statusLabel;
 
 
+    /*
+     * These are the lists that the UI watches.
+     */
+    private ObservableList<Cat> partyCats;
+
+    private ObservableList<Cat> storedCats;
+
+
     private CatDAO catDAO;
 
     private Player player;
@@ -36,6 +46,57 @@ public class StorageController {
 
     @FXML
     private void initialize() {
+
+        /*
+         * Create the observable lists.
+         */
+        partyCats =
+                FXCollections.observableArrayList();
+
+        storedCats =
+                FXCollections.observableArrayList();
+
+
+        /*
+         * Connect each ListView to its list.
+         *
+         * We only need to do this once.
+         */
+        partyListView.setItems(
+                partyCats
+        );
+
+        storageListView.setItems(
+                storedCats
+        );
+
+
+        /*
+         * Bind the labels to the list sizes.
+         *
+         * When a cat is added or removed,
+         * these labels update automatically.
+         */
+        partyCountLabel
+                .textProperty()
+                .bind(
+                        Bindings.concat(
+                                "Party: ",
+                                Bindings.size(partyCats),
+                                " / 4"
+                        )
+                );
+
+
+        storageCountLabel
+                .textProperty()
+                .bind(
+                        Bindings.concat(
+                                "Storage: ",
+                                Bindings.size(storedCats)
+                        )
+                );
+
 
         catDAO =
                 new CatDAO();
@@ -64,61 +125,33 @@ public class StorageController {
 
 
     /**
-     * Reloads both lists from the database.
+     * Loads the party and storage cats
+     * from the database.
      */
     private void loadCats() {
-
-        partyListView
-                .getItems()
-                .clear();
-
-        storageListView
-                .getItems()
-                .clear();
-
 
         int playerId =
                 player.getPlayerId();
 
 
-        ArrayList<Cat> partyCats =
+        /*
+         * setAll replaces everything currently
+         * in the ObservableList.
+         *
+         * Because the ListViews watch these lists,
+         * the screen updates automatically.
+         */
+        partyCats.setAll(
                 catDAO.findPartyCats(
                         playerId
-                );
-
-
-        ArrayList<Cat> storedCats =
-                catDAO.findStoredCats(
-                        playerId
-                );
-
-
-        for (Cat cat : partyCats) {
-
-            partyListView
-                    .getItems()
-                    .add(cat);
-        }
-
-
-        for (Cat cat : storedCats) {
-
-            storageListView
-                    .getItems()
-                    .add(cat);
-        }
-
-
-        partyCountLabel.setText(
-                "Party: "
-                        + partyCats.size()
-                        + " / 4"
+                )
         );
 
 
-        storageCountLabel.setText(
-                "Storage: "
-                        + storedCats.size()
+        storedCats.setAll(
+                catDAO.findStoredCats(
+                        playerId
+                )
         );
     }
 
@@ -154,9 +187,8 @@ public class StorageController {
 
 
         /*
-         * Until active-cat behavior is agreed on with
-         * the account/battle system, don't allow the
-         * active cat to be placed into storage.
+         * Do not allow the active cat
+         * to be placed into storage.
          */
         if (isActiveCat(partyCat)) {
 
@@ -178,14 +210,36 @@ public class StorageController {
 
         if (swapped) {
 
+            /*
+             * The DAO already saved the changes
+             * to the database.
+             *
+             * Now update our ObservableLists.
+             */
+            partyCats.remove(
+                    partyCat
+            );
+
+            storedCats.remove(
+                    storedCat
+            );
+
+
+            partyCats.add(
+                    storedCat
+            );
+
+            storedCats.add(
+                    partyCat
+            );
+
+
             statusLabel.setText(
                     partyCat.getName()
                             + " was swapped with "
                             + storedCat.getName()
                             + "."
             );
-
-            loadCats();
 
         } else {
 
@@ -197,7 +251,8 @@ public class StorageController {
 
 
     /**
-     * Moves a stored cat into an empty party slot.
+     * Moves a stored cat into
+     * an empty party slot.
      */
     @FXML
     private void handleMoveToParty() {
@@ -218,9 +273,11 @@ public class StorageController {
         }
 
 
-        if (catDAO.countPartyCats(
-                player.getPlayerId()
-        ) >= 4) {
+        /*
+         * We can use the size of our
+         * ObservableList here.
+         */
+        if (partyCats.size() >= 4) {
 
             statusLabel.setText(
                     "The party is already full."
@@ -239,12 +296,26 @@ public class StorageController {
 
         if (moved) {
 
+            /*
+             * Move the Cat between the two
+             * observable lists.
+             *
+             * The ListViews and count labels
+             * will update automatically.
+             */
+            storedCats.remove(
+                    storedCat
+            );
+
+            partyCats.add(
+                    storedCat
+            );
+
+
             statusLabel.setText(
                     storedCat.getName()
                             + " joined the party."
             );
-
-            loadCats();
 
         } else {
 
@@ -256,7 +327,8 @@ public class StorageController {
 
 
     /**
-     * Moves a party cat into storage.
+     * Moves a party cat
+     * into storage.
      */
     @FXML
     private void handleMoveToStorage() {
@@ -296,12 +368,23 @@ public class StorageController {
 
         if (moved) {
 
+            /*
+             * Move the Cat between
+             * the observable lists.
+             */
+            partyCats.remove(
+                    partyCat
+            );
+
+            storedCats.add(
+                    partyCat
+            );
+
+
             statusLabel.setText(
                     partyCat.getName()
                             + " was moved to storage."
             );
-
-            loadCats();
 
         } else {
 
@@ -313,8 +396,8 @@ public class StorageController {
 
 
     /**
-     * Checks whether this is the player's
-     * currently selected active cat.
+     * Checks whether the supplied Cat
+     * is the player's active cat.
      */
     private boolean isActiveCat(
             Cat cat
@@ -325,6 +408,7 @@ public class StorageController {
 
 
         if (activeCatId == null) {
+
             return false;
         }
 
@@ -335,6 +419,9 @@ public class StorageController {
     }
 
 
+    /**
+     * Opens the Party screen.
+     */
     @FXML
     private void handleParty() {
 
@@ -344,6 +431,9 @@ public class StorageController {
     }
 
 
+    /**
+     * Returns to the main menu.
+     */
     @FXML
     private void handleBack() {
 
