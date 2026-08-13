@@ -15,16 +15,20 @@ public class BattleEngine {
 
   private final Cat playerCat;
   private final Cat opponentCat;
+  private final String battleType;
   private boolean battleWon;
   private boolean battleLost;
 
-  public BattleEngine(Cat playerCat, Cat opponentCat) {
+  public BattleEngine(Cat playerCat, Cat opponentCat, String battleType) {
     this.playerCat = playerCat;
     this.opponentCat = opponentCat;
+    this.battleType = battleType;
     this.battleWon = false;
     this.battleLost = false;
   }
-
+  public BattleEngine(Cat playerCat, Cat opponentCat) {
+    this(playerCat, opponentCat, "WILD");
+  }
   public Cat getPlayerCat() {
     return playerCat;
   }
@@ -116,7 +120,13 @@ public class BattleEngine {
 
     return abilityName;
   }
+  public String getBattleType() {
+    return battleType;
+  }
 
+  public boolean isArenaBattle() {
+    return "ARENA".equalsIgnoreCase(battleType);
+  }
 
 }
 

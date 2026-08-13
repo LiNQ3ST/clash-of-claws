@@ -1,13 +1,5 @@
 package adminarena;
 
-/**
- * Player-facing Arena Controller
- *
- * @author Nabiha Fatima
- * @version 0.1.0
- * @since 8/11/26
- */
-
 import account.AccountService;
 import account.Player;
 import app.SceneFactory;
@@ -18,6 +10,7 @@ import creature.CatGenerator;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 
 /**
@@ -68,6 +61,7 @@ public class PlayerArenaController {
     @FXML
     private void initialize() {
         loadCurrentPlayer();
+        challengeButton.setDisable(true);
     }
 
     public void setArena(Arena arena) {
@@ -79,9 +73,18 @@ public class PlayerArenaController {
 
         this.arena = arena;
 
-        arenaNameLabel.setText(arena.getArenaName());
-        townNameLabel.setText(arena.getTownName());
-        difficultyLabel.setText(arena.getDifficulty());
+        arenaNameLabel.setText(
+                arena.getArenaName()
+        );
+
+        townNameLabel.setText(
+                arena.getTownName()
+        );
+
+        difficultyLabel.setText(
+                arena.getDifficulty()
+        );
+
         rewardLabel.setText(
                 arena.getRewardAmount() + " coins"
         );
@@ -153,6 +156,55 @@ public class PlayerArenaController {
     }
 
     @FXML
+    private void handleEasyArena() {
+        setArena(
+                new Arena(
+                        1,
+                        "Whiskerton Claw Pit",
+                        "Whiskerton",
+                        "EASY",
+                        200,
+                        true
+                )
+        );
+    }
+
+    @FXML
+    private void handleMediumArena() {
+        setArena(
+                new Arena(
+                        2,
+                        "Shadow Alley Arena",
+                        "Moonpaw",
+                        "MEDIUM",
+                        400,
+                        true
+                )
+        );
+    }
+
+    @FXML
+    private void handleHardArena() {
+        setArena(
+                new Arena(
+                        3,
+                        "Royal Paw Coliseum",
+                        "Clawchester",
+                        "HARD",
+                        700,
+                        true
+                )
+        );
+    }
+
+    @FXML
+    private void handleBackToTown() {
+        SceneFactory.show(
+                SceneType.MAIN
+        );
+    }
+
+    @FXML
     private void handleChallengeArena() {
         if (arena == null) {
             showError(
@@ -189,20 +241,41 @@ public class PlayerArenaController {
             return;
         }
 
-        Cat opponentCat =
-                catGenerator.generateCat();
+        Alert confirmation =
+                new Alert(
+                        Alert.AlertType.CONFIRMATION
+                );
 
-        SceneFactory.showBattle(
-                activeCat,
-                opponentCat
+        confirmation.setTitle(
+                "Confirm Arena Challenge"
         );
-    }
 
-    @FXML
-    private void handleReturn() {
-        SceneFactory.show(
-                SceneType.MAIN
+        confirmation.setHeaderText(
+                "Challenge "
+                        + arena.getArenaName()
+                        + "?"
         );
+
+        confirmation.setContentText(
+                "You will battle the arena opponent for "
+                        + arena.getRewardAmount()
+                        + " coins."
+        );
+
+        confirmation.showAndWait()
+                .ifPresent(response -> {
+                    if (response == ButtonType.OK) {
+
+                        Cat opponentCat =
+                                catGenerator.generateCat();
+
+                        SceneFactory.showBattle(
+                                activeCat,
+                                opponentCat,
+                                "ARENA"
+                        );
+                    }
+                });
     }
 
     private void updateChallengeButton() {
@@ -213,12 +286,16 @@ public class PlayerArenaController {
                         && activeCat != null
                         && activeCat.getCurrentHp() > 0;
 
-        challengeButton.setDisable(!canChallenge);
+        challengeButton.setDisable(
+                !canChallenge
+        );
     }
 
     private void showError(String message) {
         Alert alert =
-                new Alert(Alert.AlertType.ERROR);
+                new Alert(
+                        Alert.AlertType.ERROR
+                );
 
         alert.setTitle("Arena");
         alert.setHeaderText(null);

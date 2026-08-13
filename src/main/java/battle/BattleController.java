@@ -55,8 +55,8 @@ public class BattleController {
 
   private BattleEngine battleEngine;
 
-  public void startBattle(Cat playerCat, Cat opponentCat) {
-    battleEngine = new BattleEngine(playerCat, opponentCat);
+  public void startBattle(Cat playerCat, Cat opponentCat, String battleType) {
+    battleEngine = new BattleEngine(playerCat, opponentCat, battleType);
 
     playerNameLabel.setText(playerCat.getName());
     opponentNameLabel.setText(opponentCat.getName());

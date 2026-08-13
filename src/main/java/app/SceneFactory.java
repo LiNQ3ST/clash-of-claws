@@ -83,7 +83,8 @@ public final class SceneFactory {
 
     public static void showBattle(
             Cat playerCat,
-            Cat opponentCat
+            Cat opponentCat,
+            String battleType
     ) {
         ensureInitialized();
 
@@ -106,7 +107,8 @@ public final class SceneFactory {
 
             controller.startBattle(
                     playerCat,
-                    opponentCat
+                    opponentCat,
+                    battleType
             );
 
             Scene scene = new Scene(
