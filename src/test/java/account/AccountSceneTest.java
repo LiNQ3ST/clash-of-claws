@@ -67,7 +67,7 @@ public class AccountSceneTest {
             Player testPlayer = playerDAO.findByUsername(testUsername).orElse(null);
 
             if (testPlayer != null) {
-                playerDAO.delete(testPlayer.getPlayerId());
+                playerDAO.deleteAccount(testPlayer.getPlayerId());
             }
         }
     }
