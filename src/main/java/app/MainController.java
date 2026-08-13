@@ -8,12 +8,12 @@ public class MainController {
 
     @FXML
     private void handleBackToLogin() {
+        AccountService.getInstance().logout();
         SceneFactory.show(SceneType.LOGIN);
     }
 
     @FXML
     private void handleBattle() {
-        AccountService.getInstance().logout();
         SceneFactory.show(SceneType.BATTLE);
     }
 
