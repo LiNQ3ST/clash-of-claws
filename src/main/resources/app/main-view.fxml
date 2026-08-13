@@ -86,7 +86,7 @@
                    onMouseClicked="#handleStorage"
                    styleClass="map-hotspot">
 
-            <Button text="Enter Kitty Condo"
+            <Button text="View Storage"
                     mouseTransparent="true"
                     focusTraversable="false"
                     styleClass="map-action-button"/>
@@ -95,10 +95,10 @@
         <!-- Utility navigation -->
         <HBox layoutX="300.0"
               layoutY="548.0"
-              prefWidth="360.0"
+              prefWidth="240.0"
               prefHeight="42.0"
               alignment="CENTER"
-              spacing="8.0"
+              spacing="30"
               styleClass="town-hud">
 
             <Button text="View Party"
