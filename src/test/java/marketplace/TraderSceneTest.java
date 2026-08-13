@@ -21,7 +21,7 @@ import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 import org.testfx.util.WaitForAsyncUtils;
-
+import org.junit.jupiter.api.Tag;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Each test uses its own temporary SQLite database so the UI tests do not
  * modify clash-of-claws.db.
  */
+@Tag("testfx")
 @ExtendWith(ApplicationExtension.class)
 class TraderSceneTest {
 
