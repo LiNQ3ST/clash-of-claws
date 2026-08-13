@@ -1,12 +1,14 @@
 package app;
 
 
+import account.AccountService;
 import javafx.fxml.FXML;
 
 public class MainController {
 
     @FXML
     private void handleBackToLogin() {
+        AccountService.getInstance().logout();
         SceneFactory.show(SceneType.LOGIN);
     }
 

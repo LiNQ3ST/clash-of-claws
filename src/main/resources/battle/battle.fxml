@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
 
 <BorderPane
   xmlns="http://javafx.com/javafx"
@@ -37,17 +38,25 @@
 
       </VBox>
 
-      <!-- Opponent cat placeholder -->
-      <Label
-        layoutX="490.0"
-        layoutY="95.0"
-        text="[Opponent Cat]"/>
+      <!-- Opponent cat image -->
+      <ImageView
+              fx:id="opponentCatImage"
+              layoutX="470.0"
+              layoutY="55.0"
+              fitWidth="160.0"
+              fitHeight="160.0"
+              preserveRatio="true"
+              smooth="false"/>
 
-      <!-- Player cat placeholder -->
-      <Label
-        layoutX="120.0"
-        layoutY="250.0"
-        text="[Player Cat]"/>
+      <!-- Player cat image -->
+      <ImageView
+              fx:id="playerCatImage"
+              layoutX="90.0"
+              layoutY="175.0"
+              fitWidth="160.0"
+              fitHeight="160.0"
+              preserveRatio="true"
+              smooth="false"/>
 
       <!-- Player information -->
       <VBox

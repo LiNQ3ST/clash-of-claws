@@ -1,12 +1,14 @@
 package battle;
 
 import creature.Cat;
+import creature.CatSpriteRenderer;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import java.util.ArrayList;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.image.ImageView;
 
 /**
  * Controls the basic Battle Engine scene.
@@ -25,12 +27,16 @@ public class BattleController {
   private Label playerNameLabel;
   @FXML
   private Label playerHealthLabel;
+  @FXML
+  private ImageView playerCatImage;
 
   // Opponent
   @FXML
   private Label opponentNameLabel;
   @FXML
   private Label opponentHealthLabel;
+  @FXML
+  private ImageView opponentCatImage;
 
   @FXML
   private HBox actionMenu;
@@ -60,6 +66,18 @@ public class BattleController {
 
     playerNameLabel.setText(playerCat.getName());
     opponentNameLabel.setText(opponentCat.getName());
+    CatSpriteRenderer.setSprite(
+            playerCatImage,
+            playerCat,
+            CatSpriteRenderer.BATTLE_PLAYER
+    );
+
+    CatSpriteRenderer.setSprite(
+            opponentCatImage,
+            opponentCat,
+            CatSpriteRenderer.BATTLE_OPPONENT
+    );
+
     updateHealthLabels();
     loadAbilityButtons();
 

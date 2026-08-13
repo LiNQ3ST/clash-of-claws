@@ -38,19 +38,25 @@ Issue if the team later decides to attempt it for extra credit._
 - <Slice 5>: Luke McCormick, Creature Roster: Building Evolutions - out of scope.
 
 ## Code Review Log
-| PR  | Author           | Human reviewer(s)                | AI review (link) | Outcome   |
-|-----|------------------|----------------------------------|------------------|-----------|
-| #27 | Quinton Nisonger | Sahtra Green                     | -                | merged    |
-| #28 | Luke McCormick   | Todd Gonzales                    | -                | merged    |
-| #23 | Sahtra Green     | Quinton Nisonger                 | -                | merged    |
-| #25 | Todd Gonzales    | Luke McCormick                   | -                | merged    |
-| #26 | Sahtra Green     | Nabiha Fatima, Quinton Nisonger  | -                | merged    |
-| #29 | Nabiha Fatima    | Todd Gonzales                    | -                | merged    |
-| #32 | Sahtra Green     | Quinton Nisonger                 | -                | merged    |
-| #33 | Quinton Nisonger | Luke McCormick                   | -                | merged    |
-| #34 | Luke McCormick   | Quinton Nisonger                 | -                | merged    |
-| #35 | Luke McCormick   | Sahtra Green                     | -                | merged    |
-| #36 | Sahtra Green     |                                  | -                | in review |
+| PR | Author           | Human reviewer(s)               | AI review (link) | Outcome   |
+|--|------------------|---------------------------------|------------------|-----------|
+| #27 | Quinton Nisonger | Sahtra Green                    | -                | merged    |
+| #28 | Luke McCormick   | Todd Gonzales                   | -                | merged    |
+| #23 | Sahtra Green     | Quinton Nisonger                | -                | merged    |
+| #25 | Todd Gonzales    | Luke McCormick                  | -                | merged    |
+| #26 | Sahtra Green     | Nabiha Fatima, Quinton Nisonger | -                | merged    |
+| #29 | Nabiha Fatima    | Todd Gonzales                   | -                | merged    |
+| #32 | Sahtra Green     | Quinton Nisonger                | -                | merged    |
+| #33 | Quinton Nisonger | Luke McCormick                  | -                | merged    |
+| #34 | Luke McCormick   | Quinton Nisonger                | -                | merged    |
+| #35 | Luke McCormick   | Sahtra Green                    | -                | merged    |
+| #36 | Sahtra Green     | Luke McCormick, Quinton Nisonger | -                | merged    |
+| #37 | Todd Gonzales    | Quinton Nisonger                | -                | merged    |
+| #38 | Todd Gonzales    | Quinton Nisonger                | -                | merged    |
+| #39 | Luke McCormick   | Sahtra Green                    | -                | merged    |
+| #41 | Nabiha Fatima    | Quinton Nisonger, Sahtra Green  | -                | in review |
+| #42 | Luke McCormick   | Sahtra Green                    | -                | merged    |
+|  | Sahtra Green     |             | -                | in review |
 ## AI Usage Log
 - **AI-drafted tests:** <link to TESTING.md / commit> — per owner.
 - **AI code reviews:** <PR link + adjudication note> — per owner.
