@@ -9,7 +9,6 @@ import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -24,8 +23,7 @@ import java.util.ArrayList;
 /**
  * Controller for the Trader scene.
  *
- * Issue #11 connects the existing Issue #10 UI to TraderService so that
- * purchases and creature sales now change the database.
+ * Issue #12 adds reusable notifications and TestFX-friendly control IDs.
  */
 public class TraderController {
 
@@ -141,8 +139,7 @@ public class TraderController {
             ));
             clearItemDetails();
         } catch (SQLException exception) {
-            showAlert(
-                    Alert.AlertType.ERROR,
+            TraderNotification.error(
                     "Database Error",
                     "The trader items could not be loaded.",
                     exception.getMessage()
@@ -180,15 +177,13 @@ public class TraderController {
             );
             sellCreatureButton.setDisable(true);
             clearCreatureDetails();
-
         } catch (RuntimeException exception) {
             creatureListView.setItems(FXCollections.observableArrayList());
             creatureListView.setPlaceholder(new Label("Creatures could not be loaded."));
             sellCreatureButton.setDisable(true);
             clearCreatureDetails();
 
-            showAlert(
-                    Alert.AlertType.ERROR,
+            TraderNotification.error(
                     "Creature Error",
                     "Your creatures could not be loaded.",
                     exception.getMessage()
@@ -248,8 +243,7 @@ public class TraderController {
     @FXML
     private void buyItem() {
         if (!hasLoggedInPlayer()) {
-            showAlert(
-                    Alert.AlertType.WARNING,
+            TraderNotification.warning(
                     "Login Required",
                     "Log in before buying an item.",
                     null
@@ -261,8 +255,7 @@ public class TraderController {
                 traderItemsTable.getSelectionModel().getSelectedItem();
 
         if (selectedItem == null) {
-            showAlert(
-                    Alert.AlertType.WARNING,
+            TraderNotification.warning(
                     "No Item Selected",
                     "Select an item first.",
                     "Choose a potion or catching item from the table."
@@ -270,7 +263,10 @@ public class TraderController {
             return;
         }
 
-        int quantity = quantitySpinner.getValue();
+        Integer quantity = readRequestedQuantity(selectedItem);
+        if (quantity == null) {
+            return;
+        }
 
         try {
             TraderService.PurchaseResult result = traderService.purchaseItem(
@@ -281,8 +277,7 @@ public class TraderController {
 
             currentPlayer.setCurrencyBalance(result.newBalance());
 
-            showAlert(
-                    Alert.AlertType.INFORMATION,
+            TraderNotification.success(
                     "Purchase Complete",
                     "Item purchased successfully.",
                     quantity + " x " + selectedItem.getItemName()
@@ -290,18 +285,16 @@ public class TraderController {
             );
 
             refreshAll();
-
-        } catch (IllegalArgumentException | IllegalStateException exception) {
-            showAlert(
-                    Alert.AlertType.WARNING,
-                    "Purchase Failed",
-                    "The purchase could not be completed.",
+        } catch (IllegalArgumentException exception) {
+            TraderNotification.warning(
+                    "Invalid Quantity",
+                    "The quantity is not valid.",
                     exception.getMessage()
             );
-
+        } catch (IllegalStateException exception) {
+            showPurchaseRuleAlert(exception.getMessage());
         } catch (SQLException exception) {
-            showAlert(
-                    Alert.AlertType.ERROR,
+            TraderNotification.error(
                     "Database Error",
                     "The purchase could not be saved.",
                     exception.getMessage()
@@ -309,11 +302,75 @@ public class TraderController {
         }
     }
 
+    private Integer readRequestedQuantity(TraderItem selectedItem) {
+        String text = quantitySpinner.getEditor().getText();
+
+        final int quantity;
+        try {
+            quantity = Integer.parseInt(text.trim());
+        } catch (NumberFormatException exception) {
+            TraderNotification.warning(
+                    "Invalid Quantity",
+                    "Enter a whole number greater than zero.",
+                    "Quantity must be a number."
+            );
+            return null;
+        }
+
+        if (quantity <= 0) {
+            TraderNotification.warning(
+                    "Invalid Quantity",
+                    "Enter a whole number greater than zero.",
+                    "Quantity must be greater than zero."
+            );
+            return null;
+        }
+
+        if (quantity > selectedItem.getStockQuantity()) {
+            TraderNotification.warning(
+                    "Insufficient Stock",
+                    "The trader does not have enough stock.",
+                    "Available: " + selectedItem.getStockQuantity()
+            );
+            return null;
+        }
+
+        return quantity;
+    }
+
+    private void showPurchaseRuleAlert(String message) {
+        String safeMessage = message == null ? "The purchase could not be completed." : message;
+        String lower = safeMessage.toLowerCase();
+
+        if (lower.contains("insufficient coins")) {
+            TraderNotification.warning(
+                    "Insufficient Coins",
+                    "You do not have enough coins.",
+                    safeMessage
+            );
+            return;
+        }
+
+        if (lower.contains("not enough stock")) {
+            TraderNotification.warning(
+                    "Insufficient Stock",
+                    "The trader does not have enough stock.",
+                    safeMessage
+            );
+            return;
+        }
+
+        TraderNotification.warning(
+                "Purchase Failed",
+                "The purchase could not be completed.",
+                safeMessage
+        );
+    }
+
     @FXML
     private void sellCreature() {
         if (!hasLoggedInPlayer()) {
-            showAlert(
-                    Alert.AlertType.WARNING,
+            TraderNotification.warning(
                     "Login Required",
                     "Log in before selling a creature.",
                     null
@@ -324,8 +381,7 @@ public class TraderController {
         Cat selectedCat = creatureListView.getSelectionModel().getSelectedItem();
 
         if (selectedCat == null) {
-            showAlert(
-                    Alert.AlertType.WARNING,
+            TraderNotification.warning(
                     "No Creature Selected",
                     "Select a creature first.",
                     null
@@ -341,31 +397,59 @@ public class TraderController {
 
             currentPlayer.setCurrencyBalance(result.newBalance());
 
-            showAlert(
-                    Alert.AlertType.INFORMATION,
+            TraderNotification.success(
                     "Creature Sold",
                     selectedCat.getName() + " was sold successfully.",
                     "You received " + result.saleValue() + " coins."
             );
 
             refreshAll();
-
-        } catch (IllegalArgumentException | IllegalStateException exception) {
-            showAlert(
-                    Alert.AlertType.WARNING,
+        } catch (IllegalArgumentException exception) {
+            TraderNotification.warning(
                     "Sale Failed",
                     "The creature could not be sold.",
                     exception.getMessage()
             );
-
+        } catch (IllegalStateException exception) {
+            showSaleRuleAlert(exception.getMessage());
         } catch (SQLException exception) {
-            showAlert(
-                    Alert.AlertType.ERROR,
+            TraderNotification.error(
                     "Database Error",
                     "The creature sale could not be saved.",
                     exception.getMessage()
             );
         }
+    }
+
+    private void showSaleRuleAlert(String message) {
+        String safeMessage = message == null ? "The creature could not be sold." : message;
+        String lower = safeMessage.toLowerCase();
+
+        if (lower.contains("active creature")) {
+            TraderNotification.warning(
+                    "Active Creature",
+                    "The active creature cannot be sold.",
+                    safeMessage
+            );
+            return;
+        }
+
+        if (lower.contains("do not own")
+                || lower.contains("not owned")
+                || lower.contains("not owned by the player")) {
+            TraderNotification.error(
+                    "Creature Not Owned",
+                    "You cannot sell this creature.",
+                    safeMessage
+            );
+            return;
+        }
+
+        TraderNotification.warning(
+                "Sale Failed",
+                "The creature could not be sold.",
+                safeMessage
+        );
     }
 
     private boolean hasLoggedInPlayer() {
@@ -376,20 +460,8 @@ public class TraderController {
     private void returnToMainMenu() {
         SceneFactory.showMainScene();
     }
-
-    private static void showAlert(
-            Alert.AlertType alertType,
-            String title,
-            String header,
-            String content
-    ) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
 }
+
 
 
 
