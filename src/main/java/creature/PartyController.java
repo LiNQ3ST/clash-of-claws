@@ -8,8 +8,16 @@ import app.SceneType;
 import java.util.ArrayList;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.util.Callback;
+
 
 public class PartyController {
 
@@ -31,22 +39,40 @@ public class PartyController {
     @FXML
     private void initialize() {
 
+        /*
+         * Set up how each Cat looks
+         * inside the Party ListView.
+         */
+        setupCatListView(
+            partyListView
+        );
+
+
+        /*
+         * Give each cat enough vertical
+         * space for its sprite and info.
+         */
+        partyListView.setFixedCellSize(
+            100
+        );
+
+
         catDAO =
-                new CatDAO();
+            new CatDAO();
 
 
         player =
-                AccountService
-                        .getInstance()
-                        .getCurrentPlayer()
-                        .orElse(null);
+            AccountService
+                .getInstance()
+                .getCurrentPlayer()
+                .orElse(null);
 
 
         if (player == null
-                || player.getPlayerId() == null) {
+            || player.getPlayerId() == null) {
 
             statusLabel.setText(
-                    "No player is logged in."
+                "No player is logged in."
             );
 
             return;
@@ -57,46 +83,224 @@ public class PartyController {
     }
 
 
+    /**
+     * Loads the player's current party
+     * from the database.
+     */
     private void loadParty() {
 
         partyListView
-                .getItems()
-                .clear();
+            .getItems()
+            .clear();
 
 
         ArrayList<Cat> partyCats =
-                catDAO.findPartyCats(
-                        player.getPlayerId()
-                );
+            catDAO.findPartyCats(
+                player.getPlayerId()
+            );
 
 
         for (Cat cat : partyCats) {
 
             partyListView
-                    .getItems()
-                    .add(cat);
+                .getItems()
+                .add(
+                    cat
+                );
         }
 
 
         partyCountLabel.setText(
-                "Party: "
-                        + partyCats.size()
-                        + " / 4"
+            "Party: "
+                + partyCats.size()
+                + " / 4"
         );
 
 
         if (partyCats.isEmpty()) {
 
             statusLabel.setText(
-                    "Your party is empty."
+                "Your party is empty."
             );
 
         } else {
 
             statusLabel.setText(
-                    "Select Manage Storage to change your party."
+                "Select Manage Storage to change your party."
             );
         }
+    }
+
+
+    /**
+     * Controls how each Cat appears
+     * inside the Party ListView.
+     */
+    private void setupCatListView(
+        ListView<Cat> listView
+    ) {
+
+        listView.setCellFactory(
+            new Callback<ListView<Cat>, ListCell<Cat>>() {
+
+                @Override
+                public ListCell<Cat> call(
+                    ListView<Cat> catList
+                ) {
+
+                    return new ListCell<Cat>() {
+
+                        @Override
+                        protected void updateItem(
+                            Cat cat,
+                            boolean empty
+                        ) {
+
+                            super.updateItem(
+                                cat,
+                                empty
+                            );
+
+
+                            /*
+                             * Empty ListView rows should
+                             * display nothing.
+                             */
+                            if (empty
+                                || cat == null) {
+
+                                setText(null);
+                                setGraphic(null);
+
+                                return;
+                            }
+
+
+                            /*
+                             * Cat sprite.
+                             */
+                            ImageView catImage =
+                                new ImageView();
+
+
+                            catImage.setFitWidth(
+                                72
+                            );
+
+                            catImage.setFitHeight(
+                                72
+                            );
+
+
+                            CatSpriteRenderer.setSprite(
+                                catImage,
+                                cat,
+                                CatSpriteRenderer.IDLE
+                            );
+
+
+                            /*
+                             * Cat name.
+                             */
+                            Label nameLabel =
+                                new Label(
+                                    cat.getName()
+                                );
+
+
+                            nameLabel.setStyle(
+                                "-fx-font-size: 16px;"
+                                    + "-fx-font-weight: bold;"
+                            );
+
+
+                            /*
+                             * Cat type.
+                             */
+                            Label typeLabel =
+                                new Label(
+                                    cat.getType()
+                                );
+
+
+                            /*
+                             * Current and maximum HP.
+                             */
+                            Label hpLabel =
+                                new Label(
+                                    "HP: "
+                                        + cat.getCurrentHp()
+                                        + " / "
+                                        + cat.getMaxHp()
+                                );
+
+
+                            /*
+                             * Ability list.
+                             */
+                            Label abilityLabel =
+                                new Label(
+                                    "Abilities: "
+                                        + String.join(
+                                        ", ",
+                                        cat.getAbilities()
+                                    )
+                                );
+
+
+                            abilityLabel.setWrapText(
+                                true
+                            );
+
+
+                            /*
+                             * Stack all the cat information
+                             * vertically.
+                             */
+                            VBox information =
+                                new VBox(
+                                    3,
+                                    nameLabel,
+                                    typeLabel,
+                                    hpLabel,
+                                    abilityLabel
+                                );
+
+
+                            /*
+                             * Sprite on the left,
+                             * information on the right.
+                             */
+                            HBox row =
+                                new HBox(
+                                    15,
+                                    catImage,
+                                    information
+                                );
+
+
+                            row.setAlignment(
+                                Pos.CENTER_LEFT
+                            );
+
+
+                            row.setPadding(
+                                new Insets(
+                                    6
+                                )
+                            );
+
+
+                            setText(null);
+
+                            setGraphic(
+                                row
+                            );
+                        }
+                    };
+                }
+            }
+        );
     }
 
 
@@ -104,7 +308,7 @@ public class PartyController {
     private void handleStorage() {
 
         SceneFactory.show(
-                SceneType.STORAGE
+            SceneType.STORAGE
         );
     }
 
@@ -113,7 +317,7 @@ public class PartyController {
     private void handleBack() {
 
         SceneFactory.show(
-                SceneType.MAIN
+            SceneType.MAIN
         );
     }
 }
