@@ -101,6 +101,7 @@ class BattleEngineTest {
 
   @Test
   void exposesBattleParticipants() {
+
     assertSame(
         playerCat,
         wildBattleEngine.getPlayerCat()
@@ -111,18 +112,19 @@ class BattleEngineTest {
         wildBattleEngine.getOpponentCat()
     );
 
-    assertEquals(90, opponentCat.getCurrentHp());
+    assertEquals(100, playerCat.getCurrentHp());
+    assertEquals(100, opponentCat.getCurrentHp());
   }
 
   @Test
   void scratchDamagesOpponentCurrentHp() {
+
     wildBattleEngine.ability(
         playerCat,
         opponentCat,
         "SCRATCH"
     );
 
-    assertEquals(85, opponentCat.getCurrentHp());
     assertEquals(
         90,
         opponentCat.getCurrentHp()
@@ -156,6 +158,7 @@ class BattleEngineTest {
 
   @Test
   void healingPurrHealsAttacker() {
+
     playerCat.setCurrentHp(50);
 
     wildBattleEngine.ability(
@@ -169,12 +172,15 @@ class BattleEngineTest {
         playerCat.getCurrentHp()
     );
 
-    assertEquals(70, playerCat.getCurrentHp());
-    assertEquals(100, opponentCat.getCurrentHp());
+    assertEquals(
+        100,
+        opponentCat.getCurrentHp()
+    );
   }
 
   @Test
   void healDoesNotExceedMaximumHp() {
+
     playerCat.setCurrentHp(95);
 
     wildBattleEngine.heal(
@@ -182,7 +188,10 @@ class BattleEngineTest {
         20
     );
 
-    assertEquals(60, playerCat.getCurrentHp());
+    assertEquals(
+        100,
+        playerCat.getCurrentHp()
+    );
   }
 
   @Test

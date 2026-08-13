@@ -18,7 +18,6 @@ public class MainController {
         SceneFactory.show(SceneType.LOGIN);
     }
 
-    // TODO is this singleton?
   @FXML
   private void handleBattle() {
     Player player =
@@ -30,7 +29,6 @@ public class MainController {
       return;
     }
 
-    /* TODO TBH not sure that this is for
     if (player.getActiveCatId() == null) {
       return;
     }
@@ -58,7 +56,7 @@ public class MainController {
         playerCat,
         opponentCat,
         BattleType.WILD
-    );*/
+    );
   }
 
   @FXML

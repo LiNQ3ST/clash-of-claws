@@ -1,5 +1,6 @@
 package battle;
 
+import java.util.List;
 import javafx.event.ActionEvent;
 import account.AccountService;
 import account.Player;
@@ -22,6 +23,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.scene.image.ImageView;
+import marketplace.TraderItem;
+import marketplace.TraderItemDAO;
+import marketplace.TraderService;
 
 /**
  * Controls the basic Battle Engine scene.
@@ -106,12 +110,59 @@ public class BattleController {
   private final BattleDAO battleDAO = new BattleDAO();
   private final PlayerDAO playerDAO = new PlayerDAO();
   private final CatDAO catDAO = new CatDAO();
+  private final TraderItemDAO traderItemDAO = new TraderItemDAO();
+  private final TraderService traderService = new TraderService();
 
   private Timeline messageTimeline;
   private String fullMessage = "";
   private int messageCharacterIndex;
   private Runnable messageAdvanceAction;
   private boolean messageTyping;
+
+  public BattleController() {
+  }
+
+  public BattleController(Label battleMessageLabel, Label messageAdvanceIndicator,
+      Label playerNameLabel, Label playerHealthLabel, ImageView playerCatImage,
+      Label opponentNameLabel, Label opponentHealthLabel, ImageView opponentCatImage,
+      HBox actionMenu,
+      VBox attackMenu, VBox bagMenu, Button abilityButton1, Button abilityButton2,
+      Button abilityButton3, Button abilityButton4, Button itemButton1, Button itemButton2,
+      Button itemButton3, Button itemButton4, Button itemButton5, Button itemButton6,
+      Button runButton, BattleEngine battleEngine, Player currentPlayer, Battle battleRecord,
+      Timeline messageTimeline, String fullMessage, int messageCharacterIndex,
+      Runnable messageAdvanceAction, boolean messageTyping) {
+    this.battleMessageLabel = battleMessageLabel;
+    this.messageAdvanceIndicator = messageAdvanceIndicator;
+    this.playerNameLabel = playerNameLabel;
+    this.playerHealthLabel = playerHealthLabel;
+    this.playerCatImage = playerCatImage;
+    this.opponentNameLabel = opponentNameLabel;
+    this.opponentHealthLabel = opponentHealthLabel;
+    this.opponentCatImage = opponentCatImage;
+    this.actionMenu = actionMenu;
+    this.attackMenu = attackMenu;
+    this.bagMenu = bagMenu;
+    this.abilityButton1 = abilityButton1;
+    this.abilityButton2 = abilityButton2;
+    this.abilityButton3 = abilityButton3;
+    this.abilityButton4 = abilityButton4;
+    this.itemButton1 = itemButton1;
+    this.itemButton2 = itemButton2;
+    this.itemButton3 = itemButton3;
+    this.itemButton4 = itemButton4;
+    this.itemButton5 = itemButton5;
+    this.itemButton6 = itemButton6;
+    this.runButton = runButton;
+    this.battleEngine = battleEngine;
+    this.currentPlayer = currentPlayer;
+    this.battleRecord = battleRecord;
+    this.messageTimeline = messageTimeline;
+    this.fullMessage = fullMessage;
+    this.messageCharacterIndex = messageCharacterIndex;
+    this.messageAdvanceAction = messageAdvanceAction;
+    this.messageTyping = messageTyping;
+  }
 
   public void startBattle(
       Cat playerCat,
@@ -152,15 +203,15 @@ public class BattleController {
     opponentNameLabel.setText(opponentCat.getName());
 
     CatSpriteRenderer.setSprite(
-            playerCatImage,
-            playerCat,
-            CatSpriteRenderer.BATTLE_PLAYER
+        playerCatImage,
+        playerCat,
+        CatSpriteRenderer.BATTLE_PLAYER
     );
 
     CatSpriteRenderer.setSprite(
-            opponentCatImage,
-            opponentCat,
-            CatSpriteRenderer.BATTLE_OPPONENT
+        opponentCatImage,
+        opponentCat,
+        CatSpriteRenderer.BATTLE_OPPONENT
     );
 
     updateHealthLabels();
@@ -230,40 +281,60 @@ public class BattleController {
 
     for (Button button : itemButtons) {
       button.setUserData(null);
-      button.setText("");
       button.setVisible(false);
       button.setManaged(false);
     }
 
-    /*
-    // get player's owned items from Todd
+    for (Button button : itemButtons) {
+      button.setVisible(false);
+      button.setManaged(false);
+      button.setUserData(null);
+    }
 
-    for (int i = 0; i < buttons.length; i++) {
+    try {
+      List<TraderItem> allItems =
+          traderItemDAO.findAll();
 
-        if (i < inventoryItems.size()) {
+      int buttonIndex = 0;
 
-            PlayerInventoryItem item =
-                inventoryItems.get(i);
+      for (TraderItem item : allItems) {
 
-            buttons[i].setUserData(item);
-
-            buttons[i].setText(
-                item.getItemName()
-                    + " x"
-                    + item.getQuantity()
+        int quantity =
+            traderService.getInventoryQuantity(
+                currentPlayer.getPlayerId(),
+                item.getItemId()
             );
 
-            buttons[i].setVisible(true);
-            buttons[i].setManaged(true);
-
-        } else {
-
-            buttons[i].setUserData(null);
-            buttons[i].setVisible(false);
-            buttons[i].setManaged(false);
+        if (quantity <= 0) {
+          continue;
         }
+
+        if (buttonIndex >= itemButtons.length) {
+          break;
+        }
+
+        Button button =
+            itemButtons[buttonIndex];
+
+        button.setText(
+            item.getItemName()
+                + " x"
+                + quantity
+        );
+
+        button.setUserData(item);
+        button.setVisible(true);
+        button.setManaged(true);
+
+        buttonIndex++;
+      }
+
+    } catch (SQLException exception) {
+      throw new IllegalStateException(
+          "Could not load player inventory.",
+          exception
+      );
     }
-     */
   }
 
   /*
@@ -345,7 +416,6 @@ private void useCatchingItem(...) {
     );
 }
    */
-
 
 
   private String formatAbilityName(String abilityId) {
@@ -623,17 +693,165 @@ private void useCatchingItem(...) {
   @FXML
   private void handleItem(ActionEvent event) {
 
-    Button button =
-        (Button) event.getSource();
+    Button button = (Button) event.getSource();
 
-    Object itemData =
-        button.getUserData();
+    Object itemData = button.getUserData();
 
-    if (itemData == null) {
+    if (!(itemData instanceof TraderItem item)) {
       return;
     }
 
-    // inventory integration goes here.
+    String itemType = item.getItemType();
+
+    if ("HEALING".equalsIgnoreCase(itemType)) {
+      useHealingItem(item);
+      return;
+    }
+
+    if ("CATCHING".equalsIgnoreCase(itemType)) {
+      useCatchingItem(item);
+    }
+  }
+
+  private void useHealingItem(TraderItem item) {
+
+    int healingAmount;
+
+    try {
+      healingAmount = getHealingAmount(item);
+    } catch (IllegalArgumentException exception) {
+      showMessage(
+          "That item cannot be used for healing.",
+          null
+      );
+      return;
+    }
+
+    if (battleEngine.getPlayerCat().getCurrentHp()
+        >= battleEngine.getPlayerCat().getMaxHp()) {
+
+      showMessage(
+          battleEngine.getPlayerCat().getName()
+              + " is already at full health.",
+          null
+      );
+
+      return;
+    }
+
+    try {
+      traderService.consumeInventoryItem(
+          currentPlayer.getPlayerId(),
+          item.getItemId()
+      );
+    } catch (SQLException exception) {
+      throw new IllegalStateException(
+          "Could not consume healing item.",
+          exception
+      );
+    }
+
+    int hpBefore =
+        battleEngine.getPlayerCat().getCurrentHp();
+
+    battleEngine.heal(
+        battleEngine.getPlayerCat(),
+        healingAmount
+    );
+
+    int hpAfter =
+        battleEngine.getPlayerCat().getCurrentHp();
+
+    int actualHealing =
+        hpAfter - hpBefore;
+
+    persistPlayerCat();
+    updateHealthLabels();
+
+    bagMenu.setVisible(false);
+    bagMenu.setManaged(false);
+
+    actionMenu.setVisible(false);
+    actionMenu.setManaged(false);
+
+    showMessage(
+        battleEngine.getPlayerCat().getName()
+            + " recovered "
+            + actualHealing
+            + " HP!",
+        this::performOpponentTurn
+    );
+  }
+
+  private void useCatchingItem(TraderItem item) {
+
+    if (battleEngine.getBattleType() != BattleType.WILD) {
+      showMessage(
+          "Catching items can only be used in Wild battles.",
+          null
+      );
+      return;
+    }
+
+    int catchChance;
+
+    try {
+      catchChance = getCatchChance(item);
+    } catch (IllegalArgumentException exception) {
+      showMessage(
+          "That item cannot be used for catching.",
+          null
+      );
+      return;
+    }
+
+    try {
+      traderService.consumeInventoryItem(
+          currentPlayer.getPlayerId(),
+          item.getItemId()
+      );
+    } catch (SQLException exception) {
+      throw new IllegalStateException(
+          "Could not consume catching item.",
+          exception
+      );
+    }
+
+    bagMenu.setVisible(false);
+    bagMenu.setManaged(false);
+
+    actionMenu.setVisible(false);
+    actionMenu.setManaged(false);
+
+    int roll = (int) (Math.random() * 100);
+
+    boolean captured =
+        isCaptureSuccessful(
+            catchChance,
+            roll
+        );
+
+    if (captured) {
+
+      battleRecord.setStatus("CAPTURED");
+      battleDAO.update(battleRecord);
+
+      persistPlayerCat();
+
+      showMessage(
+          battleEngine.getOpponentCat().getName()
+              + " was captured!",
+          () -> SceneFactory.show(SceneType.MAIN)
+      );
+
+      return;
+    }
+
+    showMessage(
+        battleEngine.getOpponentCat().getName()
+            + " broke free!",
+        this::performOpponentTurn
+    );
   }
 
   @FXML
@@ -781,5 +999,43 @@ private void useCatchingItem(...) {
         () -> SceneFactory.show(SceneType.MAIN)
     );
   }
+
+  private int getHealingAmount(TraderItem item) {
+
+    if ("Small Potion".equalsIgnoreCase(item.getItemName())) {
+      return 10;
+    }
+
+    if ("Large Potion".equalsIgnoreCase(item.getItemName())) {
+      return 20;
+    }
+
+    throw new IllegalArgumentException(
+        "Unknown healing item: " + item.getItemName()
+    );
+  }
+
+  private int getCatchChance(TraderItem item) {
+
+    if ("Basic Catching Item".equalsIgnoreCase(item.getItemName())) {
+      return 50;
+    }
+
+    if ("Strong Catching Item".equalsIgnoreCase(item.getItemName())) {
+      return 75;
+    }
+
+    throw new IllegalArgumentException(
+        "Unknown catching item: " + item.getItemName()
+    );
+  }
+
+  private boolean isCaptureSuccessful(
+      int catchChance,
+      int roll) {
+
+    return roll < catchChance;
+  }
+
 
 }
