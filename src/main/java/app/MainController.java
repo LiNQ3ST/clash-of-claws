@@ -1,15 +1,22 @@
 package app;
 
-
 import account.AccountService;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 
 public class MainController {
 
     @FXML
-    private void handleBackToLogin() {
-        AccountService.getInstance().logout();
-        SceneFactory.show(SceneType.LOGIN);
+    private Label currencyLabel;
+
+    @FXML
+    private void initialize() {
+        refreshCurrency();
+    }
+
+    @FXML
+    private void handleOptions() {
+        SceneFactory.show(SceneType.OPTIONS);
     }
 
     @FXML
@@ -31,12 +38,24 @@ public class MainController {
     private void handleCatDex() {
         SceneFactory.show(SceneType.CAT_DEX);
     }
+
     @FXML
     private void handleParty() {
         SceneFactory.show(SceneType.PARTY);
     }
+
     @FXML
     private void handleStorage() {
         SceneFactory.show(SceneType.STORAGE);
+    }
+
+    private void refreshCurrency() {
+        AccountService.getInstance()
+                .getCurrentPlayer()
+                .ifPresent(player ->
+                        currencyLabel.setText(
+                                "Coins: " + player.getCurrencyBalance()
+                        )
+                );
     }
 }
