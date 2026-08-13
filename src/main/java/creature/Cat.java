@@ -121,6 +121,34 @@ public class Cat {
         this.type = type;
     }
 
+    /**
+     * Returns file path of each cat spritesheet
+     */
+    public String getSpriteSheetPath() {
+
+        return switch (type) {
+            case "Tabby" ->
+                    "/images/tabby-spritesheet.png";
+
+            case "Sphynx" ->
+                    "/images/sphynx-spritesheet.png";
+
+            case "Maine Coon" ->
+                    "/images/mainecoon-spritesheet.png";
+
+            case "Siamese" ->
+                    "/images/siamese-spritesheet.png";
+
+            case "Calico" ->
+                    "/images/calico-spritesheet.png";
+
+            default ->
+                    throw new IllegalStateException(
+                            "No sprite sheet for cat type: " + type
+                    );
+        };
+    }
+
 
     /**
      * Returns the cat's maximum HP.

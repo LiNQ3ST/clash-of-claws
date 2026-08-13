@@ -2,6 +2,7 @@ package app;
 
 
 import account.AccountService;
+import account.AccountService;
 import account.Player;
 import creature.Cat;
 import creature.CatDAO;
@@ -11,11 +12,13 @@ import battle.BattleType;
 
 public class MainController {
 
-  @FXML
-  private void handleBackToLogin() {
-    SceneFactory.show(SceneType.LOGIN);
-  }
+    @FXML
+    private void handleBackToLogin() {
+        AccountService.getInstance().logout();
+        SceneFactory.show(SceneType.LOGIN);
+    }
 
+    // TODO is this singleton?
   @FXML
   private void handleBattle() {
     Player player =
@@ -27,6 +30,7 @@ public class MainController {
       return;
     }
 
+    /* TODO TBH not sure that this is for
     if (player.getActiveCatId() == null) {
       return;
     }
@@ -54,7 +58,7 @@ public class MainController {
         playerCat,
         opponentCat,
         BattleType.WILD
-    );
+    );*/
   }
 
   @FXML

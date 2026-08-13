@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.image.ImageView?>
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="creature.StarterController"
       alignment="CENTER"
@@ -36,6 +37,13 @@
               spacing="10"
               prefWidth="250">
 
+            <ImageView
+                    fx:id="catOneImage"
+                    fitWidth="160"
+                    fitHeight="160"
+                    preserveRatio="true"
+                    smooth="false"/>
+
             <RadioButton
                     fx:id="catOneButton"
                     text="Choose Cat 1"/>
@@ -53,6 +61,13 @@
               spacing="10"
               prefWidth="250">
 
+            <ImageView
+                    fx:id="catTwoImage"
+                    fitWidth="160"
+                    fitHeight="160"
+                    preserveRatio="true"
+                    smooth="false"/>
+
             <RadioButton
                     fx:id="catTwoButton"
                     text="Choose Cat 2"/>
@@ -69,6 +84,13 @@
         <VBox alignment="CENTER"
               spacing="10"
               prefWidth="250">
+
+            <ImageView
+                    fx:id="catThreeImage"
+                    fitWidth="160"
+                    fitHeight="160"
+                    preserveRatio="true"
+                    smooth="false"/>
 
             <RadioButton
                     fx:id="catThreeButton"

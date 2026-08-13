@@ -9,6 +9,9 @@ import app.SceneFactory;
 import app.SceneType;
 import creature.Cat;
 import java.sql.SQLException;
+import creature.CatSpriteRenderer;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import java.util.ArrayList;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -18,6 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import javafx.scene.image.ImageView;
 
 /**
  * Controls the basic Battle Engine scene.
@@ -41,12 +45,16 @@ public class BattleController {
   private Label playerNameLabel;
   @FXML
   private Label playerHealthLabel;
+  @FXML
+  private ImageView playerCatImage;
 
   // Opponent
   @FXML
   private Label opponentNameLabel;
   @FXML
   private Label opponentHealthLabel;
+  @FXML
+  private ImageView opponentCatImage;
 
   @FXML
   private HBox actionMenu;
@@ -142,6 +150,18 @@ public class BattleController {
 
     playerNameLabel.setText(playerCat.getName());
     opponentNameLabel.setText(opponentCat.getName());
+
+    CatSpriteRenderer.setSprite(
+            playerCatImage,
+            playerCat,
+            CatSpriteRenderer.BATTLE_PLAYER
+    );
+
+    CatSpriteRenderer.setSprite(
+            opponentCatImage,
+            opponentCat,
+            CatSpriteRenderer.BATTLE_OPPONENT
+    );
 
     updateHealthLabels();
     loadAbilityButtons();

@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
 
 <BorderPane
   xmlns="http://javafx.com/javafx"
@@ -58,6 +59,15 @@
           GridPane.rowIndex="0">
           <Label text="[Opponent Cat]" style="-fx-font-size: 16px;"/>
         </StackPane>
+      <!-- Opponent cat image -->
+      <ImageView
+              fx:id="opponentCatImage"
+              layoutX="470.0"
+              layoutY="55.0"
+              fitWidth="160.0"
+              fitHeight="160.0"
+              preserveRatio="true"
+              smooth="false"/>
 
         <StackPane
           minWidth="220.0"
@@ -66,6 +76,15 @@
           GridPane.rowIndex="1">
           <Label text="[Player Cat]" style="-fx-font-size: 16px;"/>
         </StackPane>
+      <!-- Player cat image -->
+      <ImageView
+              fx:id="playerCatImage"
+              layoutX="90.0"
+              layoutY="175.0"
+              fitWidth="160.0"
+              fitHeight="160.0"
+              preserveRatio="true"
+              smooth="false"/>
 
         <VBox
           alignment="CENTER_LEFT"
