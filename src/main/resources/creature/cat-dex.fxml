@@ -35,11 +35,6 @@
           text="No cats loaded"
           styleClass="creature-status" />
 
-        <Button text="Back"
-          onAction="#handleBack"
-          prefWidth="140"
-          styleClass="primary-button" />
-
         <HBox alignment="CENTER_LEFT">
 
             <Button text="Back"
