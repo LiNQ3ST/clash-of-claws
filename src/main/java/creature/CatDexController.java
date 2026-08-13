@@ -16,6 +16,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 
 public class CatDexController {
@@ -25,6 +27,10 @@ public class CatDexController {
 
     @FXML
     private Label statusLabel;
+
+    private CatDAO catDAO;
+
+    private Player player;
 
 
     @FXML
@@ -53,7 +59,7 @@ public class CatDexController {
 
 
 
-        Player player =
+      player =
             AccountService
                 .getInstance()
                 .getCurrentPlayer()
@@ -75,7 +81,7 @@ public class CatDexController {
             player.getPlayerId();
 
 
-        CatDAO catDAO =
+        catDAO =
             new CatDAO();
 
 
@@ -109,6 +115,79 @@ public class CatDexController {
             "Cats loaded: "
                 + cats.size()
         );
+    }
+    @FXML
+    private void handleResetCatDex() {
+
+        if (player == null
+            || player.getPlayerId() == null) {
+
+            statusLabel.setText(
+                "No player is logged in."
+            );
+
+            return;
+        }
+
+
+        Alert confirmation =
+            new Alert(
+                Alert.AlertType.CONFIRMATION
+            );
+
+
+        confirmation.setTitle(
+            "Reset CatDex"
+        );
+
+        confirmation.setHeaderText(
+            "Start your CatDex over?"
+        );
+
+        confirmation.setContentText(
+            "This will permanently remove all cats "
+                + "from your CatDex, Party, and Storage. "
+                + "You will then choose a new starter."
+        );
+
+
+        ButtonType result =
+            confirmation
+                .showAndWait()
+                .orElse(
+                    ButtonType.CANCEL
+                );
+
+
+        if (result != ButtonType.OK) {
+
+            return;
+        }
+
+
+        boolean deleted =
+            catDAO.deleteAllForPlayer(
+                player.getPlayerId()
+            );
+
+
+        if (deleted) {
+
+            catListView
+                .getItems()
+                .clear();
+
+
+            SceneFactory.show(
+                SceneType.STARTER
+            );
+
+        } else {
+
+            statusLabel.setText(
+                "CatDex could not be reset."
+            );
+        }
     }
 
 
@@ -269,4 +348,5 @@ public class CatDexController {
             }
         );
     }
+
 }

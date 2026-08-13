@@ -136,3 +136,31 @@
   -fx-font-size: 15px;
   -fx-font-weight: bold;
 }
+
+
+.danger-button {
+  -fx-background-color: #57281f;
+  -fx-background-radius: 4;
+
+  -fx-border-color: #3f2416, #c58a52;
+  -fx-border-width: 1, 2;
+  -fx-border-insets: 0, 1;
+  -fx-border-radius: 5, 4;
+
+  -fx-text-fill: #f4d7a1;
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+
+  -fx-padding: 8 14;
+  -fx-cursor: hand;
+}
+
+.danger-button:hover {
+  -fx-background-color: #79362a;
+  -fx-border-color: #3f2416, #e4b66c;
+}
+
+.danger-button:pressed {
+  -fx-background-color: #421d17;
+  -fx-translate-y: 1;
+}

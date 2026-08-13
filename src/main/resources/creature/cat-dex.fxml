@@ -5,6 +5,8 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <VBox xmlns:fx="http://javafx.com/fxml"
   fx:controller="creature.CatDexController"
   alignment="CENTER"
@@ -38,6 +40,20 @@
           prefWidth="140"
           styleClass="primary-button" />
 
+        <HBox alignment="CENTER_LEFT">
+
+            <Button text="Back"
+              onAction="#handleBack"
+              prefWidth="140"
+              styleClass="primary-button" />
+
+            <Region HBox.hgrow="ALWAYS" />
+
+            <Button text="Reset Game"
+              onAction="#handleResetCatDex"
+              styleClass="danger-button" />
+
+        </HBox>
     </VBox>
 
 </VBox>
