@@ -47,8 +47,13 @@
                   styleClass="option-radio" />
 
                 <Label fx:id="catOneDetails"
+                  prefWidth="220"
+                  maxWidth="220"
+                  minHeight="75"
                   wrapText="true"
-                  textAlignment="CENTER" />
+                  textAlignment="CENTER"
+                  alignment="CENTER"
+                  styleClass="cat-details" />
 
             </VBox>
 
@@ -68,8 +73,13 @@
                   styleClass="option-radio" />
 
                 <Label fx:id="catTwoDetails"
+                  prefWidth="220"
+                  maxWidth="220"
+                  minHeight="75"
                   wrapText="true"
-                  textAlignment="CENTER" />
+                  textAlignment="CENTER"
+                  alignment="CENTER"
+                  styleClass="cat-details"/>
 
             </VBox>
 
@@ -89,8 +99,13 @@
                   styleClass="option-radio" />
 
                 <Label fx:id="catThreeDetails"
+                  prefWidth="220"
+                  maxWidth="220"
+                  minHeight="75"
                   wrapText="true"
-                  textAlignment="CENTER" />
+                  textAlignment="CENTER"
+                  alignment="CENTER"
+                  styleClass="cat-details" />
 
             </VBox>
 
