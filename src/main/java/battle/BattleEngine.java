@@ -40,7 +40,9 @@ public class BattleEngine {
     this.battleType = battleType;
     this.battleResult = BattleResult.IN_PROGRESS;
   }
-
+  public BattleEngine(Cat playerCat, Cat opponentCat) {
+    this(playerCat, opponentCat, "WILD");
+  }
   public Cat getPlayerCat() {
     return playerCat;
   }
@@ -163,12 +165,18 @@ public class BattleEngine {
 
     return abilityName;
   }
+  public String getBattleType() {
+    return battleType;
+  }
 
+  public boolean isArenaBattle() {
+    return "ARENA".equalsIgnoreCase(battleType);
+  }
+  
   private void validateBattleActive() {
     if (isBattleOver()) {
       throw new IllegalStateException(
           "Battle has already ended.");
-    }
   }
 
 }

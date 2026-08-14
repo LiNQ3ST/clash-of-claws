@@ -1,4 +1,3 @@
-
 /**
  * @author Nabiha Fatima
  * @version 0.1.0
@@ -50,7 +49,6 @@ class JdbcArenaDAOTest {
                 null,
                 "Claw Pit",
                 "Whiskerton",
-                1,
                 "MEDIUM",
                 300,
                 true
@@ -98,7 +96,6 @@ class JdbcArenaDAOTest {
                     arena_id INTEGER PRIMARY KEY AUTOINCREMENT,
                     arena_name TEXT NOT NULL,
                     town_name TEXT NOT NULL,
-                    opponent_cat_id INTEGER NOT NULL,
                     difficulty TEXT NOT NULL,
                     reward_amount INTEGER NOT NULL
                         CHECK (reward_amount >= 0),

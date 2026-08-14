@@ -10,7 +10,6 @@ public class Arena {
     private Integer arenaId;
     private String arenaName;
     private String townName;
-    private Integer opponentCatId;
     private String difficulty;
     private int rewardAmount;
     private boolean active;
@@ -22,7 +21,6 @@ public class Arena {
             Integer arenaId,
             String arenaName,
             String townName,
-            Integer opponentCatId,
             String difficulty,
             int rewardAmount,
             boolean active
@@ -30,7 +28,6 @@ public class Arena {
         this.arenaId = arenaId;
         this.arenaName = arenaName;
         this.townName = townName;
-        this.opponentCatId = opponentCatId;
         this.difficulty = difficulty;
         this.rewardAmount = rewardAmount;
         this.active = active;
@@ -58,14 +55,6 @@ public class Arena {
 
     public void setTownName(String townName) {
         this.townName = townName;
-    }
-
-    public Integer getOpponentCatId() {
-        return opponentCatId;
-    }
-
-    public void setOpponentCatId(Integer opponentCatId) {
-        this.opponentCatId = opponentCatId;
     }
 
     public String getDifficulty() {

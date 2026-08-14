@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="adminarena.PlayerArenaController"
+            prefWidth="960.0"
+            prefHeight="600.0">
+
+    <top>
+        <VBox alignment="CENTER" spacing="5.0">
+            <padding>
+                <Insets top="25.0"
+                        right="20.0"
+                        bottom="20.0"
+                        left="20.0"/>
+            </padding>
+
+            <Label fx:id="arenaNameLabel"
+                   text="Arena"
+                   style="-fx-font-size: 30px; -fx-font-weight: bold;"/>
+
+            <Label fx:id="townNameLabel"
+                   text="Town"
+                   style="-fx-font-size: 18px;"/>
+        </VBox>
+    </top>
+
+    <center>
+        <HBox alignment="CENTER" spacing="60.0">
+
+            <padding>
+                <Insets top="30.0"
+                        right="40.0"
+                        bottom="30.0"
+                        left="40.0"/>
+            </padding>
+
+            <VBox spacing="10.0" prefWidth="220.0">
+
+                <Label text="Choose an Arena"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+                <Button text="Whiskerton Claw Pit"
+                        onAction="#handleEasyArena"
+                        prefWidth="220.0"/>
+
+                <Button text="Shadow Alley Arena"
+                        onAction="#handleMediumArena"
+                        prefWidth="220.0"/>
+
+                <Button text="Royal Paw Coliseum"
+                        onAction="#handleHardArena"
+                        prefWidth="220.0"/>
+
+            </VBox>
+
+            <VBox spacing="15.0" prefWidth="220.0">
+
+                <Label text="Arena Information"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+                <Label text="Difficulty"/>
+
+                <Label fx:id="difficultyLabel"
+                       text="--"/>
+
+                <Label text="Reward"/>
+
+                <Label fx:id="rewardLabel"
+                       text="-- coins"/>
+
+            </VBox>
+
+            <VBox spacing="15.0" prefWidth="220.0">
+
+                <Label text="Your Active Cat"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+                <Label fx:id="activeCatNameLabel"
+                       text="No active cat"/>
+
+                <Label fx:id="activeCatHealthLabel"
+                       text="HP: --"/>
+
+            </VBox>
+
+        </HBox>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER" spacing="20.0">
+
+            <padding>
+                <Insets top="20.0"
+                        right="20.0"
+                        bottom="30.0"
+                        left="20.0"/>
+            </padding>
+
+            <Button fx:id="challengeButton"
+                    text="Challenge Arena"
+                    onAction="#handleChallengeArena"
+                    prefWidth="170.0"/>
+
+            <Button text="Back to Town"
+                    onAction="#handleBackToTown"
+                    prefWidth="140.0"/>
+
+        </HBox>
+    </bottom>
+
+</BorderPane>
