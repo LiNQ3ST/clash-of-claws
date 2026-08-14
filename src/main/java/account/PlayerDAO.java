@@ -32,10 +32,9 @@ public class PlayerDAO {
                 username,
                 password_hash,
                 currency_balance,
-                active_cat_id,
-                experience
+                active_cat_id
                 )
-                VALUES (?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?)
                 """;
         try (
                 Connection connection = getConnection();
@@ -53,8 +52,6 @@ public class PlayerDAO {
             } else {
                 statement.setInt(4, player.getActiveCatId());
             }
-
-            statement.setInt(5, player.getExperience());
 
             int affectedRows = statement.executeUpdate();
 
@@ -83,7 +80,6 @@ public class PlayerDAO {
                     password_hash,
                     currency_balance,
                     active_cat_id,
-                    experience,
                     created_at
                 FROM player
                 WHERE player_id = ?
@@ -112,7 +108,6 @@ public class PlayerDAO {
                     password_hash,
                     currency_balance,
                     active_cat_id,
-                    experience,
                     created_at
                 FROM player
                 WHERE username = ?
@@ -145,8 +140,7 @@ public class PlayerDAO {
             SET username = ?,
                 password_hash = ?,
                 currency_balance = ?,
-                active_cat_id = ?,
-                experience = ?
+                active_cat_id = ?
             WHERE player_id = ?
             """;
 
@@ -164,8 +158,7 @@ public class PlayerDAO {
                 statement.setInt(4, player.getActiveCatId());
             }
 
-            statement.setInt(5, player.getExperience());
-            statement.setInt(6, player.getPlayerId());
+            statement.setInt(5, player.getPlayerId());
 
             return statement.executeUpdate() == 1;
         }
@@ -258,7 +251,6 @@ public class PlayerDAO {
                 resultSet.getString("password_hash"),
                 resultSet.getInt("currency_balance"),
                 activeCatId,
-                resultSet.getInt("experience"),
                 createdAt
         );
     }

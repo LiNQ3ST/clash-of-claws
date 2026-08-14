@@ -68,7 +68,7 @@ public class MainController {
 
   @FXML
   private void handleArena() {
-    SceneFactory.show(SceneType.ARENA);
+    SceneFactory.show(SceneType.PLAYER_ARENA);
   }
 
   @FXML
