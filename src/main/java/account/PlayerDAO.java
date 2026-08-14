@@ -1,6 +1,7 @@
 package account;
 
 import database.DatabaseManager;
+import java.sql.DriverManager;
 
 import java.time.LocalDateTime;
 import java.sql.Connection;
@@ -170,19 +171,69 @@ public class PlayerDAO {
         }
     }
 
-    public boolean delete(int playerId) throws SQLException {
-        String sql = """
-            DELETE FROM player
-            WHERE player_id = ?
-            """;
+    public boolean deleteAccount(int playerId) throws SQLException {
+        try (Connection connection = getConnection()) {
+            connection.setAutoCommit(false);
 
-        try (
-                Connection connection = getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)
-        ) {
+            try {
+                deletePlayerData(
+                        connection,
+                        "DELETE FROM player_inventory WHERE player_id = ?",
+                        playerId
+                );
+
+                deletePlayerData(
+                        connection,
+                        "DELETE FROM cats WHERE player_id = ?",
+                        playerId
+                );
+
+                deletePlayerData(
+                        connection,
+                        "DELETE FROM battle WHERE player_id = ?",
+                        playerId
+                );
+
+                String sql = """
+                    DELETE FROM player
+                    WHERE player_id = ?
+                    """;
+
+                boolean deleted;
+
+                try (PreparedStatement statement =
+                             connection.prepareStatement(sql)) {
+
+                    statement.setInt(1, playerId);
+                    deleted = statement.executeUpdate() == 1;
+                }
+
+                if (!deleted) {
+                    connection.rollback();
+                    return false;
+                }
+
+                connection.commit();
+                return true;
+
+            } catch (SQLException exception) {
+                connection.rollback();
+                throw exception;
+            }
+        }
+    }
+
+    private void deletePlayerData(
+            Connection connection,
+            String sql,
+            int playerId
+    ) throws SQLException {
+
+        try (PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
             statement.setInt(1, playerId);
-
-            return statement.executeUpdate() == 1;
+            statement.executeUpdate();
         }
     }
 
@@ -213,13 +264,10 @@ public class PlayerDAO {
     }
 
     private Connection getConnection() throws SQLException {
-        DatabaseManager databaseManager =
-                DatabaseManager.getInstance();
-
         if (databaseUrl == null) {
-            return databaseManager.getConnection();
+            return DatabaseManager.getInstance().getConnection();
         }
 
-        return databaseManager.getConnection(databaseUrl);
+        return DriverManager.getConnection(databaseUrl);
     }
 }

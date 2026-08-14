@@ -1,0 +1,183 @@
+.account-root {
+    -fx-background-image: url("../images/wood-wall.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+    -fx-background-size: 100% 100%;
+    -fx-padding: 32;
+}
+
+/* Parchment poster */
+.poster-panel {
+    -fx-background-color:
+            linear-gradient(
+                    from 0% 0% to 100% 100%,
+                    #fff1c9 0%,
+                    #d1bf8d 55%,
+                    #c2a76f 100%
+            );
+
+    -fx-background-radius: 4;
+    -fx-border-color: #6b4024;
+    -fx-border-width: 4;
+    -fx-border-radius: 4;
+
+    -fx-padding: 24 36 28 36;
+    -fx-spacing: 14;
+
+    -fx-effect:
+            dropshadow(
+                    gaussian,
+                    rgba(33, 20, 12, 0.58),
+                    16,
+                    0.2,
+                    0,
+                    7
+            );
+}
+
+/* Poster typography */
+.poster-title {
+    -fx-text-fill: #5a321d;
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+}
+
+.poster-subtitle {
+    -fx-text-fill: #7b4a2b;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+}
+
+/* Credential rows */
+.credential-form {
+    -fx-alignment: center;
+}
+
+.credential-row {
+    -fx-alignment: center;
+    -fx-spacing: 18;
+}
+
+.credential-label {
+    -fx-min-width: 165;
+    -fx-pref-width: 165;
+    -fx-alignment: center-right;
+    -fx-text-fill: #5a321d;
+    -fx-font-size: 18px;
+    -fx-font-weight: semibold;
+}
+
+.credential-input {
+    -fx-min-width: 420;
+    -fx-pref-width: 420;
+    -fx-pref-height: 46;
+
+    -fx-background-color: #fff8df;
+    -fx-background-radius: 2;
+
+    -fx-border-color: #8a5834;
+    -fx-border-width: 2;
+    -fx-border-radius: 2;
+
+    -fx-text-fill: #432718;
+    -fx-prompt-text-fill: #a47b5d;
+
+    -fx-font-size: 18px;
+
+    -fx-padding: 9 65 9 11;
+}
+
+.credential-input:focused {
+    -fx-background-color: #fffdf0;
+    -fx-border-color: #7d5301;
+    -fx-border-width: 3;
+}
+
+/* Buttons: brown center, gold inner border, dark-brown outer border */
+.primary-button {
+    -fx-background-color: #3a2819;
+    -fx-background-radius: 4;
+
+    -fx-border-color: #3f2416, #d7a94b;
+    -fx-border-width: 1, 2;
+    -fx-border-insets: 0, 1;
+    -fx-border-radius: 5, 4;
+
+    -fx-text-fill: #f1cf72;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+
+    -fx-padding: 9 18 9 18;
+    -fx-cursor: hand;
+}
+
+.primary-button:hover{
+    -fx-background-color: #52351f;
+    -fx-border-color: #3f2416, #ffe08a;
+    -fx-text-fill: #fff0bd;
+}
+
+.primary-button:pressed{
+    -fx-background-color: #2e1d12;
+    -fx-translate-y: 1;
+}
+.primary-button:focused{
+    -fx-border-color: #f6a800;
+    -fx-border-width: 3;
+}
+.secondary-button {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+
+    -fx-text-fill: #6b4024;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+
+    -fx-underline: true;
+
+    -fx-padding: 4 10;
+    -fx-cursor: hand;
+}
+
+.secondary-button:hover{
+    -fx-text-fill: #3f2416;
+}
+.secondary-button:focused{
+    -fx-border-color: #7d5301;
+    -fx-border-width: 3;
+    -fx-text-fill: #3f2416;
+}
+
+/* Error / validation */
+.validation-label {
+    -fx-text-fill: #8b2f22;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-wrap-text: true;
+    -fx-alignment: center;
+}
+
+/* Show-password checkbox */
+.show-password {
+    -fx-text-fill: #6b4024;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 10 0 0;
+}
+
+.show-password .box {
+    -fx-background-color: #fff8df;
+    -fx-border-color: #8a5834;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 2;
+}
+
+.show-password:selected .mark {
+    -fx-background-color: #5a321d;
+}
+.show-password:focused .box{
+    -fx-border-color: #7d5301;
+    -fx-border-width: 3;
+}

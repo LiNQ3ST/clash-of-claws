@@ -1,73 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
 <BorderPane
         xmlns="http://javafx.com/javafx"
         xmlns:fx="http://javafx.com/fxml"
         fx:controller="account.RegisterController"
         prefWidth="960.0"
-        prefHeight="540.0">
+        prefHeight="600.0"
+        stylesheets="@account.css"
+        styleClass="account-root">
 
     <center>
         <VBox
                 alignment="CENTER"
                 spacing="14.0"
-                style="-fx-padding: 12px 40px 18px 40px;">
+                maxWidth="700.0"
+                styleClass="poster-panel">
 
             <Label
                     text="JOIN THE BATTLE"
-                    style="-fx-font-size: 58px;"/>
+                    styleClass="poster-title"/>
 
             <Label
-                    text="Create your player account"
-                    style="-fx-font-size: 34px;"/>
+                    text="CREATE YOUR PLAYER ACCOUNT"
+                    styleClass="poster-subtitle"/>
 
             <fx:include
                     fx:id="credentialFields"
                     source="CredentialFields.fxml"/>
 
-            <HBox
-                    alignment="CENTER"
-                    spacing="18.0">
+            <HBox styleClass="credential-row">
 
                 <Label
-                        text="Confirm:"
-                        style="-fx-font-size: 30px;
-                               -fx-min-width: 185px;
-                               -fx-alignment: center-right;"/>
+                        text="Confirm Password:"
+                        styleClass="credential-label"/>
 
                 <StackPane
-                        prefWidth="510.0"
+                        prefWidth="420.0"
                         prefHeight="46.0">
 
                     <PasswordField
                             fx:id="confirmationField"
-                            prefWidth="510.0"
-                            prefHeight="46.0"
-                            style="-fx-font-size: 22px;
-                   -fx-padding: 0 145 0 8;"/>
+                            styleClass="credential-input"/>
 
                     <TextField
                             fx:id="visibleConfirmationField"
                             visible="false"
                             managed="false"
-                            prefWidth="510.0"
-                            prefHeight="46.0"
-                            style="-fx-font-size: 22px;
-                   -fx-padding: 0 145 0 8;"/>
+                            styleClass="credential-input"/>
 
                     <CheckBox
                             fx:id="showConfirmationCheckBox"
-                            text="Show Password"
+                            text="Show"
                             onAction="#handleShowConfirmation"
                             StackPane.alignment="CENTER_RIGHT"
-                            style="-fx-font-size: 14px;
-                   -fx-padding: 0 10 0 0;"/>
+                            styleClass="show-password"/>
+
                 </StackPane>
             </HBox>
 
@@ -75,21 +72,21 @@
                     fx:id="errorLabel"
                     minHeight="24.0"
                     wrapText="true"
-                    style="-fx-font-size: 18px;-fx-text-fill: #9b0303;"/>
+                    styleClass="validation-label"/>
 
             <Button
-                    text="Create Account"
+                    text="CREATE ACCOUNT"
                     prefWidth="220.0"
                     prefHeight="46.0"
                     onAction="#handleCreateAccount"
-                    style="-fx-font-size: 22px;"/>
+                    styleClass="primary-button"/>
 
             <Button
-                    text="Back"
-                    prefWidth="185.0"
+                    text="BACK TO LOGIN"
+                    prefWidth="220.0"
                     prefHeight="46.0"
                     onAction="#handleBack"
-                    style="-fx-font-size: 22px;"/>
+                    styleClass="secondary-button"/>
 
         </VBox>
     </center>

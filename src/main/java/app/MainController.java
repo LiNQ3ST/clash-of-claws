@@ -1,19 +1,32 @@
 package app;
 
-
 import account.AccountService;
 import account.Player;
+import battle.BattleType;
 import creature.Cat;
 import creature.CatDAO;
 import creature.CatGenerator;
 import javafx.fxml.FXML;
-import battle.BattleType;
+import javafx.scene.control.Label;
 
 public class MainController {
 
   @FXML
+  private Label currencyLabel;
+
+  @FXML
+  private void initialize() {
+    refreshCurrency();
+  }
+
+  @FXML
   private void handleBackToLogin() {
     SceneFactory.show(SceneType.LOGIN);
+  }
+
+  @FXML
+  private void handleOptions() {
+    SceneFactory.show(SceneType.OPTIONS);
   }
 
   @FXML
@@ -39,11 +52,7 @@ public class MainController {
             player.getPlayerId()
         );
 
-    if (playerCat == null) {
-      return;
-    }
-
-    if (playerCat.getCurrentHp() <= 0) {
+    if (playerCat == null || playerCat.getCurrentHp() <= 0) {
       return;
     }
 
@@ -80,5 +89,15 @@ public class MainController {
   @FXML
   private void handleStorage() {
     SceneFactory.show(SceneType.STORAGE);
+  }
+
+  private void refreshCurrency() {
+    AccountService.getInstance()
+        .getCurrentPlayer()
+        .ifPresent(player ->
+            currencyLabel.setText(
+                "Coins: " + player.getCurrencyBalance()
+            )
+        );
   }
 }

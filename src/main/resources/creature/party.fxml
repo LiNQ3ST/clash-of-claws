@@ -7,33 +7,46 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="creature.PartyController"
-      spacing="15"
-      prefWidth="900"
-      prefHeight="550"
-      style="-fx-padding: 20;">
+  fx:controller="creature.PartyController"
+  alignment="CENTER"
+  prefWidth="900"
+  prefHeight="550"
+  styleClass="creature-root"
+  stylesheets="@creature.css">
 
-    <Label text="Current Party"
-           style="-fx-font-size: 28px; -fx-font-weight: bold;" />
+    <VBox spacing="14"
+      maxWidth="840"
+      maxHeight="500"
+      styleClass="creature-panel">
 
-    <Label fx:id="partyCountLabel"
-           text="Party: 0 / 4"
-           style="-fx-font-size: 18px;" />
+        <Label text="Current Party"
+          styleClass="creature-title" />
 
-    <ListView fx:id="partyListView"
-              VBox.vgrow="ALWAYS" />
+        <Label fx:id="partyCountLabel"
+          text="Party: 0 / 4"
+          styleClass="section-title" />
 
-    <Label fx:id="statusLabel"
-           text="Loading party..." />
+        <ListView fx:id="partyListView"
+          fixedCellSize="100"
+          styleClass="cat-list"
+          VBox.vgrow="ALWAYS" />
 
-    <HBox spacing="10">
+        <Label fx:id="statusLabel"
+          text="Loading party..."
+          styleClass="creature-status" />
 
-        <Button text="Manage Storage"
-                onAction="#handleStorage" />
+        <HBox spacing="10">
 
-        <Button text="Back to Town"
-                onAction="#handleBack" />
+            <Button text="Manage Storage"
+              onAction="#handleStorage"
+              styleClass="primary-button" />
 
-    </HBox>
+            <Button text="Back to Town"
+              onAction="#handleBack"
+              styleClass="primary-button" />
+
+        </HBox>
+
+    </VBox>
 
 </VBox>

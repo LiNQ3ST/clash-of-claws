@@ -1,0 +1,219 @@
+.trader-root {
+    -fx-background-image: url("../images/wood-wall.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+    -fx-background-size: 100% 100%;
+    -fx-padding: 28;
+}
+
+.trader-panel {
+    -fx-background-color:
+            linear-gradient(
+                    from 0% 0% to 100% 100%,
+                    #fff1c9 0%,
+                    #d1bf8d 55%,
+                    #c2a76f 100%
+            );
+    -fx-background-radius: 4;
+    -fx-border-color: #6b4024;
+    -fx-border-width: 4;
+    -fx-border-radius: 4;
+    -fx-padding: 20;
+    -fx-effect:
+            dropshadow(
+                    gaussian,
+                    rgba(33, 20, 12, 0.58),
+                    16,
+                    0.2,
+                    0,
+                    7
+            );
+}
+
+.trader-title {
+    -fx-text-fill: #5a321d;
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+}
+
+.trader-subtitle {
+    -fx-text-fill: #432718;
+    -fx-font-size: 14px;
+}
+
+.section-title {
+    -fx-text-fill: #5a321d;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.coin-badge {
+    -fx-background-color: #3a2819;
+    -fx-background-radius: 4;
+    -fx-border-color: #3f2416, #d7a94b;
+    -fx-border-width: 1, 2;
+    -fx-border-insets: 0, 1;
+    -fx-border-radius: 5, 4;
+    -fx-text-fill: #f1cf72;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 14;
+}
+
+/* Trader inventory table */
+.trader-table {
+    -fx-background-color: #fff8df;
+    -fx-border-color: #8a5834;
+    -fx-border-width: 2;
+    -fx-border-radius: 3;
+    -fx-padding: 0;
+}
+
+.trader-table .column-header-background {
+    -fx-background-color: #3a2819;
+}
+
+.trader-table .column-header,
+.trader-table .filler {
+    -fx-background-color: #3a2819;
+    -fx-border-color: transparent #d7a94b #d7a94b transparent;
+    -fx-border-width: 0 1 1 0;
+    -fx-size: 34;
+}
+
+.trader-table .column-header .label {
+    -fx-text-fill: #f1cf72;
+    -fx-font-weight: bold;
+}
+
+.trader-table .table-row-cell {
+    -fx-background-color: #fff8df;
+    -fx-border-color: transparent transparent #d1bf8d transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.trader-table .table-row-cell:filled:selected,
+.trader-table .table-row-cell:filled:selected:focused {
+    -fx-background-color: #d7c18a;
+}
+
+.trader-table .table-cell {
+    -fx-text-fill: #432718;
+    -fx-padding: 7 8;
+    -fx-border-color: transparent;
+}
+
+.trader-table .placeholder .label {
+    -fx-text-fill: #5a321d;
+}
+
+/* Creature list matches the Cat Storage / CatDex lists. */
+.trader-list {
+    -fx-background-color: #fff8df;
+    -fx-border-color: #8a5834;
+    -fx-border-width: 2;
+    -fx-border-radius: 3;
+    -fx-padding: 5;
+}
+
+.trader-list .list-cell {
+    -fx-background-color: #fff8df;
+    -fx-text-fill: #432718;
+    -fx-border-color: transparent transparent #c2a76f transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 8;
+}
+
+.trader-list .list-cell:empty {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+
+.trader-list .list-cell:selected {
+    -fx-background-color: #d7c18a;
+}
+
+.trader-list .placeholder .label {
+    -fx-text-fill: #5a321d;
+    -fx-font-size: 14px;
+}
+
+/* Details area under each list/table. */
+.detail-card {
+    -fx-background-color: rgba(255, 248, 223, 0.58);
+    -fx-background-radius: 3;
+    -fx-border-color: #9a6842;
+    -fx-border-width: 1;
+    -fx-border-radius: 3;
+    -fx-padding: 10;
+}
+
+.detail-title {
+    -fx-text-fill: #5a321d;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.detail-label {
+    -fx-text-fill: #5a321d;
+    -fx-font-weight: bold;
+}
+
+.detail-value {
+    -fx-text-fill: #432718;
+}
+
+/* Quantity input */
+.quantity-spinner {
+    -fx-background-color: #fff8df;
+}
+
+.quantity-spinner .text-field {
+    -fx-background-color: #fff8df;
+    -fx-text-fill: #432718;
+    -fx-border-color: #8a5834;
+    -fx-border-width: 1;
+}
+
+.quantity-spinner .increment-arrow-button,
+.quantity-spinner .decrement-arrow-button {
+    -fx-background-color: #d7c18a;
+    -fx-border-color: #8a5834;
+    -fx-border-width: 0 0 0 1;
+}
+
+.quantity-spinner .increment-arrow,
+.quantity-spinner .decrement-arrow {
+    -fx-background-color: #5a321d;
+}
+
+/* Buttons match creature.css exactly. */
+.primary-button {
+    -fx-background-color: #3a2819;
+    -fx-background-radius: 4;
+    -fx-border-color: #3f2416, #d7a94b;
+    -fx-border-width: 1, 2;
+    -fx-border-insets: 0, 1;
+    -fx-border-radius: 5, 4;
+    -fx-text-fill: #f1cf72;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16 8 16;
+    -fx-cursor: hand;
+}
+
+.primary-button:hover {
+    -fx-background-color: #52351f;
+    -fx-border-color: #3f2416, #ffe08a;
+    -fx-text-fill: #fff0bd;
+}
+
+.primary-button:pressed {
+    -fx-background-color: #2e1d12;
+    -fx-translate-y: 1;
+}
+
+.primary-button:disabled {
+    -fx-opacity: 0.48;
+    -fx-cursor: default;
+}
