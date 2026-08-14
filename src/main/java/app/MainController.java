@@ -1,13 +1,12 @@
 package app;
 
 import account.AccountService;
-import account.AccountService;
 import account.Player;
+import battle.BattleType;
 import creature.Cat;
 import creature.CatDAO;
 import creature.CatGenerator;
 import javafx.fxml.FXML;
-import battle.BattleType;
 import javafx.scene.control.Label;
 
 public class MainController {
@@ -18,6 +17,11 @@ public class MainController {
   @FXML
   private void initialize() {
     refreshCurrency();
+  }
+
+  @FXML
+  private void handleBackToLogin() {
+    SceneFactory.show(SceneType.LOGIN);
   }
 
   @FXML
@@ -48,11 +52,7 @@ public class MainController {
             player.getPlayerId()
         );
 
-    if (playerCat == null) {
-      return;
-    }
-
-    if (playerCat.getCurrentHp() <= 0) {
+    if (playerCat == null || playerCat.getCurrentHp() <= 0) {
       return;
     }
 
@@ -68,27 +68,12 @@ public class MainController {
 
   @FXML
   private void handleArena() {
-    SceneFactory.show(SceneType.ARENA);
+    SceneFactory.show(SceneType.PLAYER_ARENA);
   }
 
   @FXML
   private void handleTrader() {
     SceneFactory.show(SceneType.TRADER);
-  }
-
-  @FXML
-  private void handleCatDex() {
-    SceneFactory.show(SceneType.CAT_DEX);
-  }
-
-  @FXML
-  private void handleParty() {
-    SceneFactory.show(SceneType.PARTY);
-  }
-
-  @FXML
-  private void handleStorage() {
-    SceneFactory.show(SceneType.STORAGE);
   }
 
   @FXML

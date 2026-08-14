@@ -1,34 +1,34 @@
 package battle;
 
-import java.util.List;
-import javafx.event.ActionEvent;
 import account.AccountService;
 import account.Player;
 import account.PlayerDAO;
-import creature.CatDAO;
+import adminarena.Arena;
 import app.SceneFactory;
 import app.SceneType;
 import creature.Cat;
-import java.sql.SQLException;
+import creature.CatDAO;
+import creature.CatGenerator;
 import creature.CatSpriteRenderer;
-import javafx.fxml.FXML;
-import javafx.scene.control.Label;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-import javafx.scene.image.ImageView;
 import marketplace.TraderItem;
 import marketplace.TraderItemDAO;
 import marketplace.TraderService;
 
 /**
- * Controls the basic Battle Engine scene.
+ * Controls the shared Wild and Arena battle scene.
  *
  * @author Quinton Nisonger
  * @version 0.1.0
@@ -37,6 +37,7 @@ import marketplace.TraderService;
 public class BattleController {
 
   private static final Duration LETTER_DELAY = Duration.millis(28);
+  private static final int WILD_VICTORY_REWARD = 10;
 
   @FXML
   private Label battleMessageLabel;
@@ -44,19 +45,21 @@ public class BattleController {
   @FXML
   private Label messageAdvanceIndicator;
 
-  // Player
   @FXML
   private Label playerNameLabel;
+
   @FXML
   private Label playerHealthLabel;
+
   @FXML
   private ImageView playerCatImage;
 
-  // Opponent
   @FXML
   private Label opponentNameLabel;
+
   @FXML
   private Label opponentHealthLabel;
+
   @FXML
   private ImageView opponentCatImage;
 
@@ -68,6 +71,9 @@ public class BattleController {
 
   @FXML
   private VBox bagMenu;
+
+  @FXML
+  private VBox wildVictoryMenu;
 
   @FXML
   private Button abilityButton1;
@@ -102,6 +108,8 @@ public class BattleController {
   @FXML
   private Button runButton;
 
+  @FXML
+  private Button itemActionButton;
 
   private BattleEngine battleEngine;
   private Player currentPlayer;
@@ -118,50 +126,10 @@ public class BattleController {
   private int messageCharacterIndex;
   private Runnable messageAdvanceAction;
   private boolean messageTyping;
+  private boolean continuingWilds;
+  private Arena currentArena;
 
   public BattleController() {
-  }
-
-  public BattleController(Label battleMessageLabel, Label messageAdvanceIndicator,
-      Label playerNameLabel, Label playerHealthLabel, ImageView playerCatImage,
-      Label opponentNameLabel, Label opponentHealthLabel, ImageView opponentCatImage,
-      HBox actionMenu,
-      VBox attackMenu, VBox bagMenu, Button abilityButton1, Button abilityButton2,
-      Button abilityButton3, Button abilityButton4, Button itemButton1, Button itemButton2,
-      Button itemButton3, Button itemButton4, Button itemButton5, Button itemButton6,
-      Button runButton, BattleEngine battleEngine, Player currentPlayer, Battle battleRecord,
-      Timeline messageTimeline, String fullMessage, int messageCharacterIndex,
-      Runnable messageAdvanceAction, boolean messageTyping) {
-    this.battleMessageLabel = battleMessageLabel;
-    this.messageAdvanceIndicator = messageAdvanceIndicator;
-    this.playerNameLabel = playerNameLabel;
-    this.playerHealthLabel = playerHealthLabel;
-    this.playerCatImage = playerCatImage;
-    this.opponentNameLabel = opponentNameLabel;
-    this.opponentHealthLabel = opponentHealthLabel;
-    this.opponentCatImage = opponentCatImage;
-    this.actionMenu = actionMenu;
-    this.attackMenu = attackMenu;
-    this.bagMenu = bagMenu;
-    this.abilityButton1 = abilityButton1;
-    this.abilityButton2 = abilityButton2;
-    this.abilityButton3 = abilityButton3;
-    this.abilityButton4 = abilityButton4;
-    this.itemButton1 = itemButton1;
-    this.itemButton2 = itemButton2;
-    this.itemButton3 = itemButton3;
-    this.itemButton4 = itemButton4;
-    this.itemButton5 = itemButton5;
-    this.itemButton6 = itemButton6;
-    this.runButton = runButton;
-    this.battleEngine = battleEngine;
-    this.currentPlayer = currentPlayer;
-    this.battleRecord = battleRecord;
-    this.messageTimeline = messageTimeline;
-    this.fullMessage = fullMessage;
-    this.messageCharacterIndex = messageCharacterIndex;
-    this.messageAdvanceAction = messageAdvanceAction;
-    this.messageTyping = messageTyping;
   }
 
   public void startBattle(
@@ -169,20 +137,41 @@ public class BattleController {
       Cat opponentCat,
       BattleType battleType) {
 
+    startBattle(
+        playerCat,
+        opponentCat,
+        battleType,
+        null
+    );
+  }
+
+  public void startBattle(
+      Cat playerCat,
+      Cat opponentCat,
+      BattleType battleType,
+      Arena arena) {
+
     currentPlayer =
         AccountService.getInstance()
             .getCurrentPlayer()
             .orElse(null);
 
-  public void startBattle(Cat playerCat, Cat opponentCat, String battleType) {
-    battleEngine = new BattleEngine(playerCat, opponentCat, battleType);
     if (currentPlayer == null
         || currentPlayer.getPlayerId() == null) {
-
       throw new IllegalStateException(
           "A logged-in player is required to start a battle."
       );
     }
+
+    if (battleType == BattleType.ARENA && arena == null) {
+      throw new IllegalArgumentException(
+          "Arena battles require an Arena."
+      );
+    }
+
+    currentArena = arena;
+
+    hideAllMenus();
 
     battleEngine =
         new BattleEngine(
@@ -191,11 +180,16 @@ public class BattleController {
             battleType
         );
 
+    Integer arenaId =
+        arena == null
+            ? null
+            : arena.getArenaId();
+
     battleRecord =
         new Battle(
             currentPlayer.getPlayerId(),
             battleType.name(),
-            null,
+            arenaId,
             BattleResult.IN_PROGRESS.name()
         );
 
@@ -220,12 +214,35 @@ public class BattleController {
     loadAbilityButtons();
     configureBattleActions();
 
+    if (battleType == BattleType.WILD) {
+      showWildOpeningMessage(opponentCat);
+      return;
+    }
+
     showMessage(
         playerCat.getName()
             + " is battling "
             + opponentCat.getName()
             + "!",
-        null
+        this::showActionMenu
+    );
+  }
+
+  private void showWildOpeningMessage(Cat opponentCat) {
+    String openingMessage = continuingWilds
+        ? "You continue deeper into the Wilds..."
+        : "Welcome to the Wilds!";
+
+    continuingWilds = false;
+
+    showMessage(
+        openingMessage,
+        () -> showMessage(
+            "A wild "
+                + opponentCat.getName()
+                + " appeared!",
+            this::showActionMenu
+        )
     );
   }
 
@@ -255,23 +272,42 @@ public class BattleController {
     };
 
     for (int i = 0; i < buttons.length; i++) {
-      if (i < abilities.size()) {
-        String abilityId = abilities.get(i);
+      Button button = buttons[i];
 
-        buttons[i].setUserData(abilityId);
-        buttons[i].setText(formatAbilityName(abilityId));
-        buttons[i].setVisible(true);
-        buttons[i].setManaged(true);
-      } else {
-        buttons[i].setUserData(null);
-        buttons[i].setVisible(false);
-        buttons[i].setManaged(false);
+      if (i >= abilities.size()) {
+        button.setUserData(null);
+        button.setText("");
+        button.setVisible(false);
+        button.setManaged(false);
+        continue;
       }
+
+      String abilityId = abilities.get(i);
+      int amount = battleEngine.getAbilityAmount(abilityId);
+
+      button.setUserData(abilityId);
+
+      if ("HEALING_PURR".equals(abilityId)) {
+        button.setText(
+            formatAbilityName(abilityId)
+                + " - Heal "
+                + amount
+        );
+      } else {
+        button.setText(
+            formatAbilityName(abilityId)
+                + " - "
+                + amount
+                + " Damage"
+        );
+      }
+
+      button.setVisible(true);
+      button.setManaged(true);
     }
   }
 
   private void loadItemButtons() {
-
     Button[] itemButtons = {
         itemButton1,
         itemButton2,
@@ -283,17 +319,19 @@ public class BattleController {
 
     for (Button button : itemButtons) {
       button.setUserData(null);
+      button.setText("");
       button.setVisible(false);
       button.setManaged(false);
     }
 
     try {
-      List<TraderItem> allItems =
-          traderItemDAO.findAll();
-
+      List<TraderItem> allItems = traderItemDAO.findAll();
       int buttonIndex = 0;
 
       for (TraderItem item : allItems) {
+        if (!isItemAllowedInBattle(item)) {
+          continue;
+        }
 
         int quantity =
             traderService.getInventoryQuantity(
@@ -309,22 +347,18 @@ public class BattleController {
           break;
         }
 
-        Button button =
-            itemButtons[buttonIndex];
-
+        Button button = itemButtons[buttonIndex];
         button.setText(
             item.getItemName()
                 + " x"
                 + quantity
         );
-
         button.setUserData(item);
         button.setVisible(true);
         button.setManaged(true);
 
         buttonIndex++;
       }
-
     } catch (SQLException exception) {
       throw new IllegalStateException(
           "Could not load player inventory.",
@@ -348,7 +382,6 @@ public class BattleController {
 
     return formatted.toString();
   }
-
 
   private void updateHealthLabels() {
     playerHealthLabel.setText(
@@ -384,8 +417,6 @@ public class BattleController {
     actionMenu.setManaged(false);
 
     if (battleEngine.isBattleWon()) {
-      updateHealthLabels();
-
       showMessage(
           battleEngine.getPlayerCat().getName()
               + " used "
@@ -393,7 +424,6 @@ public class BattleController {
               + "!",
           this::handleVictory
       );
-
       return;
     }
 
@@ -439,11 +469,44 @@ public class BattleController {
   }
 
   private void configureBattleActions() {
+
     boolean wildBattle =
         battleEngine.getBattleType() == BattleType.WILD;
 
     runButton.setVisible(wildBattle);
     runButton.setManaged(wildBattle);
+
+    if (wildBattle) {
+      itemActionButton.setText("Bag");
+    } else {
+      itemActionButton.setText("Heal");
+    }
+  }
+
+  private boolean isItemAllowedInBattle(
+      TraderItem item) {
+
+    if (battleEngine.getBattleType() == BattleType.ARENA) {
+      return "HEALING".equalsIgnoreCase(
+          item.getItemType()
+      );
+    }
+
+    return true;
+  }
+
+  private void hideAllMenus() {
+    actionMenu.setVisible(false);
+    actionMenu.setManaged(false);
+
+    attackMenu.setVisible(false);
+    attackMenu.setManaged(false);
+
+    bagMenu.setVisible(false);
+    bagMenu.setManaged(false);
+
+    wildVictoryMenu.setVisible(false);
+    wildVictoryMenu.setManaged(false);
   }
 
   private void showMessage(String message, Runnable advanceAction) {
@@ -522,11 +585,17 @@ public class BattleController {
     blinkTimeline.setCycleCount(Timeline.INDEFINITE);
     blinkTimeline.play();
 
-    messageAdvanceIndicator.getProperties().put("blinkTimeline", blinkTimeline);
+    messageAdvanceIndicator.getProperties().put(
+        "blinkTimeline",
+        blinkTimeline
+    );
   }
 
   private void stopAdvanceIndicatorBlink() {
-    Object value = messageAdvanceIndicator.getProperties().remove("blinkTimeline");
+    Object value =
+        messageAdvanceIndicator
+            .getProperties()
+            .remove("blinkTimeline");
 
     if (value instanceof Timeline blinkTimeline) {
       blinkTimeline.stop();
@@ -561,7 +630,7 @@ public class BattleController {
     attackMenu.setVisible(true);
     attackMenu.setManaged(true);
 
-    battleMessageLabel.setText("Choose an ability.");
+    showMessage("Choose an ability.", null);
   }
 
   @FXML
@@ -580,7 +649,8 @@ public class BattleController {
       );
       battleDAO.update(battleRecord);
 
-      showMessage("You escaped successfully.",
+      showMessage(
+          "You escaped successfully.",
           () -> SceneFactory.show(SceneType.MAIN)
       );
       return;
@@ -607,29 +677,24 @@ public class BattleController {
 
   @FXML
   private void handleItem(ActionEvent event) {
-
     Button button = (Button) event.getSource();
-
     Object itemData = button.getUserData();
 
     if (!(itemData instanceof TraderItem item)) {
       return;
     }
 
-    String itemType = item.getItemType();
-
-    if ("HEALING".equalsIgnoreCase(itemType)) {
+    if ("HEALING".equalsIgnoreCase(item.getItemType())) {
       useHealingItem(item);
       return;
     }
 
-    if ("CATCHING".equalsIgnoreCase(itemType)) {
+    if ("CATCHING".equalsIgnoreCase(item.getItemType())) {
       useCatchingItem(item);
     }
   }
 
   private void useHealingItem(TraderItem item) {
-
     int healingAmount;
 
     try {
@@ -644,13 +709,11 @@ public class BattleController {
 
     if (battleEngine.getPlayerCat().getCurrentHp()
         >= battleEngine.getPlayerCat().getMaxHp()) {
-
       showMessage(
           battleEngine.getPlayerCat().getName()
               + " is already at full health.",
           null
       );
-
       return;
     }
 
@@ -666,28 +729,22 @@ public class BattleController {
       );
     }
 
-    int hpBefore =
-        battleEngine.getPlayerCat().getCurrentHp();
+    int hpBefore = battleEngine.getPlayerCat().getCurrentHp();
 
     battleEngine.heal(
         battleEngine.getPlayerCat(),
         healingAmount
     );
 
-    int hpAfter =
-        battleEngine.getPlayerCat().getCurrentHp();
-
     int actualHealing =
-        hpAfter - hpBefore;
+        battleEngine.getPlayerCat().getCurrentHp()
+            - hpBefore;
 
     persistPlayerCat();
     updateHealthLabels();
 
     bagMenu.setVisible(false);
     bagMenu.setManaged(false);
-
-    actionMenu.setVisible(false);
-    actionMenu.setManaged(false);
 
     showMessage(
         battleEngine.getPlayerCat().getName()
@@ -699,7 +756,6 @@ public class BattleController {
   }
 
   private void useCatchingItem(TraderItem item) {
-
     if (battleEngine.getBattleType() != BattleType.WILD) {
       showMessage(
           "Catching items can only be used in Wild battles.",
@@ -735,11 +791,7 @@ public class BattleController {
     bagMenu.setVisible(false);
     bagMenu.setManaged(false);
 
-    actionMenu.setVisible(false);
-    actionMenu.setManaged(false);
-
     int roll = (int) (Math.random() * 100);
-
     boolean captured =
         isCaptureSuccessful(
             catchChance,
@@ -747,10 +799,7 @@ public class BattleController {
         );
 
     if (captured) {
-
-      Cat capturedCat =
-          battleEngine.getOpponentCat();
-
+      Cat capturedCat = battleEngine.getOpponentCat();
       capturedCat.setPlayerCat(true);
       capturedCat.setInParty(false);
 
@@ -769,7 +818,6 @@ public class BattleController {
               + " was captured and sent to storage!",
           () -> SceneFactory.show(SceneType.MAIN)
       );
-
       return;
     }
 
@@ -822,42 +870,48 @@ public class BattleController {
     useAbility(abilityButton4);
   }
 
-  private void handleVictory() {
+  @FXML
+  private void handleReturnToTown() {
+    SceneFactory.show(SceneType.MAIN);
+  }
 
+  @FXML
+  private void handleContinueWilds() {
+    wildVictoryMenu.setVisible(false);
+    wildVictoryMenu.setManaged(false);
+
+    Cat playerCat = battleEngine.getPlayerCat();
+    Cat opponentCat = new CatGenerator().generateCat();
+
+    continuingWilds = true;
+
+    startBattle(
+        playerCat,
+        opponentCat,
+        BattleType.WILD
+    );
+  }
+
+  private void handleVictory() {
     if (battleEngine.getBattleType() == BattleType.WILD) {
       handleWildVictory();
       return;
     }
 
-    // Arena victory integration will go here later.
+    handleArenaVictory();
   }
 
   private void handleWildVictory() {
     persistPlayerCat();
 
-    int currencyReward = 10;
-
     currentPlayer.setCurrencyBalance(
         currentPlayer.getCurrencyBalance()
-            + currencyReward
+            + WILD_VICTORY_REWARD
     );
 
-    try {
-      boolean updated =
-          playerDAO.update(currentPlayer);
-
-      if (!updated) {
-        throw new IllegalStateException(
-            "Player rewards could not be saved."
-        );
-      }
-
-    } catch (SQLException exception) {
-      throw new IllegalStateException(
-          "Player rewards could not be saved.",
-          exception
-      );
-    }
+    updatePlayerOrThrow(
+        "Player rewards could not be saved."
+    );
 
     battleRecord.setStatus(
         BattleResult.VICTORY.name()
@@ -865,53 +919,71 @@ public class BattleController {
     battleDAO.update(battleRecord);
 
     showMessage(
-        "Victory! You earned rewards.",
+        "Victory! You earned "
+            + WILD_VICTORY_REWARD
+            + " coins.",
+        this::showWildVictoryMenu
+    );
+  }
+
+  private void handleArenaVictory() {
+
+    persistPlayerCat();
+
+    if (currentArena == null) {
+      throw new IllegalStateException(
+          "Arena battle is missing Arena information."
+      );
+    }
+
+    int currencyReward =
+        currentArena.getRewardAmount();
+
+    currentPlayer.setCurrencyBalance(
+        currentPlayer.getCurrencyBalance()
+            + currencyReward
+    );
+
+    updatePlayerOrThrow(
+        "Arena reward could not be saved."
+    );
+
+    battleRecord.setStatus(
+        BattleResult.VICTORY.name()
+    );
+
+    battleDAO.update(battleRecord);
+
+    showMessage(
+        "Arena victory! You earned "
+            + currencyReward
+            + " coins.",
         () -> SceneFactory.show(SceneType.MAIN)
     );
   }
 
   private void handleDefeat() {
-
     if (battleEngine.getBattleType() == BattleType.WILD) {
       handleWildDefeat();
       return;
     }
 
-    // Arena defeat integration will go here later.
+    handleArenaDefeat();
   }
 
   private void handleWildDefeat() {
     persistPlayerCat();
 
-    int currentCurrency =
-        currentPlayer.getCurrencyBalance();
-
-    int penalty =
-        currentCurrency / 10;
-
-    int remainingCurrency =
-        currentCurrency - penalty;
+    int currentCurrency = currentPlayer.getCurrencyBalance();
+    int penalty = currentCurrency / 10;
 
     currentPlayer.setCurrencyBalance(
-        remainingCurrency
+        currentCurrency - penalty
     );
 
-    try {
-      boolean updated =
-          playerDAO.update(currentPlayer);
-
-      if (!updated) {
-        throw new IllegalStateException(
-            "Player defeat penalty could not be saved."
-        );
-      }
-
-    } catch (SQLException exception) {
-      throw new IllegalStateException(
-          "Player defeat penalty could not be saved.",
-          exception
-      );
-    }
+    updatePlayerOrThrow(
+        "Player defeat penalty could not be saved."
+    );
 
     battleRecord.setStatus(
         BattleResult.DEFEAT.name()
@@ -926,8 +998,48 @@ public class BattleController {
     );
   }
 
-  private int getHealingAmount(TraderItem item) {
+  private void handleArenaDefeat() {
+    persistPlayerCat();
 
+    battleRecord.setStatus(
+        BattleResult.DEFEAT.name()
+    );
+    battleDAO.update(battleRecord);
+
+    showMessage(
+        "You were defeated in the arena.",
+        () -> SceneFactory.show(SceneType.MAIN)
+    );
+  }
+
+  private void updatePlayerOrThrow(String errorMessage) {
+    try {
+      boolean updated = playerDAO.update(currentPlayer);
+
+      if (!updated) {
+        throw new IllegalStateException(errorMessage);
+      }
+    } catch (SQLException exception) {
+      throw new IllegalStateException(
+          errorMessage,
+          exception
+      );
+    }
+  }
+
+  private void showWildVictoryMenu() {
+    hideAllMenus();
+
+    wildVictoryMenu.setVisible(true);
+    wildVictoryMenu.setManaged(true);
+
+    showMessage(
+        "Would you like to continue exploring the Wilds?",
+        null
+    );
+  }
+
+  private int getHealingAmount(TraderItem item) {
     if ("Small Potion".equalsIgnoreCase(item.getItemName())) {
       return 10;
     }
@@ -942,7 +1054,6 @@ public class BattleController {
   }
 
   private int getCatchChance(TraderItem item) {
-
     if ("Basic Catching Item".equalsIgnoreCase(item.getItemName())) {
       return 50;
     }
@@ -962,6 +1073,4 @@ public class BattleController {
 
     return roll < catchChance;
   }
-
-
 }

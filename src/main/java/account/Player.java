@@ -12,24 +12,21 @@ public class Player {
     private String passwordHash;
     private int currencyBalance;
     private Integer activeCatId;
-    private int experience;
     private LocalDateTime createdAt;
 
     public Player(String username,  String passwordHash) {
         this.username = username;
         this.passwordHash = passwordHash;
-        this.currencyBalance = 0;
+        this.currencyBalance = 100;
         this.activeCatId = null;
-        this.experience = 0;
     }
 
-    public Player(Integer playerId, String username, String passwordHash, int currencyBalance, Integer activeCatId, int experience, LocalDateTime createdAt) {
+    public Player(Integer playerId, String username, String passwordHash, int currencyBalance, Integer activeCatId, LocalDateTime createdAt) {
         this.playerId = playerId;
         this.username = username;
         this.passwordHash = passwordHash;
         this.currencyBalance = currencyBalance;
         this.activeCatId = activeCatId;
-        this.experience = experience;
         this.createdAt = createdAt;
     }
 
@@ -71,14 +68,6 @@ public class Player {
 
     public void setActiveCatId(Integer activeCatId) {
         this.activeCatId = activeCatId;
-    }
-
-    public int getExperience() {
-        return experience;
-    }
-
-    public void setExperience(int experience) {
-        this.experience = experience;
     }
 
     public LocalDateTime getCreatedAt() {

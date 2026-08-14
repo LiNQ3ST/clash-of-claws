@@ -557,73 +557,26 @@ public class CatDAO {
     }
 
 
-    /**
-     * Swaps one party cat with one stored cat.
-     */
-    public boolean swapCats(
-            Cat partyCat,
-            Cat storedCat,
-            int playerId
-    ) {
-
-        if (!partyCat.isPlayerCat()
-                || !storedCat.isPlayerCat()) {
-
-            return false;
-        }
-
-
-        if (!partyCat.isInParty()) {
-            return false;
-        }
-
-
-        if (storedCat.isInParty()) {
-            return false;
-        }
-
-
-        partyCat.setInParty(false);
-        storedCat.setInParty(true);
-
-
-        boolean firstUpdate =
-                update(
-                        partyCat,
-                        playerId
-                );
-
-        boolean secondUpdate =
-                update(
-                        storedCat,
-                        playerId
-                );
-
-
-        return firstUpdate
-                && secondUpdate;
-    }
-
     public boolean deleteAllForPlayer(int playerId) {
 
         String sql =
-            "DELETE FROM cats "
-                + "WHERE player_id = ?";
+                "DELETE FROM cats "
+                        + "WHERE player_id = ?";
 
 
         try (
-            Connection connection =
-                DatabaseManager
-                    .getInstance()
-                    .getConnection();
+                Connection connection =
+                        DatabaseManager
+                                .getInstance()
+                                .getConnection();
 
-            PreparedStatement statement =
-                connection.prepareStatement(sql)
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
         ) {
 
             statement.setInt(
-                1,
-                playerId
+                    1,
+                    playerId
             );
 
 

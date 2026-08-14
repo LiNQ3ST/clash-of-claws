@@ -1,19 +1,22 @@
 package app;
 
+import adminarena.Arena;
 import battle.BattleController;
 import battle.BattleType;
 import creature.Cat;
 import java.io.IOException;
+import java.net.URL;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.net.URL;
 
 /**
- * Desc go here
+ * Creates and displays application scenes.
  *
  * @author Quinton Nisonger, Sahtra Green, Todd Gonzales, Nabiha Fatima
- * @version 0.1.1
+ * @version 0.1.2
  * @since 8/5/2026
  */
 
@@ -38,25 +41,19 @@ public final class SceneFactory {
     }
 
     primaryStage = stage;
+    primaryStage.setMinWidth(MIN_WINDOW_WIDTH);
+    primaryStage.setMinHeight(MIN_WINDOW_HEIGHT);
   }
 
   public static Scene create(SceneType type) {
-    URL resource = SceneFactory.class.getResource(
-        type.getFxmlPath()
-    );
-
-    if (resource == null) {
-      throw new IllegalStateException(
-          "FXML resource was not found: "
-              + type.getFxmlPath()
-      );
-    }
+    URL resource = getResource(type);
 
     try {
       FXMLLoader loader = new FXMLLoader(resource);
+      Parent root = loader.load();
 
       return new Scene(
-          loader.load(),
+          root,
           WINDOW_WIDTH,
           WINDOW_HEIGHT
       );
@@ -70,9 +67,7 @@ public final class SceneFactory {
 
   public static void show(SceneType type) {
     ensureInitialized();
-
-    primaryStage.setScene(create(type));
-    primaryStage.show();
+    showScene(create(type));
   }
 
   public static void showMainScene() {
@@ -88,39 +83,68 @@ public final class SceneFactory {
       Cat opponentCat,
       BattleType battleType) {
 
+    showBattle(
+        playerCat,
+        opponentCat,
+        battleType,
+        null
+    );
+  }
+
+  public static void showBattle(
+      Cat playerCat,
+      Cat opponentCat,
+      BattleType battleType,
+      Arena arena) {
+
     ensureInitialized();
 
-    URL resource = SceneFactory.class.getResource(
-        SceneType.BATTLE.getFxmlPath()
-    );
-
-    if (resource == null) {
-      throw new IllegalStateException(
-          "FXML resource was not found: "
-              + SceneType.BATTLE.getFxmlPath()
+    if (playerCat == null) {
+      throw new IllegalArgumentException(
+          "Player cat cannot be null."
       );
     }
 
+    if (opponentCat == null) {
+      throw new IllegalArgumentException(
+          "Opponent cat cannot be null."
+      );
+    }
+
+    if (battleType == null) {
+      throw new IllegalArgumentException(
+          "Battle type cannot be null."
+      );
+    }
+
+    if (battleType == BattleType.ARENA && arena == null) {
+      throw new IllegalArgumentException(
+          "Arena battles require an Arena."
+      );
+    }
+
+    URL resource = getResource(SceneType.BATTLE);
+
     try {
       FXMLLoader loader = new FXMLLoader(resource);
+      Parent root = loader.load();
 
-      Scene scene = new Scene(
-          loader.load(),
-          WINDOW_WIDTH,
-          WINDOW_HEIGHT
-      );
-
-      BattleController controller =
-          loader.getController();
+      BattleController controller = loader.getController();
 
       controller.startBattle(
           playerCat,
           opponentCat,
-          battleType
+          battleType,
+          arena
       );
 
-      primaryStage.setScene(scene);
-      primaryStage.show();
+      Scene scene = new Scene(
+          root,
+          WINDOW_WIDTH,
+          WINDOW_HEIGHT
+      );
+
+      showScene(scene);
 
     } catch (IOException exception) {
       throw new IllegalStateException(
@@ -130,59 +154,26 @@ public final class SceneFactory {
     }
   }
 
-    public static void showBattle(
-            Cat playerCat,
-            Cat opponentCat,
-            String battleType
-    ) {
-        ensureInitialized();
+  private static URL getResource(SceneType type) {
+    URL resource = SceneFactory.class.getResource(
+        type.getFxmlPath()
+    );
 
-        URL resource = SceneFactory.class.getResource(
-                SceneType.BATTLE.getFxmlPath()
-        );
-
-        if (resource == null) {
-            throw new IllegalStateException(
-                    "Battle FXML resource was not found."
-            );
-        }
-
-        try {
-            FXMLLoader loader = new FXMLLoader(resource);
-
-            Parent root = loader.load();
-
-            BattleController controller = loader.getController();
-
-            controller.startBattle(
-                    playerCat,
-                    opponentCat,
-                    battleType
-            );
-
-            Scene scene = new Scene(
-                    root,
-                    WINDOW_WIDTH,
-                    WINDOW_HEIGHT
-            );
-
-            primaryStage.setScene(scene);
-            primaryStage.show();
-
-        } catch (IOException exception) {
-            throw new IllegalStateException(
-                    "Unable to load battle scene.",
-                    exception
-            );
-        }
+    if (resource == null) {
+      throw new IllegalStateException(
+          "FXML resource was not found: "
+              + type.getFxmlPath()
+      );
     }
 
-    private static void ensureInitialized() {
-        if (primaryStage == null) {
-            throw new IllegalStateException(
-                    "SceneFactory must be initialized first."
-            );
-        }
+    return resource;
+  }
+
+  private static void showScene(Scene scene) {
+    primaryStage.setScene(scene);
+    primaryStage.show();
+  }
+
   private static void ensureInitialized() {
     if (primaryStage == null) {
       throw new IllegalStateException(

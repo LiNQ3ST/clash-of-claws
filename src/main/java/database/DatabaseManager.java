@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.stream.Collectors;
@@ -60,7 +62,77 @@ public final class DatabaseManager {
                     statement.execute(trimmedSql);
                 }
             }
+            migrateLegacySchema(connection);
         }
+    }
+
+    private void migrateLegacySchema(Connection connection) throws SQLException {
+        migrateLegacyCats(connection);
+        migrateStartingCurrency(connection);
+    }
+
+    private void migrateLegacyCats(Connection connection) throws SQLException {
+        if (tableExists(connection, "cats")
+                && !columnExists(connection, "cats", "player_id")) {
+
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(
+                        "ALTER TABLE cats ADD COLUMN player_id INTEGER"
+                );
+            }
+        }
+    }
+
+    private void migrateStartingCurrency(Connection connection) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS schema_migrations (
+                    migration_name TEXT PRIMARY KEY
+                )
+                """);
+
+            try (ResultSet resultSet = statement.executeQuery("""
+                SELECT migration_name
+                FROM schema_migrations
+                WHERE migration_name = 'starting_currency_100'
+                """)) {
+
+                if (resultSet.next()) {
+                    return;
+                }
+            }
+
+            statement.executeUpdate("""
+                UPDATE player
+                SET currency_balance = currency_balance + 100
+                """);
+
+            statement.executeUpdate("""
+                INSERT INTO schema_migrations (migration_name)
+                VALUES ('starting_currency_100')
+                """);
+        }
+    }
+
+    private boolean tableExists(Connection connection, String tableName) throws SQLException {
+        DatabaseMetaData metaData = connection.getMetaData();
+        try (ResultSet tables = metaData.getTables(null, null, tableName, null)) {
+            return tables.next();
+        }
+    }
+
+    private boolean columnExists(Connection connection, String tableName, String columnName)
+            throws SQLException {
+        DatabaseMetaData metaData = connection.getMetaData();
+        try (ResultSet columns = metaData.getColumns(null, null, tableName, null)) {
+            while (columns.next()) {
+                if (columnName.equalsIgnoreCase(columns.getString("COLUMN_NAME"))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static String currentDatabaseUrl() {
