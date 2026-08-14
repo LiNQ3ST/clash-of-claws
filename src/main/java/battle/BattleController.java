@@ -158,6 +158,8 @@ public class BattleController {
             .getCurrentPlayer()
             .orElse(null);
 
+  public void startBattle(Cat playerCat, Cat opponentCat, String battleType) {
+    battleEngine = new BattleEngine(playerCat, opponentCat, battleType);
     if (currentPlayer == null
         || currentPlayer.getPlayerId() == null) {
       throw new IllegalStateException(
