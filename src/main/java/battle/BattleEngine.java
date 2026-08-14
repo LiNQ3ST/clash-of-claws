@@ -10,6 +10,7 @@ import java.util.ArrayList;
  * @version 0.1.0
  * @since 8/9/2026
  */
+
 public class BattleEngine {
 
   private Cat playerCat;
@@ -65,12 +66,16 @@ public class BattleEngine {
     return opponentCat;
   }
 
+  public BattleResult getBattleResult() {
+    return battleResult;
+  }
+
   public BattleType getBattleType() {
     return battleType;
   }
 
-  public BattleResult getBattleResult() {
-    return battleResult;
+  public boolean isArenaBattle() {
+    return BattleType.ARENA.equals(battleType);
   }
 
   public boolean isBattleOver() {

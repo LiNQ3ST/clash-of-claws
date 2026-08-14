@@ -56,6 +56,19 @@ CREATE TABLE IF NOT EXISTS arenas
 );
 
 -- ============================================================================
+-- slice 4 - Admin/Arena
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS arenas (
+                                      arena_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                      arena_name TEXT NOT NULL,
+                                      town_name TEXT NOT NULL,
+                                      difficulty TEXT NOT NULL,
+                                      reward_amount INTEGER NOT NULL
+                                      CHECK (reward_amount >= 0),
+    active INTEGER NOT NULL DEFAULT 1
+    );
+
+-- ============================================================================
 -- slice 5 - Creature Generation / CatDex
 -- ============================================================================
 
