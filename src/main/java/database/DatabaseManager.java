@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.stream.Collectors;
@@ -60,7 +62,38 @@ public final class DatabaseManager {
                     statement.execute(trimmedSql);
                 }
             }
+            migrateLegacySchema(connection);
         }
+    }
+
+    private void migrateLegacySchema(Connection connection) throws SQLException {
+        if (!tableExists(connection, "cats") || columnExists(connection, "cats", "player_id")) {
+            return;
+        }
+
+        try (Statement statement = connection.createStatement()) {
+            statement.execute("ALTER TABLE cats ADD COLUMN player_id INTEGER");
+        }
+    }
+
+    private boolean tableExists(Connection connection, String tableName) throws SQLException {
+        DatabaseMetaData metaData = connection.getMetaData();
+        try (ResultSet tables = metaData.getTables(null, null, tableName, null)) {
+            return tables.next();
+        }
+    }
+
+    private boolean columnExists(Connection connection, String tableName, String columnName)
+            throws SQLException {
+        DatabaseMetaData metaData = connection.getMetaData();
+        try (ResultSet columns = metaData.getColumns(null, null, tableName, null)) {
+            while (columns.next()) {
+                if (columnName.equalsIgnoreCase(columns.getString("COLUMN_NAME"))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static String currentDatabaseUrl() {
