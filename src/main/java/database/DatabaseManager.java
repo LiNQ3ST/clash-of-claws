@@ -67,12 +67,51 @@ public final class DatabaseManager {
     }
 
     private void migrateLegacySchema(Connection connection) throws SQLException {
-        if (!tableExists(connection, "cats") || columnExists(connection, "cats", "player_id")) {
-            return;
-        }
+        migrateLegacyCats(connection);
+        migrateStartingCurrency(connection);
+    }
 
+    private void migrateLegacyCats(Connection connection) throws SQLException {
+        if (tableExists(connection, "cats")
+                && !columnExists(connection, "cats", "player_id")) {
+
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(
+                        "ALTER TABLE cats ADD COLUMN player_id INTEGER"
+                );
+            }
+        }
+    }
+
+    private void migrateStartingCurrency(Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            statement.execute("ALTER TABLE cats ADD COLUMN player_id INTEGER");
+
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS schema_migrations (
+                    migration_name TEXT PRIMARY KEY
+                )
+                """);
+
+            try (ResultSet resultSet = statement.executeQuery("""
+                SELECT migration_name
+                FROM schema_migrations
+                WHERE migration_name = 'starting_currency_100'
+                """)) {
+
+                if (resultSet.next()) {
+                    return;
+                }
+            }
+
+            statement.executeUpdate("""
+                UPDATE player
+                SET currency_balance = currency_balance + 100
+                """);
+
+            statement.executeUpdate("""
+                INSERT INTO schema_migrations (migration_name)
+                VALUES ('starting_currency_100')
+                """);
         }
     }
 
