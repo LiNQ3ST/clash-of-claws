@@ -31,6 +31,18 @@
           styleClass="cat-list"
           VBox.vgrow="ALWAYS" />
 
+        <HBox spacing="10">
+
+            <Button text="Make Active"
+                    onAction="#handleMakeActive"
+                    styleClass="primary-button" />
+
+            <Button text="Rest Party"
+                    onAction="#handleHealParty"
+                    styleClass="primary-button" />
+
+        </HBox>
+
         <Label fx:id="statusLabel"
           text="Loading party..."
           styleClass="creature-status" />
@@ -38,12 +50,12 @@
         <HBox spacing="10">
 
             <Button text="Manage Storage"
-              onAction="#handleStorage"
-              styleClass="primary-button" />
+                    onAction="#handleStorage"
+                    styleClass="primary-button" />
 
             <Button text="Back to Town"
-              onAction="#handleBack"
-              styleClass="primary-button" />
+                    onAction="#handleBack"
+                    styleClass="primary-button" />
 
         </HBox>
 

@@ -2,9 +2,11 @@ package creature;
 
 import account.AccountService;
 import account.Player;
+import account.PlayerDAO;
 import app.SceneFactory;
 import app.SceneType;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javafx.fxml.FXML;
@@ -319,5 +321,103 @@ public class PartyController {
         SceneFactory.show(
             SceneType.MAIN
         );
+    }
+
+    @FXML
+    private void handleMakeActive() {
+
+        Cat selectedCat =
+                partyListView
+                        .getSelectionModel()
+                        .getSelectedItem();
+
+        if (selectedCat == null) {
+            statusLabel.setText(
+                    "Select a cat to make active."
+            );
+            return;
+        }
+
+        player.setActiveCatId(
+                selectedCat.getId()
+        );
+
+        try {
+            boolean updated =
+                    new PlayerDAO().update(player);
+
+            if (updated) {
+                statusLabel.setText(
+                        selectedCat.getName()
+                                + " is now your active cat!"
+                );
+            } else {
+                statusLabel.setText(
+                        "Could not update the active cat."
+                );
+            }
+
+        } catch (SQLException exception) {
+            statusLabel.setText(
+                    "Could not update the active cat."
+            );
+        }
+    }
+
+    @FXML
+    private void handleHealParty() {
+
+        ArrayList<Cat> partyCats =
+                catDAO.findPartyCats(
+                        player.getPlayerId()
+                );
+
+        if (partyCats.isEmpty()) {
+            statusLabel.setText(
+                    "Your party is empty."
+            );
+            return;
+        }
+
+        boolean healedAny = false;
+
+        for (Cat cat : partyCats) {
+
+            if (cat.getCurrentHp() < cat.getMaxHp()) {
+
+                cat.setCurrentHp(
+                        cat.getMaxHp()
+                );
+
+                catDAO.update(
+                        cat,
+                        player.getPlayerId()
+                );
+
+                healedAny = true;
+            }
+        }
+
+        if (healedAny) {
+            statusLabel.setText(
+                    "Your party is fully healed!"
+            );
+        } else {
+            statusLabel.setText(
+                    "Your party is already at full health."
+            );
+        }
+
+        loadParty();
+
+        if (healedAny) {
+            statusLabel.setText(
+                    "Your party is fully healed!"
+            );
+        } else {
+            statusLabel.setText(
+                    "Your party is already at full health."
+            );
+        }
     }
 }
