@@ -239,10 +239,9 @@ class TraderServiceTest {
                     username,
                     password_hash,
                     currency_balance,
-                    experience,
                     active_cat_id
                 )
-                VALUES (?, 'test-hash', ?, 0, NULL)
+                VALUES (?, 'test-hash', ?, NULL)
                 """;
 
         try (Connection connection = DriverManager.getConnection(jdbcUrl);
