@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
 
 <BorderPane
   xmlns="http://javafx.com/javafx"
@@ -56,7 +57,13 @@
           minHeight="110.0"
           GridPane.columnIndex="1"
           GridPane.rowIndex="0">
-          <Label text="[Opponent Cat]" style="-fx-font-size: 16px;"/>
+      <!-- Opponent cat image -->
+      <ImageView
+              fx:id="opponentCatImage"
+              fitWidth="160.0"
+              fitHeight="160.0"
+              preserveRatio="true"
+              smooth="false"/>
         </StackPane>
 
         <StackPane
@@ -64,7 +71,14 @@
           minHeight="110.0"
           GridPane.columnIndex="0"
           GridPane.rowIndex="1">
-          <Label text="[Player Cat]" style="-fx-font-size: 16px;"/>
+
+      <!-- Player cat image -->
+      <ImageView
+              fx:id="playerCatImage"
+              fitWidth="160.0"
+              fitHeight="160.0"
+              preserveRatio="true"
+              smooth="false"/>
         </StackPane>
 
         <VBox
@@ -191,8 +205,60 @@
         managed="false"
         spacing="8">
 
+        <GridPane
+          hgap="10.0"
+          vgap="8.0"
+          alignment="CENTER">
+
+          <Button
+            fx:id="itemButton1"
+            prefWidth="170.0"
+            GridPane.columnIndex="0"
+            GridPane.rowIndex="0"
+            onAction="#handleItem"/>
+
+          <Button
+            fx:id="itemButton2"
+            prefWidth="170.0"
+            GridPane.columnIndex="1"
+            GridPane.rowIndex="0"
+            onAction="#handleItem"/>
+
+          <Button
+            fx:id="itemButton3"
+            prefWidth="170.0"
+            GridPane.columnIndex="0"
+            GridPane.rowIndex="1"
+            onAction="#handleItem"/>
+
+          <Button
+            fx:id="itemButton4"
+            prefWidth="170.0"
+            GridPane.columnIndex="1"
+            GridPane.rowIndex="1"
+            onAction="#handleItem"/>
+
+          <Button
+            fx:id="itemButton5"
+            prefWidth="170.0"
+            GridPane.columnIndex="0"
+            GridPane.rowIndex="2"
+            onAction="#handleItem"/>
+
+          <Button
+            fx:id="itemButton6"
+            prefWidth="170.0"
+            GridPane.columnIndex="1"
+            GridPane.rowIndex="2"
+            onAction="#handleItem"/>
+
+        </GridPane>
         <Label text="Would you like to continue exploring the Wilds?"/>
 
+        <Button
+          text="Back"
+          prefWidth="100.0"
+          onAction="#handleBagBack"/>
         <Button text="Continue Exploring"
           onAction="#handleContinueWilds"/>
 
@@ -200,7 +266,7 @@
           onAction="#handleReturnToTown"/>
 
       </VBox>
-
     </StackPane>
   </bottom>
 </BorderPane>
+

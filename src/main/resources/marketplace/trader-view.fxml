@@ -10,14 +10,12 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.VBox?>
-
 <BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:id="traderRoot"
             fx:controller="marketplace.TraderController"
             prefWidth="960"
             prefHeight="600">
-
     <top>
         <VBox spacing="6">
             <padding>
@@ -28,91 +26,94 @@
             <Label fx:id="coinBalanceLabel" text="Your Coins: --"/>
         </VBox>
     </top>
-
     <center>
-        <HBox spacing="14">
+        <HBox spacing="16">
             <padding>
                 <Insets top="6" right="16" bottom="10" left="16"/>
             </padding>
 
-            <VBox spacing="8" HBox.hgrow="ALWAYS">
+            <VBox spacing="8" prefWidth="500">
                 <Label text="Trader Items"
                        style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-
-                <TableView fx:id="traderItemsTable" VBox.vgrow="ALWAYS">
+                <TableView fx:id="traderItemsTable" prefHeight="300">
                     <columns>
-                        <TableColumn fx:id="itemNameColumn"
-                                     text="Item Name"
-                                     prefWidth="190"/>
-                        <TableColumn fx:id="itemTypeColumn"
-                                     text="Type"
-                                     prefWidth="110"/>
-                        <TableColumn fx:id="priceColumn"
-                                     text="Price"
-                                     prefWidth="80"/>
-                        <TableColumn fx:id="stockColumn"
-                                     text="Stock"
-                                     prefWidth="80"/>
+                        <TableColumn fx:id="itemNameColumn" text="Item Name" prefWidth="190"/>
+                        <TableColumn fx:id="itemTypeColumn" text="Type" prefWidth="110"/>
+                        <TableColumn fx:id="priceColumn" text="Price" prefWidth="80"/>
+                        <TableColumn fx:id="stockColumn" text="Stock" prefWidth="80"/>
                     </columns>
                 </TableView>
-
-                <HBox spacing="8" alignment="CENTER_LEFT">
-                    <Label text="Quantity:"/>
-                    <Spinner fx:id="quantitySpinner"
-                             editable="true"
-                             prefWidth="90"/>
-                    <Button text="Buy Item" onAction="#buyItem"/>
-                    <Button text="Refresh" onAction="#refreshItems"/>
-                </HBox>
-            </VBox>
-
-            <VBox spacing="10" prefWidth="310">
                 <Label text="Selected Item Details"
-                       style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                       style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
 
-                <GridPane hgap="8" vgap="8">
+                <GridPane hgap="8" vgap="6">
                     <Label text="Name:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
                     <Label fx:id="selectedNameLabel" text="-"
                            GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-
                     <Label text="Type:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
                     <Label fx:id="selectedTypeLabel" text="-"
                            GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-
                     <Label text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
                     <Label fx:id="selectedDescriptionLabel"
                            text="Select an item from the table."
                            wrapText="true"
-                           maxWidth="200"
+                           maxWidth="330"
                            GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-
                     <Label text="Price:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
                     <Label fx:id="selectedPriceLabel" text="-"
                            GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-
                     <Label text="Stock:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
                     <Label fx:id="selectedStockLabel" text="-"
                            GridPane.columnIndex="1" GridPane.rowIndex="4"/>
                 </GridPane>
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label text="Quantity:"/>
+                    <Spinner fx:id="quantitySpinner" editable="true" prefWidth="90"/>
+                    <Button fx:id="buyItemButton" text="Buy Item" onAction="#buyItem"/>
+                </HBox>
+            </VBox>
 
-                <Separator/>
+            <Separator orientation="VERTICAL"/>
 
-                <Label text="Sell Creature (Milestone 2)"
+            <VBox fx:id="creatureSellingSection" spacing="8" prefWidth="390">
+                <Label text="Your Creatures"
                        style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-                <ListView fx:id="creatureListView" prefHeight="130"/>
+
+                <ListView fx:id="creatureListView" prefHeight="260"/>
+
+                <Label text="Selected Creature Details"
+                       style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+                <GridPane hgap="8" vgap="6">
+                    <Label text="Name:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <Label fx:id="creatureNameLabel" text="-"
+                           GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                    <Label text="Type:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                    <Label fx:id="creatureTypeLabel" text="-"
+                           GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                    <Label text="HP:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                    <Label fx:id="creatureHpLabel" text="-"
+                           GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+                    <Label text="Sale Value:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                    <Label fx:id="creatureSaleValueLabel" text="-"
+                           GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                </GridPane>
                 <Button fx:id="sellCreatureButton"
                         text="Sell Creature"
-                        disable="true"/>
+                        disable="true"
+                        onAction="#sellCreature"/>
             </VBox>
         </HBox>
     </center>
-
     <bottom>
         <HBox alignment="CENTER_RIGHT" spacing="8">
             <padding>
                 <Insets top="8" right="16" bottom="16" left="16"/>
             </padding>
-            <Button text="Return to Main Menu"
+            <Button fx:id="refreshTraderButton" text="Refresh" onAction="#refreshAll"/>
+            <Button fx:id="returnToMainMenuButton"
+                    text="Return to Main Menu"
                     onAction="#returnToMainMenu"/>
         </HBox>
     </bottom>

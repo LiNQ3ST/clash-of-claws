@@ -1,28 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="creature.CatDexController"
-      spacing="10"
-      prefWidth="700"
-      prefHeight="450"
-      style="-fx-padding: 20;">
+  fx:controller="creature.CatDexController"
+  alignment="CENTER"
+  prefWidth="900"
+  prefHeight="550"
+  styleClass="creature-root"
+  stylesheets="@creature.css">
 
-    <Label text="CatDex"
-           style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+    <VBox spacing="14"
+      maxWidth="840"
+      maxHeight="500"
+      styleClass="creature-panel">
 
-    <ListView fx:id="catListView"
-              VBox.vgrow="ALWAYS" />
+        <Label text="CatDex"
+          styleClass="creature-title" />
 
-    <Label fx:id="statusLabel"
-           text="No cats loaded" />
+        <Label text="Every cat you have encountered."
+          styleClass="creature-subtitle" />
 
-    <Button text="Back"
-            onAction="#handleBack"
-            prefWidth="120"/>
+        <ListView fx:id="catListView"
+          fixedCellSize="100"
+          styleClass="cat-list"
+          VBox.vgrow="ALWAYS" />
+
+        <Label fx:id="statusLabel"
+          text="No cats loaded"
+          styleClass="creature-status" />
+
+        <HBox alignment="CENTER_LEFT">
+
+            <Button text="Back"
+              onAction="#handleBack"
+              prefWidth="140"
+              styleClass="primary-button" />
+
+            <Region HBox.hgrow="ALWAYS" />
+
+            <Button text="Reset Game"
+              onAction="#handleResetCatDex"
+              styleClass="danger-button" />
+
+        </HBox>
+    </VBox>
 
 </VBox>

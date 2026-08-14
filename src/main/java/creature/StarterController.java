@@ -16,6 +16,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
+import java.util.Objects;
 
 
 /**
@@ -54,6 +59,15 @@ public class StarterController {
 
     @FXML
     private Button chooseButton;
+
+    @FXML
+    private ImageView catOneImage;
+
+    @FXML
+    private ImageView catTwoImage;
+
+    @FXML
+    private ImageView catThreeImage;
 
 
     private Cat catOne;
@@ -157,6 +171,24 @@ public class StarterController {
         catThreeDetails.setText(
                 formatCat(catThree)
         );
+
+        CatSpriteRenderer.setSprite(
+                catOneImage,
+                catOne,
+                CatSpriteRenderer.IDLE
+        );
+
+        CatSpriteRenderer.setSprite(
+                catTwoImage,
+                catTwo,
+                CatSpriteRenderer.IDLE
+        );
+
+        CatSpriteRenderer.setSprite(
+                catThreeImage,
+                catThree,
+                CatSpriteRenderer.IDLE
+        );
     }
 
 
@@ -232,7 +264,6 @@ public class StarterController {
 
         return null;
     }
-
 
     /**
      * Saves the selected starter cat.

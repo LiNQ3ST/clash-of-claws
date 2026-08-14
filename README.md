@@ -16,13 +16,13 @@ and PRs. Replace every <placeholder> and delete this comment before you submit.
 CST 338 Project 2 — Team **L!NQ3ST**.
 
 ## Team & Slice Ownership
-| Slice | Owner        | GitHub username | Issues         | Branch(es)                                      | PR(s) | Enhancement chosen | Status |
-|-------|--------------|-----------------|----------------|-------------------------------------------------|-----|--------------------|--------|
-| 1 — Accounts | Sahtra Green | SahtraRG | #5, #6, #7, #8 | `sahtra/player-data`, `sahtra/account-scenes`, `sahtra/account-auth` | [#23](https://github.com/LiNQ3ST/clash-of-claws/pull/23), [#26](https://github.com/LiNQ3ST/clash-of-claws/pull/26), [#32](https://github.com/LiNQ3ST/clash-of-claws/pull/32) | Custom reusable FXML component | in-progress |
-| 2 — Admin & Arenas| Nabiha Fatima |nfatima-csumb | #13, #14, #15, #16 | `nabiha/admin-arena-skeleton`                   | [#29](https://github.com/LiNQ3ST/clash-of-claws/pull/29) | Confirmation and Validation Dialogs | in-progress |
-| 3 — Battle Engine | Quinton Nisonger | QuintonScripts | #1, #2, #3, #4 | `quinton/battle-skeleton`                       | [#27](https://github.com/LiNQ3ST/clash-of-claws/pull/27) | Extra TestFX scene tests | in-progress |
-| 4 — Marketplace & Trading | Todd Gonzales | toddgonzales-xg | #9, #10, #11, #12 | `todd/trader`                                   | [#25](https://github.com/LiNQ3ST/clash-of-claws/pull/25) | Notifications / alerts | in-progress|
-| 5- Creature Roster| Luke McCormick |lumccormick-collab | #17, #18, #19  | `luke/creature-skeleton`                        | [#28](https://github.com/LiNQ3ST/clash-of-claws/pull/28) | Data binding | in-progress |
+| Slice | Owner        | GitHub username | Issues         | Branch(es)                                                                                   | PR(s) | Enhancement chosen | Status |
+|-------|--------------|-----------------|----------------|----------------------------------------------------------------------------------------------|-----|--------------------|--------|
+| 1 — Accounts | Sahtra Green | SahtraRG | #5, #6, #7, #8 | `sahtra/player-data`, `sahtra/account-scenes`, `sahtra/account-auth`, `sahtra/account-tests` | [#23](https://github.com/LiNQ3ST/clash-of-claws/pull/23), [#26](https://github.com/LiNQ3ST/clash-of-claws/pull/26), [#32](https://github.com/LiNQ3ST/clash-of-claws/pull/32) | Custom reusable FXML component | in-progress |
+| 2 — Admin & Arenas| Nabiha Fatima |nfatima-csumb | #13, #14, #15, #16 | `nabiha/admin-arena-skeleton`                                                                | [#29](https://github.com/LiNQ3ST/clash-of-claws/pull/29) | Confirmation and Validation Dialogs | in-progress |
+| 3 — Battle Engine | Quinton Nisonger | QuintonScripts | #1, #2, #3, #4 | `quinton/battle-skeleton`, `quinton/shared-battle-logic`                                     | [#27](https://github.com/LiNQ3ST/clash-of-claws/pull/27) | Extra TestFX scene tests | in-progress |
+| 4 — Marketplace & Trading | Todd Gonzales | toddgonzales-xg | #9, #10, #11, #12 | `todd/trader`                                                                                | [#25](https://github.com/LiNQ3ST/clash-of-claws/pull/25) | Notifications / alerts | in-progress|
+| 5- Creature Roster| Luke McCormick |lumccormick-collab | #17, #18, #19  | `luke/creature-skeleton`, `luke/creatureDex`, `luke/starterCat`                               | [#28](https://github.com/LiNQ3ST/clash-of-claws/pull/28) | Data binding | in-progress |
 
 
 _Status values: planned · in-progress · complete_
@@ -38,18 +38,30 @@ Issue if the team later decides to attempt it for extra credit._
 - <Slice 5>: Luke McCormick, Creature Roster: Building Evolutions - out of scope.
 
 ## Code Review Log
-| PR  | Author           | Human reviewer(s)               | AI review (link) | Outcome   |
-|-----|------------------|---------------------------------|------------------|-----------|
-| #27 | Quinton Nisonger | Sahtra Green                    | -                | merged    |
-| #28 | Luke McCormick   | Todd Gonzales                   | -                | merged    |
-| #23 | Sahtra Green     | Quinton Nisonger                | -                | merged    |
-| #25 | Todd Gonzales    | Luke McCormick                  | -                | merged    |
-| #26 | Sahtra Green     | Nabiha Fatima, Quinton Nisonger | -                | merged    |
-| #29 | Nabiha Fatima    | Todd Gonzales                   | -                | merged    |
-| #32 | Sahtra Green     | Quinton Nisonger                | -                | in review |
+| PR | Author           | Human reviewer(s)                | AI review (link) | Outcome   |
+|--|------------------|----------------------------------|------------------|-----------|
+| #27 | Quinton Nisonger | Sahtra Green                     | -                | merged    |
+| #28 | Luke McCormick   | Todd Gonzales                    | -                | merged    |
+| #23 | Sahtra Green     | Quinton Nisonger                 | -                | merged    |
+| #25 | Todd Gonzales    | Luke McCormick                   | -                | merged    |
+| #26 | Sahtra Green     | Nabiha Fatima, Quinton Nisonger  | -                | merged    |
+| #29 | Nabiha Fatima    | Todd Gonzales                    | -                | merged    |
+| #32 | Sahtra Green     | Quinton Nisonger                 | -                | merged    |
+| #33 | Quinton Nisonger | Luke McCormick                   | -                | merged    |
+| #34 | Luke McCormick   | Quinton Nisonger                 | -                | merged    |
+| #35 | Luke McCormick   | Sahtra Green                     | -                | merged    |
+| #36 | Sahtra Green     | Luke McCormick, Quinton Nisonger | -                | merged    |
+| #37 | Todd Gonzales    | Quinton Nisonger                 | -                | merged    |
+| #38 | Todd Gonzales    | Quinton Nisonger                 | -                | merged    |
+| #39 | Luke McCormick   | Sahtra Green                     | -                | merged    |
+| #41 | Nabiha Fatima    | Quinton Nisonger, Sahtra Green   | -                | in review |
+| #42 | Luke McCormick   | Sahtra Green                     | -                | merged    |
+|  | Sahtra Green     |                                  | -                | in review |
+| #46 | Quinton Nisonger | -                                | [AI review + adjudication](PASTE-DIRECT-COMMENT-LINK) | in review |
 ## AI Usage Log
 - **AI-drafted tests:** <link to TESTING.md / commit> — per owner.
 - **AI code reviews:** <PR link + adjudication note> — per owner.
+- **AI code reviews:** [PR #46 — Wild Battle AI review and adjudication](PASTE-DIRECT-COMMENT-LINK) — Quinton Nisonger.
 
 ## Extra Credit Log
 | Item | Who | Evidence (Issue/PR) |
@@ -57,12 +69,50 @@ Issue if the team later decides to attempt it for extra credit._
 | Built Slice 5 | | #34 |
 
 ## Build & Run
-```
-./gradlew run        # launch the app
-./gradlew test       # run the test suite
-```
-**Requirements:**
+
+**Requirements**
+
 - JDK 25
-- IntelliJ IDEA
 - Git
 
+The Gradle Wrapper is included. JavaFX, SQLite, H2, JUnit, and TestFX dependencies are
+managed automatically by Gradle.
+
+### Clone & Build
+
+```bash
+git clone https://github.com/LiNQ3ST/clash-of-claws.git
+cd clash-of-claws
+./gradlew build
+```
+
+Windows users can use `gradlew.bat` in place of `./gradlew`.
+
+### Run
+
+```bash
+./gradlew run
+```
+
+The application opens to the Clash of Claws login screen. No manual database setup is
+required; the local `clash-of-claws.db` SQLite database is initialized automatically.
+
+### Tests
+
+Run the standard test suite:
+
+```bash
+./gradlew test
+```
+
+Run the TestFX UI suite:
+
+```bash
+./gradlew testfx
+```
+
+TestFX opens and interacts with the JavaFX UI, so it may temporarily control the mouse and
+keyboard while running.
+
+> **macOS:** TestFX requires Accessibility permission for the terminal or IDE running Gradle:
+> **System Settings → Privacy & Security → Accessibility**.
