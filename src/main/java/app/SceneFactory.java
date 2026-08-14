@@ -10,6 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import java.net.URL;
 
 /**
  * Creates and displays application scenes.
@@ -18,6 +19,7 @@ import javafx.stage.Stage;
  * @version 0.1.2
  * @since 8/5/2026
  */
+
 public final class SceneFactory {
 
   private static final double WINDOW_WIDTH = 960;
@@ -180,3 +182,4 @@ public final class SceneFactory {
     }
   }
 }
+
