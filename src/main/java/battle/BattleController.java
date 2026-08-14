@@ -22,6 +22,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.BorderPane;
 import javafx.util.Duration;
 import marketplace.TraderItem;
 import marketplace.TraderItemDAO;
@@ -78,6 +79,9 @@ public class BattleController {
 
   @FXML
   private VBox wildVictoryMenu;
+
+  @FXML
+  private BorderPane battleRoot;
 
   @FXML
   private Button abilityButton1;
@@ -189,6 +193,8 @@ public class BattleController {
     }
 
     currentArena = arena;
+
+    configureBattleBackground(battleType);
 
     hideAllMenus();
 
@@ -512,6 +518,19 @@ public class BattleController {
     }
 
     return true;
+  }
+
+  private void configureBattleBackground(BattleType battleType) {
+    battleRoot.getStyleClass().removeAll(
+            "wilds-background",
+            "arena-background"
+    );
+
+    if (battleType == BattleType.WILD) {
+      battleRoot.getStyleClass().add("wilds-background");
+    } else {
+      battleRoot.getStyleClass().add("arena-background");
+    }
   }
 
   private void hideAllMenus() {

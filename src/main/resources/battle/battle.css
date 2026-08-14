@@ -1,0 +1,169 @@
+/* ---------- Scene backgrounds ---------- */
+
+.battle-root {
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+    -fx-background-size: 100% 100%;
+}
+
+.battle-root.wilds-background {
+    -fx-background-image: url("../images/wilds-background.png");
+}
+
+.battle-root.arena-background {
+    -fx-background-image: url("../images/arena-background.png");
+}
+
+
+/* ---------- Cat shadows ---------- */
+
+.cat-shadow {
+    -fx-fill: rgba(33, 20, 12, 0.32);
+}
+
+
+/* ---------- Information cards ---------- */
+
+.battle-card {
+    -fx-background-color: rgba(255, 241, 201, 0.90);
+    -fx-background-radius: 4;
+
+    -fx-border-color: #6b4024;
+    -fx-border-width: 3;
+    -fx-border-radius: 4;
+
+    -fx-padding: 14;
+
+    -fx-effect:
+            dropshadow(
+                    gaussian,
+                    rgba(33, 20, 12, 0.35),
+                    8,
+                    0.15,
+                    0,
+                    3
+            );
+}
+
+.battle-name {
+    -fx-text-fill: #5a321d;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.battle-health {
+    -fx-text-fill: #432718;
+    -fx-font-size: 14px;
+}
+
+
+/* ---------- Message box ---------- */
+
+.battle-message-box {
+    -fx-background-color: rgba(255, 241, 201, 0.94);
+    -fx-background-radius: 4;
+
+    -fx-border-color: #6b4024;
+    -fx-border-width: 3;
+    -fx-border-radius: 4;
+
+    -fx-padding: 14;
+
+    -fx-effect:
+            dropshadow(
+                    gaussian,
+                    rgba(33, 20, 12, 0.35),
+                    8,
+                    0.15,
+                    0,
+                    3
+            );
+}
+
+.battle-message {
+    -fx-text-fill: #432718;
+    -fx-font-size: 15px;
+}
+
+
+/* ---------- Buttons ---------- */
+
+.primary-button {
+    -fx-background-color: #3a2819;
+    -fx-background-radius: 4;
+
+    -fx-border-color: #3f2416, #d7a94b;
+    -fx-border-width: 1, 2;
+    -fx-border-insets: 0, 1;
+    -fx-border-radius: 5, 4;
+
+    -fx-text-fill: #fff0bd;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+}
+
+.primary-button:hover {
+    -fx-background-color: #52351f;
+    -fx-border-color: #3f2416, #ffe08a;
+    -fx-text-fill: #fff0bd;
+}
+
+.primary-button:pressed {
+    -fx-background-color: #2e1d12;
+    -fx-translate-y: 1;
+}
+
+.battle-menu-title {
+    -fx-text-fill: #5a321d;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.battle-menu-button {
+    -fx-background-color: #3a2819;
+    -fx-background-radius: 4;
+
+    -fx-border-color: #3f2416, #d7a94b;
+    -fx-border-width: 1, 2;
+    -fx-border-insets: 0, 1;
+    -fx-border-radius: 5, 4;
+
+    -fx-text-fill: #fff0bd;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+
+    -fx-padding: 5 12 5 12;
+
+    -fx-cursor: hand;
+}
+
+.battle-menu-button:hover {
+    -fx-background-color: #52351f;
+    -fx-border-color: #3f2416, #ffe08a;
+    -fx-text-fill: #fff0bd;
+}
+
+.battle-menu-button:pressed {
+    -fx-background-color: #2e1d12;
+    -fx-translate-y: 1;
+}
+
+.battle-menu-panel {
+    -fx-background-color: rgba(255, 241, 201, 0.94);
+
+    -fx-border-color: #6b4024;
+    -fx-border-width: 3 0 0 0;
+
+    -fx-effect:
+            dropshadow(
+                    gaussian,
+                    rgba(33, 20, 12, 0.35),
+                    8,
+                    0.15,
+                    0,
+                    -2
+            );
+}
