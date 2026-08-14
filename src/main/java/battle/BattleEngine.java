@@ -12,10 +12,21 @@ import java.util.ArrayList;
  */
 public class BattleEngine {
 
-  private final Cat playerCat;
+  private Cat playerCat;
   private final Cat opponentCat;
   private final BattleType battleType;
   private BattleResult battleResult;
+
+  public BattleEngine(
+      Cat playerCat,
+      Cat opponentCat) {
+
+    this(
+        playerCat,
+        opponentCat,
+        BattleType.WILD
+    );
+  }
 
   public BattleEngine(
       Cat playerCat,
@@ -233,5 +244,30 @@ public class BattleEngine {
           "Battle is already over."
       );
     }
+  }
+
+  public void switchPlayerCat(Cat replacementCat) {
+
+    validateBattleActive();
+
+    if (replacementCat == null) {
+      throw new IllegalArgumentException(
+          "Replacement cat cannot be null."
+      );
+    }
+
+    if (replacementCat.getCurrentHp() <= 0) {
+      throw new IllegalArgumentException(
+          "A defeated cat cannot enter battle."
+      );
+    }
+
+    if (replacementCat == playerCat) {
+      throw new IllegalArgumentException(
+          "That cat is already battling."
+      );
+    }
+
+    playerCat = replacementCat;
   }
 }

@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.layout.Pane?>
 <BorderPane
   xmlns="http://javafx.com/javafx"
   xmlns:fx="http://javafx.com/fxml"
@@ -21,12 +22,24 @@
   minHeight="520.0">
 
   <center>
-    <VBox alignment="CENTER" spacing="22.0" maxWidth="900.0">
+    <VBox
+      alignment="CENTER"
+      spacing="12.0"
+      maxWidth="900.0">
+
       <padding>
-        <Insets top="28.0" right="35.0" bottom="15.0" left="35.0"/>
+        <Insets
+          top="20.0"
+          right="35.0"
+          bottom="10.0"
+          left="35.0"/>
       </padding>
 
-      <GridPane alignment="CENTER" hgap="55.0" vgap="38.0" maxWidth="820.0">
+      <GridPane
+        alignment="CENTER"
+        hgap="55.0"
+        vgap="20.0"
+        maxWidth="820.0">
         <columnConstraints>
           <ColumnConstraints percentWidth="50.0" halignment="CENTER" hgrow="ALWAYS"/>
           <ColumnConstraints percentWidth="50.0" halignment="CENTER" hgrow="ALWAYS"/>
@@ -54,26 +67,28 @@
 
         <StackPane
           minWidth="220.0"
-          minHeight="160.0"
+          minHeight="145.0"
           GridPane.columnIndex="1"
           GridPane.rowIndex="0">
           <ImageView
             fx:id="opponentCatImage"
-            fitWidth="160.0"
-            fitHeight="160.0"
+            fitWidth="145.0"
+            fitHeight="145.0"
             preserveRatio="true"
-            smooth="false"/>
+            smooth="false"
+            pickOnBounds="true"
+            onMouseClicked="#handleOpponentDebugClick"/>
         </StackPane>
 
         <StackPane
           minWidth="220.0"
-          minHeight="160.0"
+          minHeight="145.0"
           GridPane.columnIndex="0"
           GridPane.rowIndex="1">
           <ImageView
             fx:id="playerCatImage"
-            fitWidth="160.0"
-            fitHeight="160.0"
+            fitWidth="145.0"
+            fitHeight="145.0"
             preserveRatio="true"
             smooth="false"/>
         </StackPane>
@@ -101,16 +116,25 @@
 
       <StackPane
         fx:id="messageBox"
-        minHeight="78.0"
+        minWidth="760.0"
+        prefWidth="760.0"
         maxWidth="760.0"
-        onMouseClicked="#handleMessageClick"
-        style="-fx-border-color: #222222; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-color: white; -fx-background-radius: 5; -fx-padding: 14; -fx-cursor: hand;">
+        minHeight="100.0"
+        prefHeight="100.0"
+        maxHeight="100.0"
+        style="-fx-border-color: #222222;
+           -fx-border-width: 2;
+           -fx-border-radius: 5;
+           -fx-background-color: white;
+           -fx-background-radius: 5;
+           -fx-padding: 14;">
 
         <Label
           fx:id="battleMessageLabel"
           text="Battle has begun!"
           wrapText="true"
           maxWidth="700.0"
+          mouseTransparent="true"
           StackPane.alignment="CENTER_LEFT"
           style="-fx-font-size: 15px;"/>
 
@@ -120,7 +144,23 @@
           visible="false"
           mouseTransparent="true"
           StackPane.alignment="BOTTOM_RIGHT"
-          style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+          style="-fx-font-size: 14px;
+             -fx-font-weight: bold;"/>
+
+        <Button
+          fx:id="messageClickButton"
+          prefWidth="760.0"
+          prefHeight="100.0"
+          minWidth="760.0"
+          minHeight="100.0"
+          maxWidth="760.0"
+          maxHeight="100.0"
+          focusTraversable="false"
+          onAction="#handleMessageClick"
+          style="-fx-background-color: transparent;
+             -fx-border-color: transparent;
+             -fx-cursor: hand;"/>
+
       </StackPane>
     </VBox>
   </center>
@@ -132,14 +172,60 @@
       </padding>
 
       <HBox fx:id="actionMenu" alignment="CENTER" spacing="20.0">
-        <Button text="Attack" prefWidth="140.0" onAction="#handleAttack"/>
+        <Button
+          fx:id="attackButton"
+          text="Attack"
+          prefWidth="140.0"
+          onAction="#handleAttack"/>
         <Button
           fx:id="itemActionButton"
           text="Bag"
           prefWidth="140.0"
           onAction="#handleBag"/>
         <Button fx:id="runButton" text="Run" prefWidth="140.0" onAction="#handleRun"/>
+        <Button
+          fx:id="switchButton"
+          text="Switch"
+          prefWidth="140.0"
+          onAction="#handleSwitch"/>
       </HBox>
+
+      <VBox
+        fx:id="switchMenu"
+        alignment="CENTER"
+        spacing="8.0"
+        visible="false"
+        managed="false">
+
+        <Label text="Switch Cat"/>
+
+        <Button
+          fx:id="switchCatButton1"
+          prefWidth="220.0"
+          onAction="#handleSwitchCat"/>
+
+        <Button
+          fx:id="switchCatButton2"
+          prefWidth="220.0"
+          onAction="#handleSwitchCat"/>
+
+        <Button
+          fx:id="switchCatButton3"
+          prefWidth="220.0"
+          onAction="#handleSwitchCat"/>
+
+        <Button
+          fx:id="switchCatButton4"
+          prefWidth="220.0"
+          onAction="#handleSwitchCat"/>
+
+        <Button
+          fx:id="switchBackButton"
+          text="Back"
+          prefWidth="100.0"
+          onAction="#handleSwitchBack"/>
+
+      </VBox>
 
       <VBox
         fx:id="attackMenu"

@@ -179,13 +179,13 @@ class BattleControllerTest {
   }
 
   @Test
-  void basicCatchingItemHasFiftyPercentChance()
+  void toyMouseHasFiftyPercentBaseCatchChance()
       throws Exception {
 
     TraderItem item =
         new TraderItem(
             3,
-            "Basic Catching Item",
+            "Toy Mouse",
             "CATCHING",
             "A basic catching item.",
             25,
@@ -211,13 +211,13 @@ class BattleControllerTest {
   }
 
   @Test
-  void strongCatchingItemHasSeventyFivePercentChance()
+  void tunaCanHasSeventyFivePercentBaseCatchChance()
       throws Exception {
 
     TraderItem item =
         new TraderItem(
             4,
-            "Strong Catching Item",
+            "Tuna Can",
             "CATCHING",
             "A stronger catching item.",
             50,
@@ -451,5 +451,325 @@ class BattleControllerTest {
         );
 
     assertTrue(allowed);
+  }
+
+  @Test
+  void debugItemsTriggerOnTenthOpponentClick()
+      throws Exception {
+
+    Field clickCountField =
+        BattleController.class
+            .getDeclaredField(
+                "opponentDebugClickCount"
+            );
+
+    clickCountField.setAccessible(true);
+
+    Method rewardReady =
+        BattleController.class
+            .getDeclaredMethod(
+                "isDebugItemRewardReady"
+            );
+
+    rewardReady.setAccessible(true);
+
+    for (int i = 1; i < 10; i++) {
+
+      clickCountField.setInt(
+          controller,
+          i
+      );
+
+      boolean ready =
+          (boolean) rewardReady.invoke(
+              controller
+          );
+
+      assertFalse(
+          ready,
+          "Reward should not trigger at "
+              + i
+              + " clicks."
+      );
+    }
+
+    clickCountField.setInt(
+        controller,
+        10
+    );
+
+    boolean ready =
+        (boolean) rewardReady.invoke(
+            controller
+        );
+
+    assertTrue(
+        ready,
+        "Reward should trigger on click 10."
+    );
+  }
+
+  @Test
+  void debugItemsDoNotTriggerAtNineClicks()
+      throws Exception {
+
+    Field clickCountField =
+        BattleController.class
+            .getDeclaredField(
+                "opponentDebugClickCount"
+            );
+
+    clickCountField.setAccessible(true);
+
+    clickCountField.setInt(
+        controller,
+        9
+    );
+
+    Method rewardReady =
+        BattleController.class
+            .getDeclaredMethod(
+                "isDebugItemRewardReady"
+            );
+
+    rewardReady.setAccessible(true);
+
+    boolean ready =
+        (boolean) rewardReady.invoke(
+            controller
+        );
+
+    assertFalse(ready);
+  }
+
+  @Test
+  void toyMouseCatchChanceIncreasesBelowHalfHealth()
+      throws Exception {
+
+    TraderItem item =
+        new TraderItem(
+            3,
+            "Toy Mouse",
+            "CATCHING",
+            "A basic catching item.",
+            25,
+            5
+        );
+
+    ArrayList<String> abilities =
+        new ArrayList<>();
+
+    abilities.add("SCRATCH");
+
+    Cat playerCat =
+        new Cat(
+            "Player",
+            "Tabby",
+            100,
+            abilities,
+            true,
+            true
+        );
+
+    Cat opponentCat =
+        new Cat(
+            "Opponent",
+            "Siamese",
+            100,
+            abilities,
+            false,
+            false
+        );
+
+    opponentCat.setCurrentHp(50);
+
+    BattleEngine engine =
+        new BattleEngine(
+            playerCat,
+            opponentCat,
+            BattleType.WILD
+        );
+
+    setBattleEngine(engine);
+
+    Method method =
+        BattleController.class
+            .getDeclaredMethod(
+                "getAdjustedCatchChance",
+                TraderItem.class
+            );
+
+    method.setAccessible(true);
+
+    int chance =
+        (int) method.invoke(
+            controller,
+            item
+        );
+
+    assertEquals(
+        60,
+        chance
+    );
+  }
+
+  @Test
+  void toyMouseCatchChanceIncreasesAtQuarterHealth()
+      throws Exception {
+
+    TraderItem item =
+        new TraderItem(
+            3,
+            "Toy Mouse",
+            "CATCHING",
+            "A basic catching item.",
+            25,
+            5
+        );
+
+    ArrayList<String> abilities =
+        new ArrayList<>();
+
+    abilities.add("SCRATCH");
+
+    Cat playerCat =
+        new Cat(
+            "Player",
+            "Tabby",
+            100,
+            abilities,
+            true,
+            true
+        );
+
+    Cat opponentCat =
+        new Cat(
+            "Opponent",
+            "Siamese",
+            100,
+            abilities,
+            false,
+            false
+        );
+
+    opponentCat.setCurrentHp(25);
+
+    BattleEngine engine =
+        new BattleEngine(
+            playerCat,
+            opponentCat,
+            BattleType.WILD
+        );
+
+    setBattleEngine(engine);
+
+    Method method =
+        BattleController.class
+            .getDeclaredMethod(
+                "getAdjustedCatchChance",
+                TraderItem.class
+            );
+
+    method.setAccessible(true);
+
+    int chance =
+        (int) method.invoke(
+            controller,
+            item
+        );
+
+    assertEquals(
+        70,
+        chance
+    );
+  }
+
+  @Test
+  void tunaCanCatchChanceCapsAtNinetyFive()
+      throws Exception {
+
+    TraderItem item =
+        new TraderItem(
+            4,
+            "Tuna Can",
+            "CATCHING",
+            "A stronger catching item.",
+            50,
+            5
+        );
+
+    ArrayList<String> abilities =
+        new ArrayList<>();
+
+    abilities.add("SCRATCH");
+
+    Cat playerCat =
+        new Cat(
+            "Player",
+            "Tabby",
+            100,
+            abilities,
+            true,
+            true
+        );
+
+    Cat opponentCat =
+        new Cat(
+            "Opponent",
+            "Siamese",
+            100,
+            abilities,
+            false,
+            false
+        );
+
+    opponentCat.setCurrentHp(10);
+
+    BattleEngine engine =
+        new BattleEngine(
+            playerCat,
+            opponentCat,
+            BattleType.WILD
+        );
+
+    setBattleEngine(engine);
+
+    Method method =
+        BattleController.class
+            .getDeclaredMethod(
+                "getAdjustedCatchChance",
+                TraderItem.class
+            );
+
+    method.setAccessible(true);
+
+    int chance =
+        (int) method.invoke(
+            controller,
+            item
+        );
+
+    assertEquals(
+        95,
+        chance
+    );
+  }
+
+  private void setBattleEngine(
+      BattleEngine engine)
+      throws Exception {
+
+    Field field =
+        BattleController.class
+            .getDeclaredField(
+                "battleEngine"
+            );
+
+    field.setAccessible(true);
+
+    field.set(
+        controller,
+        engine
+    );
   }
 }

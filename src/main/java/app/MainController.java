@@ -20,27 +20,25 @@ public class MainController {
   }
 
   @FXML
-  private void handleBackToLogin() {
-    SceneFactory.show(SceneType.LOGIN);
-  }
-
-  @FXML
   private void handleOptions() {
     SceneFactory.show(SceneType.OPTIONS);
   }
 
   @FXML
   private void handleBattle() {
+
     Player player =
         AccountService.getInstance()
             .getCurrentPlayer()
             .orElse(null);
 
     if (player == null || player.getPlayerId() == null) {
+      System.out.println("Wild battle blocked: no logged-in player.");
       return;
     }
 
     if (player.getActiveCatId() == null) {
+      System.out.println("Wild battle blocked: no active cat.");
       return;
     }
 
@@ -52,7 +50,17 @@ public class MainController {
             player.getPlayerId()
         );
 
-    if (playerCat == null || playerCat.getCurrentHp() <= 0) {
+    if (playerCat == null) {
+      System.out.println("Wild battle blocked: active cat not found.");
+      return;
+    }
+
+    if (playerCat.getCurrentHp() <= 0) {
+      System.out.println(
+          "Wild battle blocked: "
+              + playerCat.getName()
+              + " has 0 HP."
+      );
       return;
     }
 
@@ -68,7 +76,7 @@ public class MainController {
 
   @FXML
   private void handleArena() {
-    SceneFactory.show(SceneType.ARENA);
+    SceneFactory.show(SceneType.PLAYER_ARENA);
   }
 
   @FXML

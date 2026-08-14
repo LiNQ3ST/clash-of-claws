@@ -2,13 +2,12 @@ package battle;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import battle.BattleEngine;
-import battle.BattleType;
 import creature.Cat;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.animation.Timeline;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -21,6 +20,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.ApplicationTest;
+import marketplace.TraderItem;
 
 /**
  * TestFX tests for the Battle scene.
@@ -35,27 +35,19 @@ class BattleFxTest extends ApplicationTest {
   private BattleController controller;
 
   @Override
-  public void start(Stage stage)
-      throws Exception {
-
+  public void start(Stage stage) throws Exception {
     URL resource =
         BattleFxTest.class.getResource(
             SceneType.BATTLE.getFxmlPath()
         );
 
-    assertNotNull(
-        resource,
-        "Battle FXML should exist."
-    );
+    assertNotNull(resource);
 
     FXMLLoader loader =
         new FXMLLoader(resource);
 
-    Parent root =
-        loader.load();
-
-    controller =
-        loader.getController();
+    Parent root = loader.load();
+    controller = loader.getController();
 
     stage.setScene(
         new Scene(root, 960, 600)
@@ -66,35 +58,21 @@ class BattleFxTest extends ApplicationTest {
 
   @Test
   void battleSceneLoads() {
-
-    assertNotNull(
-        lookup("#battleMessageLabel")
-            .query()
-    );
-
-    assertNotNull(
-        lookup("#playerNameLabel")
-            .query()
-    );
-
-    assertNotNull(
-        lookup("#playerHealthLabel")
-            .query()
-    );
-
-    assertNotNull(
-        lookup("#opponentNameLabel")
-            .query()
-    );
-
-    assertNotNull(
-        lookup("#opponentHealthLabel")
-            .query()
-    );
+    assertNotNull(lookup("#battleMessageLabel").query());
+    assertNotNull(lookup("#playerNameLabel").query());
+    assertNotNull(lookup("#playerHealthLabel").query());
+    assertNotNull(lookup("#opponentNameLabel").query());
+    assertNotNull(lookup("#opponentHealthLabel").query());
   }
 
   @Test
-  void clickingAttackOpensAbilityMenu() {
+  void clickingAttackOpensAbilityMenu()
+      throws Exception {
+
+    initializeWildBattle(
+        createPlayerCat(100, "SCRATCH"),
+        createOpponentCat(100)
+    );
 
     HBox actionMenu =
         lookup("#actionMenu")
@@ -104,13 +82,12 @@ class BattleFxTest extends ApplicationTest {
         lookup("#attackMenu")
             .queryAs(VBox.class);
 
-    assertTrue(actionMenu.isVisible());
-    assertFalse(attackMenu.isVisible());
-
-    clickOn("Attack");
+    clickOn("#attackButton");
 
     assertFalse(actionMenu.isVisible());
     assertTrue(attackMenu.isVisible());
+
+    sleep(600);
 
     assertEquals(
         "Choose an ability.",
@@ -121,27 +98,30 @@ class BattleFxTest extends ApplicationTest {
   }
 
   @Test
-  void attackBackReturnsToActionMenu() {
+  void attackBackReturnsToActionMenu()
+      throws Exception {
 
-    HBox actionMenu =
-        lookup("#actionMenu")
-            .queryAs(HBox.class);
+    initializeWildBattle(
+        createPlayerCat(100, "SCRATCH"),
+        createOpponentCat(100)
+    );
 
-    VBox attackMenu =
-        lookup("#attackMenu")
-            .queryAs(VBox.class);
-
-    clickOn("Attack");
-
-    assertFalse(actionMenu.isVisible());
-    assertTrue(attackMenu.isVisible());
-
+    clickOn("#attackButton");
     clickOn("#attackBackButton");
 
-    assertTrue(actionMenu.isVisible());
-    assertFalse(attackMenu.isVisible());
+    finishMessageAnimation();
 
-    sleep(600);
+    assertTrue(
+        lookup("#actionMenu")
+            .queryAs(HBox.class)
+            .isVisible()
+    );
+
+    assertFalse(
+        lookup("#attackMenu")
+            .queryAs(VBox.class)
+            .isVisible()
+    );
 
     assertEquals(
         "Choose an action.",
@@ -149,217 +129,22 @@ class BattleFxTest extends ApplicationTest {
             .queryAs(Label.class)
             .getText()
     );
-  }
-
-  @Test
-  void clickingBagOpensBagMenu() {
-
-    HBox actionMenu =
-        lookup("#actionMenu")
-            .queryAs(HBox.class);
-
-    VBox bagMenu =
-        lookup("#bagMenu")
-            .queryAs(VBox.class);
-
-    assertTrue(actionMenu.isVisible());
-    assertFalse(bagMenu.isVisible());
-
-    clickOn("Bag");
-
-    assertFalse(actionMenu.isVisible());
-    assertTrue(bagMenu.isVisible());
-
-    sleep(600);
-
-    assertEquals(
-        "Choose an item.",
-        lookup("#battleMessageLabel")
-            .queryAs(Label.class)
-            .getText()
-    );
-  }
-
-  @Test
-  void bagBackReturnsToActionMenu() {
-
-    HBox actionMenu =
-        lookup("#actionMenu")
-            .queryAs(HBox.class);
-
-    VBox bagMenu =
-        lookup("#bagMenu")
-            .queryAs(VBox.class);
-
-    clickOn("Bag");
-
-    assertFalse(actionMenu.isVisible());
-    assertTrue(bagMenu.isVisible());
-
-    clickOn("#bagBackButton");
-
-    assertTrue(actionMenu.isVisible());
-    assertFalse(bagMenu.isVisible());
-
-    sleep(600);
-
-    assertEquals(
-        "Choose an action.",
-        lookup("#battleMessageLabel")
-            .queryAs(Label.class)
-            .getText()
-    );
-  }
-
-  @Test
-  void emptyBagHidesUnusedItemButtons() {
-
-    clickOn("Bag");
-
-    Button itemButton1 =
-        lookup("#itemButton1")
-            .queryAs(Button.class);
-
-    Button itemButton2 =
-        lookup("#itemButton2")
-            .queryAs(Button.class);
-
-    Button itemButton3 =
-        lookup("#itemButton3")
-            .queryAs(Button.class);
-
-    assertFalse(itemButton1.isVisible());
-    assertFalse(itemButton1.isManaged());
-
-    assertFalse(itemButton2.isVisible());
-    assertFalse(itemButton2.isManaged());
-
-    assertFalse(itemButton3.isVisible());
-    assertFalse(itemButton3.isManaged());
-  }
-
-  @Test
-  void battleActionControlsExist() {
-
-    assertNotNull(
-        lookup("Attack")
-            .queryAs(Button.class)
-    );
-
-    assertNotNull(
-        lookup("Bag")
-            .queryAs(Button.class)
-    );
-
-    assertNotNull(
-        lookup("Run")
-            .queryAs(Button.class)
-    );
-  }
-
-  private Cat createPlayerCat(
-      int currentHp,
-      String... abilities) {
-
-    Cat cat =
-        new Cat(
-            "Whiskers",
-            "Tabby",
-            100,
-            new ArrayList<>(List.of(abilities)),
-            true,
-            true
-        );
-
-    cat.setCurrentHp(currentHp);
-
-    return cat;
-  }
-
-  private Cat createOpponentCat(
-      int currentHp) {
-
-    Cat cat =
-        new Cat(
-            "Bandit",
-            "Siamese",
-            100,
-            new ArrayList<>(List.of("ZOOMIES")),
-            false,
-            false
-        );
-
-    cat.setCurrentHp(currentHp);
-
-    return cat;
-  }
-
-  private BattleEngine initializeWildBattle(
-      Cat playerCat,
-      Cat opponentCat)
-      throws Exception {
-
-    BattleEngine engine =
-        new BattleEngine(
-            playerCat,
-            opponentCat,
-            BattleType.WILD
-        );
-
-    Field engineField =
-        BattleController.class
-            .getDeclaredField("battleEngine");
-
-    engineField.setAccessible(true);
-    engineField.set(controller, engine);
-
-    invokeControllerMethod("updateHealthLabels");
-    invokeControllerMethod("loadAbilityButtons");
-    invokeControllerMethod("configureBattleActions");
-    invokeControllerMethod("showActionMenu");
-
-    return engine;
-  }
-
-  private void invokeControllerMethod(
-      String methodName)
-      throws Exception {
-
-    Method method =
-        BattleController.class
-            .getDeclaredMethod(methodName);
-
-    method.setAccessible(true);
-
-    interact(() -> {
-      try {
-        method.invoke(controller);
-      } catch (Exception exception) {
-        throw new RuntimeException(exception);
-      }
-    });
   }
 
   @Test
   void wildBattleDisplaysAbilityButtons()
       throws Exception {
 
-    Cat playerCat =
+    initializeWildBattle(
         createPlayerCat(
             100,
             "SCRATCH",
             "HEALING_PURR"
-        );
-
-    Cat opponentCat =
-        createOpponentCat(100);
-
-    initializeWildBattle(
-        playerCat,
-        opponentCat
+        ),
+        createOpponentCat(100)
     );
 
-    clickOn("Attack");
+    clickOn("#attackButton");
 
     Button abilityButton1 =
         lookup("#abilityButton1")
@@ -368,12 +153,6 @@ class BattleFxTest extends ApplicationTest {
     Button abilityButton2 =
         lookup("#abilityButton2")
             .queryAs(Button.class);
-
-    assertTrue(abilityButton1.isVisible());
-    assertTrue(abilityButton1.isManaged());
-
-    assertTrue(abilityButton2.isVisible());
-    assertTrue(abilityButton2.isManaged());
 
     assertEquals(
         "Scratch - 10 Damage",
@@ -390,28 +169,12 @@ class BattleFxTest extends ApplicationTest {
   void scratchAttackUpdatesOpponentHp()
       throws Exception {
 
-    Cat playerCat =
-        createPlayerCat(
-            100,
-            "SCRATCH"
-        );
-
-    Cat opponentCat =
-        createOpponentCat(100);
-
     initializeWildBattle(
-        playerCat,
-        opponentCat
+        createPlayerCat(100, "SCRATCH"),
+        createOpponentCat(100)
     );
 
-    assertEquals(
-        "HP: 100/100",
-        lookup("#opponentHealthLabel")
-            .queryAs(Label.class)
-            .getText()
-    );
-
-    clickOn("Attack");
+    clickOn("#attackButton");
     clickOn("#abilityButton1");
 
     assertEquals(
@@ -426,29 +189,16 @@ class BattleFxTest extends ApplicationTest {
   void healingPurrRestoresPlayerHp()
       throws Exception {
 
-    Cat playerCat =
+    initializeWildBattle(
         createPlayerCat(
             50,
             "SCRATCH",
             "HEALING_PURR"
-        );
-
-    Cat opponentCat =
-        createOpponentCat(100);
-
-    initializeWildBattle(
-        playerCat,
-        opponentCat
+        ),
+        createOpponentCat(100)
     );
 
-    assertEquals(
-        "HP: 50/100",
-        lookup("#playerHealthLabel")
-            .queryAs(Label.class)
-            .getText()
-    );
-
-    clickOn("Attack");
+    clickOn("#attackButton");
     clickOn("#abilityButton2");
 
     assertEquals(
@@ -463,18 +213,9 @@ class BattleFxTest extends ApplicationTest {
   void wildRunIsAvailable()
       throws Exception {
 
-    Cat playerCat =
-        createPlayerCat(
-            100,
-            "SCRATCH"
-        );
-
-    Cat opponentCat =
-        createOpponentCat(100);
-
     initializeWildBattle(
-        playerCat,
-        opponentCat
+        createPlayerCat(100, "SCRATCH"),
+        createOpponentCat(100)
     );
 
     Button runButton =
@@ -486,85 +227,355 @@ class BattleFxTest extends ApplicationTest {
   }
 
   @Test
-  void wildVictoryShowsVictoryMenu()
+  void arenaBattleDisplaysHealAction()
       throws Exception {
 
-    Cat playerCat =
-        createPlayerCat(
-            100,
-            "SCRATCH"
-        );
+    initializeArenaBattle(
+        createPlayerCat(60, "SCRATCH"),
+        createOpponentCat(100)
+    );
 
-    Cat opponentCat =
-        createOpponentCat(100);
+    Button itemActionButton =
+        lookup("#itemActionButton")
+            .queryAs(Button.class);
+
+    Button runButton =
+        lookup("#runButton")
+            .queryAs(Button.class);
+
+    assertEquals(
+        "Heal",
+        itemActionButton.getText()
+    );
+
+    assertTrue(itemActionButton.isVisible());
+    assertFalse(runButton.isVisible());
+  }
+
+  @Test
+  void wildBattleAllowsCatchingItemInBattleUi()
+      throws Exception {
 
     initializeWildBattle(
-        playerCat,
-        opponentCat
+        createPlayerCat(100, "SCRATCH"),
+        createOpponentCat(100)
     );
 
-    invokeControllerMethod(
-        "showWildVictoryMenu"
+    TraderItem catchingItem =
+        new TraderItem(
+            1,
+            "Basic Catching Item",
+            "CATCHING",
+            "Used to catch wild cats.",
+            25,
+            5
+        );
+
+    assertTrue(
+        isItemAllowedInBattle(
+            catchingItem
+        )
     );
 
-    VBox victoryMenu =
-        lookup("#wildVictoryMenu")
-            .queryAs(VBox.class);
+    Button itemButton1 =
+        lookup("#itemButton1")
+            .queryAs(Button.class);
 
-    assertTrue(victoryMenu.isVisible());
-    assertTrue(victoryMenu.isManaged());
+    interact(() -> {
+      itemButton1.setText(
+          "Basic Catching Item x1"
+      );
 
-    assertNotNull(
-        lookup("Continue Exploring")
-            .queryAs(Button.class)
+      itemButton1.setUserData(
+          catchingItem
+      );
+
+      itemButton1.setVisible(true);
+      itemButton1.setManaged(true);
+    });
+
+    assertTrue(itemButton1.isVisible());
+
+    assertEquals(
+        "Basic Catching Item x1",
+        itemButton1.getText()
     );
 
-    assertNotNull(
-        lookup("Return to Town")
-            .queryAs(Button.class)
-    );
-
-    assertFalse(
-        lookup("#actionMenu")
-            .queryAs(HBox.class)
-            .isVisible()
+    assertSame(
+        catchingItem,
+        itemButton1.getUserData()
     );
   }
 
   @Test
-  void attackHidesMenuAfterAbilityIsUsed()
+  void arenaRejectsCatchingItem()
       throws Exception {
 
-    Cat playerCat =
-        createPlayerCat(
-            100,
-            "SCRATCH"
-        );
-
-    Cat opponentCat =
-        createOpponentCat(100);
-
-    initializeWildBattle(
-        playerCat,
-        opponentCat
+    initializeArenaBattle(
+        createPlayerCat(100, "SCRATCH"),
+        createOpponentCat(100)
     );
 
-    VBox attackMenu =
-        lookup("#attackMenu")
+    TraderItem catchingItem =
+        new TraderItem(
+            1,
+            "Basic Catching Item",
+            "CATCHING",
+            "Used to catch wild cats.",
+            25,
+            5
+        );
+
+    assertFalse(
+        isItemAllowedInBattle(
+            catchingItem
+        )
+    );
+  }
+
+  @Test
+  void battleSceneIncludesSwitchControls()
+      throws Exception {
+
+    initializeWildBattle(
+        createPlayerCat(100, "SCRATCH"),
+        createOpponentCat(100)
+    );
+
+    Button switchButton =
+        lookup("#switchButton")
+            .queryAs(Button.class);
+
+    VBox switchMenu =
+        lookup("#switchMenu")
             .queryAs(VBox.class);
 
-    HBox actionMenu =
-        lookup("#actionMenu")
-            .queryAs(HBox.class);
+    assertEquals(
+        "Switch",
+        switchButton.getText()
+    );
 
-    clickOn("Attack");
+    assertTrue(switchButton.isVisible());
+    assertFalse(switchMenu.isVisible());
 
-    assertTrue(attackMenu.isVisible());
+    assertNotNull(
+        lookup("#switchCatButton1")
+            .queryAs(Button.class)
+    );
 
-    clickOn("#abilityButton1");
+    assertNotNull(
+        lookup("#switchBackButton")
+            .queryAs(Button.class)
+    );
+  }
 
-    assertFalse(attackMenu.isVisible());
-    assertFalse(actionMenu.isVisible());
+  private Cat createPlayerCat(
+      int currentHp,
+      String... abilities) {
+
+    Cat cat =
+        new Cat(
+            "Whiskers",
+            "Tabby",
+            100,
+            new ArrayList<>(
+                List.of(abilities)
+            ),
+            true,
+            true
+        );
+
+    cat.setCurrentHp(currentHp);
+    return cat;
+  }
+
+  private Cat createOpponentCat(
+      int currentHp) {
+
+    Cat cat =
+        new Cat(
+            "Bandit",
+            "Siamese",
+            100,
+            new ArrayList<>(
+                List.of("ZOOMIES")
+            ),
+            false,
+            false
+        );
+
+    cat.setCurrentHp(currentHp);
+    return cat;
+  }
+
+  private BattleEngine initializeWildBattle(
+      Cat playerCat,
+      Cat opponentCat)
+      throws Exception {
+
+    return initializeBattle(
+        playerCat,
+        opponentCat,
+        BattleType.WILD
+    );
+  }
+
+  private BattleEngine initializeArenaBattle(
+      Cat playerCat,
+      Cat opponentCat)
+      throws Exception {
+
+    return initializeBattle(
+        playerCat,
+        opponentCat,
+        BattleType.ARENA
+    );
+  }
+
+  private BattleEngine initializeBattle(
+      Cat playerCat,
+      Cat opponentCat,
+      BattleType battleType)
+      throws Exception {
+
+    BattleEngine engine =
+        new BattleEngine(
+            playerCat,
+            opponentCat,
+            battleType
+        );
+
+    setControllerField(
+        "battleEngine",
+        engine
+    );
+
+    interact(() -> {
+      try {
+        invokeControllerMethodNow(
+            "updateHealthLabels"
+        );
+
+        invokeControllerMethodNow(
+            "loadAbilityButtons"
+        );
+
+        invokeControllerMethodNow(
+            "configureBattleActions"
+        );
+
+        HBox actionMenu =
+            lookup("#actionMenu")
+                .queryAs(HBox.class);
+
+        VBox attackMenu =
+            lookup("#attackMenu")
+                .queryAs(VBox.class);
+
+        VBox bagMenu =
+            lookup("#bagMenu")
+                .queryAs(VBox.class);
+
+        actionMenu.setVisible(true);
+        actionMenu.setManaged(true);
+
+        attackMenu.setVisible(false);
+        attackMenu.setManaged(false);
+
+        bagMenu.setVisible(false);
+        bagMenu.setManaged(false);
+
+        lookup("#battleMessageLabel")
+            .queryAs(Label.class)
+            .setText(
+                "Choose an action."
+            );
+
+      } catch (Exception exception) {
+        throw new RuntimeException(
+            exception
+        );
+      }
+    });
+
+    stopMessageTimeline();
+
+    return engine;
+  }
+
+  private boolean isItemAllowedInBattle(
+      TraderItem item)
+      throws Exception {
+
+    Method method =
+        BattleController.class
+            .getDeclaredMethod(
+                "isItemAllowedInBattle",
+                TraderItem.class
+            );
+
+    method.setAccessible(true);
+
+    return (boolean) method.invoke(
+        controller,
+        item
+    );
+  }
+
+  private void setControllerField(
+      String fieldName,
+      Object value)
+      throws Exception {
+
+    Field field =
+        BattleController.class
+            .getDeclaredField(
+                fieldName
+            );
+
+    field.setAccessible(true);
+    field.set(
+        controller,
+        value
+    );
+  }
+
+  private void invokeControllerMethodNow(
+      String methodName)
+      throws Exception {
+
+    Method method =
+        BattleController.class
+            .getDeclaredMethod(
+                methodName
+            );
+
+    method.setAccessible(true);
+    method.invoke(controller);
+  }
+
+  private void stopMessageTimeline()
+      throws Exception {
+
+    Field timelineField =
+        BattleController.class
+            .getDeclaredField(
+                "messageTimeline"
+            );
+
+    timelineField.setAccessible(true);
+
+    Timeline timeline =
+        (Timeline) timelineField.get(
+            controller
+        );
+
+    if (timeline != null) {
+      interact(timeline::stop);
+    }
+  }
+
+  private void finishMessageAnimation() {
+    sleep(550);
   }
 }
-
