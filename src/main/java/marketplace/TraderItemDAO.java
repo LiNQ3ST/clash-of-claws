@@ -1,6 +1,5 @@
 package marketplace;
-/*
- */
+
 import database.DatabaseManager;
 
 import java.sql.Connection;
@@ -24,107 +23,200 @@ public class TraderItemDAO {
     }
 
     /**
-     * Constructor used by tests so the DAO can connect to an in-memory H2 database.
+     * Constructor used by tests so the DAO can connect
+     * to an in-memory H2 database.
      */
     public TraderItemDAO(String jdbcUrl) {
         if (jdbcUrl == null || jdbcUrl.isBlank()) {
-            throw new IllegalArgumentException("JDBC URL cannot be blank.");
+            throw new IllegalArgumentException(
+                    "JDBC URL cannot be blank."
+            );
         }
+
         this.jdbcUrl = jdbcUrl;
     }
 
-    public TraderItem createItem(TraderItem item) throws SQLException {
+    public TraderItem createItem(TraderItem item)
+            throws SQLException {
+
         validateItem(item);
 
         String sql = """
                 INSERT INTO trader_items
-                    (item_name, item_type, description, price, stock_quantity)
+                    (
+                        item_name,
+                        item_type,
+                        description,
+                        price,
+                        stock_quantity
+                    )
                 VALUES (?, ?, ?, ?, ?)
                 """;
 
-        try (Connection connection = openConnection();
-             PreparedStatement statement = connection.prepareStatement(
-                     sql,
-                     Statement.RETURN_GENERATED_KEYS
-             )) {
+        try (
+                Connection connection = openConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(
+                                sql,
+                                Statement.RETURN_GENERATED_KEYS
+                        )
+        ) {
 
             setItemParameters(statement, item);
-            int rowsInserted = statement.executeUpdate();
+
+            int rowsInserted =
+                    statement.executeUpdate();
 
             if (rowsInserted != 1) {
-                throw new SQLException("The trader item was not inserted.");
+                throw new SQLException(
+                        "The trader item was not inserted."
+                );
             }
 
-            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+            try (
+                    ResultSet generatedKeys =
+                            statement.getGeneratedKeys()
+            ) {
+
                 if (!generatedKeys.next()) {
-                    throw new SQLException("The database did not return an item ID.");
+                    throw new SQLException(
+                            "The database did not return an item ID."
+                    );
                 }
-                item.setItemId(generatedKeys.getInt(1));
+
+                item.setItemId(
+                        generatedKeys.getInt(1)
+                );
             }
 
             return item;
         }
     }
 
-    public Optional<TraderItem> findById(int itemId) throws SQLException {
+    public Optional<TraderItem> findById(int itemId)
+            throws SQLException {
+
         String sql = """
-                SELECT item_id, item_name, item_type, description, price, stock_quantity
+                SELECT
+                    item_id,
+                    item_name,
+                    item_type,
+                    description,
+                    price,
+                    stock_quantity
                 FROM trader_items
                 WHERE item_id = ?
                 """;
 
-        try (Connection connection = openConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (
+                Connection connection = openConnection();
 
-            statement.setInt(1, itemId);
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
 
-            try (ResultSet resultSet = statement.executeQuery()) {
+            statement.setInt(
+                    1,
+                    itemId
+            );
+
+            try (
+                    ResultSet resultSet =
+                            statement.executeQuery()
+            ) {
+
                 if (resultSet.next()) {
-                    return Optional.of(mapItem(resultSet));
+                    return Optional.of(
+                            mapItem(resultSet)
+                    );
                 }
+
                 return Optional.empty();
             }
         }
     }
 
-    public List<TraderItem> findAll() throws SQLException {
+    public List<TraderItem> findAll()
+            throws SQLException {
+
         String sql = """
-                SELECT item_id, item_name, item_type, description, price, stock_quantity
+                SELECT
+                    item_id,
+                    item_name,
+                    item_type,
+                    description,
+                    price,
+                    stock_quantity
                 FROM trader_items
                 ORDER BY item_name
                 """;
-        return runListQuery(sql, null);
+
+        return runListQuery(
+                sql,
+                null
+        );
     }
 
-    public List<TraderItem> findAllAvailableItems() throws SQLException {
+    public List<TraderItem> findAllAvailableItems()
+            throws SQLException {
+
         String sql = """
-                SELECT item_id, item_name, item_type, description, price, stock_quantity
+                SELECT
+                    item_id,
+                    item_name,
+                    item_type,
+                    description,
+                    price,
+                    stock_quantity
                 FROM trader_items
                 WHERE stock_quantity > 0
                 ORDER BY item_name
                 """;
-        return runListQuery(sql, null);
+
+        return runListQuery(
+                sql,
+                null
+        );
     }
 
-    public List<TraderItem> findByItemType(String itemType) throws SQLException {
+    public List<TraderItem> findByItemType(String itemType)
+            throws SQLException {
+
         if (itemType == null || itemType.isBlank()) {
-            throw new IllegalArgumentException("Item type cannot be blank.");
+            throw new IllegalArgumentException(
+                    "Item type cannot be blank."
+            );
         }
 
         String sql = """
-                SELECT item_id, item_name, item_type, description, price, stock_quantity
+                SELECT
+                    item_id,
+                    item_name,
+                    item_type,
+                    description,
+                    price,
+                    stock_quantity
                 FROM trader_items
                 WHERE UPPER(item_type) = ?
                 ORDER BY item_name
                 """;
 
-        return runListQuery(sql, itemType.trim().toUpperCase(Locale.ROOT));
+        return runListQuery(
+                sql,
+                itemType.trim().toUpperCase(Locale.ROOT)
+        );
     }
 
-    public boolean updateItem(TraderItem item) throws SQLException {
+    public boolean updateItem(TraderItem item)
+            throws SQLException {
+
         validateItem(item);
+
         if (item.getItemId() <= 0) {
-            throw new IllegalArgumentException("Item ID must be greater than zero.");
+            throw new IllegalArgumentException(
+                    "Item ID must be greater than zero."
+            );
         }
 
         String sql = """
@@ -137,39 +229,123 @@ public class TraderItemDAO {
                 WHERE item_id = ?
                 """;
 
-        try (Connection connection = openConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (
+                Connection connection = openConnection();
 
-            setItemParameters(statement, item);
-            statement.setInt(6, item.getItemId());
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+
+            setItemParameters(
+                    statement,
+                    item
+            );
+
+            statement.setInt(
+                    6,
+                    item.getItemId()
+            );
+
             return statement.executeUpdate() == 1;
         }
     }
 
-    public boolean deleteItem(int itemId) throws SQLException {
-        String sql = "DELETE FROM trader_items WHERE item_id = ?";
+    /**
+     * Restores the four default Trader items
+     * to their original stock levels.
+     *
+     * Small Potion -> 10
+     * Large Potion -> 5
+     * Toy Mouse    -> 8
+     * Tuna Can     -> 3
+     */
+    public int restockDefaultItems()
+            throws SQLException {
 
-        try (Connection connection = openConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        String sql = """
+                UPDATE trader_items
+                SET stock_quantity =
+                    CASE item_name
+                        WHEN 'Small Potion' THEN 10
+                        WHEN 'Large Potion' THEN 5
+                        WHEN 'Toy Mouse' THEN 8
+                        WHEN 'Tuna Can' THEN 3
+                        ELSE stock_quantity
+                    END
+                WHERE item_name IN (
+                    'Small Potion',
+                    'Large Potion',
+                    'Toy Mouse',
+                    'Tuna Can'
+                )
+                """;
 
-            statement.setInt(1, itemId);
+        try (
+                Connection connection = openConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+
+            return statement.executeUpdate();
+        }
+    }
+
+    public boolean deleteItem(int itemId)
+            throws SQLException {
+
+        String sql = """
+                DELETE FROM trader_items
+                WHERE item_id = ?
+                """;
+
+        try (
+                Connection connection = openConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+
+            statement.setInt(
+                    1,
+                    itemId
+            );
+
             return statement.executeUpdate() == 1;
         }
     }
 
-    private List<TraderItem> runListQuery(String sql, String parameter) throws SQLException {
-        List<TraderItem> items = new ArrayList<>();
+    private List<TraderItem> runListQuery(
+            String sql,
+            String parameter
+    ) throws SQLException {
 
-        try (Connection connection = openConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        List<TraderItem> items =
+                new ArrayList<>();
+
+        try (
+                Connection connection = openConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
 
             if (parameter != null) {
-                statement.setString(1, parameter);
+                statement.setString(
+                        1,
+                        parameter
+                );
             }
 
-            try (ResultSet resultSet = statement.executeQuery()) {
+            try (
+                    ResultSet resultSet =
+                            statement.executeQuery()
+            ) {
+
                 while (resultSet.next()) {
-                    items.add(mapItem(resultSet));
+                    items.add(
+                            mapItem(resultSet)
+                    );
                 }
             }
         }
@@ -177,25 +353,57 @@ public class TraderItemDAO {
         return items;
     }
 
-    private Connection openConnection() throws SQLException {
+    private Connection openConnection()
+            throws SQLException {
+
         if (jdbcUrl == null) {
-            return DatabaseManager.getInstance().getConnection();
+            return DatabaseManager
+                    .getInstance()
+                    .getConnection();
         }
-        return DriverManager.getConnection(jdbcUrl);
+
+        return DriverManager.getConnection(
+                jdbcUrl
+        );
     }
 
     private static void setItemParameters(
             PreparedStatement statement,
             TraderItem item
     ) throws SQLException {
-        statement.setString(1, item.getItemName().trim());
-        statement.setString(2, item.getItemType().trim().toUpperCase(Locale.ROOT));
-        statement.setString(3, item.getDescription().trim());
-        statement.setInt(4, item.getPrice());
-        statement.setInt(5, item.getStockQuantity());
+
+        statement.setString(
+                1,
+                item.getItemName().trim()
+        );
+
+        statement.setString(
+                2,
+                item.getItemType()
+                        .trim()
+                        .toUpperCase(Locale.ROOT)
+        );
+
+        statement.setString(
+                3,
+                item.getDescription().trim()
+        );
+
+        statement.setInt(
+                4,
+                item.getPrice()
+        );
+
+        statement.setInt(
+                5,
+                item.getStockQuantity()
+        );
     }
 
-    private static TraderItem mapItem(ResultSet resultSet) throws SQLException {
+    private static TraderItem mapItem(
+            ResultSet resultSet
+    ) throws SQLException {
+
         return new TraderItem(
                 resultSet.getInt("item_id"),
                 resultSet.getString("item_name"),
@@ -206,23 +414,53 @@ public class TraderItemDAO {
         );
     }
 
-    private static void validateItem(TraderItem item) {
-        Objects.requireNonNull(item, "Trader item cannot be null.");
-        requireText(item.getItemName(), "Item name");
-        requireText(item.getItemType(), "Item type");
-        requireText(item.getDescription(), "Description");
+    private static void validateItem(
+            TraderItem item
+    ) {
+
+        Objects.requireNonNull(
+                item,
+                "Trader item cannot be null."
+        );
+
+        requireText(
+                item.getItemName(),
+                "Item name"
+        );
+
+        requireText(
+                item.getItemType(),
+                "Item type"
+        );
+
+        requireText(
+                item.getDescription(),
+                "Description"
+        );
 
         if (item.getPrice() < 0) {
-            throw new IllegalArgumentException("Price cannot be negative.");
+            throw new IllegalArgumentException(
+                    "Price cannot be negative."
+            );
         }
+
         if (item.getStockQuantity() < 0) {
-            throw new IllegalArgumentException("Stock quantity cannot be negative.");
+            throw new IllegalArgumentException(
+                    "Stock quantity cannot be negative."
+            );
         }
     }
 
-    private static void requireText(String value, String fieldName) {
+    private static void requireText(
+            String value,
+            String fieldName
+    ) {
+
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException(fieldName + " cannot be blank.");
+            throw new IllegalArgumentException(
+                    fieldName
+                            + " cannot be blank."
+            );
         }
     }
 }

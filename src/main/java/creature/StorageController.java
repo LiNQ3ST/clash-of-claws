@@ -44,6 +44,7 @@ public class StorageController {
 
     private ObservableList<Cat> storedCats;
 
+    private static final int MAX_PARTY_SIZE = 4;
 
     private CatDAO catDAO;
 
@@ -105,7 +106,8 @@ public class StorageController {
                         Bindings.concat(
                                 "Party: ",
                                 Bindings.size(partyCats),
-                                " / 4"
+                                " / " ,
+                                MAX_PARTY_SIZE
                         )
                 );
 
@@ -178,98 +180,6 @@ public class StorageController {
     }
 
 
-    /**
-     * Swaps one selected party cat
-     * with one selected stored cat.
-     */
-    @FXML
-    private void handleSwap() {
-
-        Cat partyCat =
-                partyListView
-                        .getSelectionModel()
-                        .getSelectedItem();
-
-
-        Cat storedCat =
-                storageListView
-                        .getSelectionModel()
-                        .getSelectedItem();
-
-
-        if (partyCat == null
-                || storedCat == null) {
-
-            statusLabel.setText(
-                    "Select one party cat and one stored cat."
-            );
-
-            return;
-        }
-
-
-        /*
-         * Do not allow the active cat
-         * to be placed into storage.
-         */
-        if (isActiveCat(partyCat)) {
-
-            statusLabel.setText(
-                    "The active cat cannot be moved to storage."
-            );
-
-            return;
-        }
-
-
-        boolean swapped =
-                catDAO.swapCats(
-                        partyCat,
-                        storedCat,
-                        player.getPlayerId()
-                );
-
-
-        if (swapped) {
-
-            /*
-             * The DAO already saved the changes
-             * to the database.
-             *
-             * Now update our ObservableLists.
-             */
-            partyCats.remove(
-                    partyCat
-            );
-
-            storedCats.remove(
-                    storedCat
-            );
-
-
-            partyCats.add(
-                    storedCat
-            );
-
-            storedCats.add(
-                    partyCat
-            );
-
-
-            statusLabel.setText(
-                    partyCat.getName()
-                            + " was swapped with "
-                            + storedCat.getName()
-                            + "."
-            );
-
-        } else {
-
-            statusLabel.setText(
-                    "The cats could not be swapped."
-            );
-        }
-    }
 
 
     /**
@@ -299,7 +209,7 @@ public class StorageController {
          * We can use the size of our
          * ObservableList here.
          */
-        if (partyCats.size() >= 4) {
+        if (partyCats.size() >= MAX_PARTY_SIZE) {
 
             statusLabel.setText(
                     "The party is already full."

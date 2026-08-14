@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.ApplicationTest;
 
@@ -43,6 +44,7 @@ public class StorageControllerTest
 
 
   @Test
+  @Tag("testfx")
   public void partyCountUpdatesWhenCatIsAdded() {
 
     ListView<Cat> partyList =
