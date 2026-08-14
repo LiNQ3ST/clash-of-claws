@@ -15,14 +15,30 @@ public class BattleEngine {
 
   private final Cat playerCat;
   private final Cat opponentCat;
-  private boolean battleWon;
-  private boolean battleLost;
+  private final BattleType battleType;
+  private BattleResult battleResult;
 
-  public BattleEngine(Cat playerCat, Cat opponentCat) {
+  public BattleEngine(Cat playerCat, Cat opponentCat, BattleType battleType) {
+
+    if (playerCat == null) {
+      throw new IllegalArgumentException(
+          "Player cat cannot be null.");
+    }
+
+    if (opponentCat == null) {
+      throw new IllegalArgumentException(
+          "Opponent cat cannot be null.");
+    }
+
+    if (battleType == null) {
+      throw new IllegalArgumentException(
+          "Battle type cannot be null.");
+    }
+
     this.playerCat = playerCat;
     this.opponentCat = opponentCat;
-    this.battleWon = false;
-    this.battleLost = false;
+    this.battleType = battleType;
+    this.battleResult = BattleResult.IN_PROGRESS;
   }
 
   public Cat getPlayerCat() {
@@ -33,33 +49,43 @@ public class BattleEngine {
     return opponentCat;
   }
 
+  public BattleResult getBattleResult() {
+    return battleResult;
+  }
+
+  public BattleType getBattleType() {
+    return battleType;
+  }
+
+  public boolean isBattleOver() {
+    return battleResult != BattleResult.IN_PROGRESS;
+  }
+
   public boolean isBattleWon() {
-    return battleWon;
+    return battleResult == BattleResult.VICTORY;
   }
 
   public boolean isBattleLost() {
-    return battleLost;
+    return battleResult == BattleResult.DEFEAT;
   }
 
   protected void ability(Cat attacker, Cat target, String abilityName) {
 
-    if (battleWon || battleLost) {
-      throw new IllegalStateException("Battle has already ended.");
-    }
+    validateBattleActive();
 
     if (attacker.getCurrentHp() <= 0) {
       throw new IllegalStateException("A defeated cat cannot act.");
     }
 
     switch (abilityName) {
-      case "Scratch" -> attack(target, 10); //TODO damage over time (bleed)
-      case "Pounce" -> attack(target, 15);
-      case "Hairball" -> attack(target, 8);
-      case "Healing Purr" -> heal(attacker, 20);
-      case "Night Claw" -> attack(target, 18);
-      case "Flame Paw" -> attack(target, 20); //TODO damage over time (burn)
-      case "Tail Whip" -> attack(target, 12);
-      case "Zoomies" -> attack(target, 4); //TODO hits 2-3 times
+      case "SCRATCH" -> attack(target, 10);
+      case "POUNCE" -> attack(target, 15);
+      case "HAIRBALL" -> attack(target, 8);
+      case "HEALING_PURR" -> heal(attacker, 20);
+      case "NIGHT_CLAW" -> attack(target, 18);
+      case "FLAME_PAW" -> attack(target, 20);
+      case "TAIL_WHIP" -> attack(target, 12);
+      case "ZOOMIES" -> attack(target, 4);
       default -> throw new IllegalArgumentException(
           "Unknown ability: " + abilityName);
     }
@@ -75,19 +101,42 @@ public class BattleEngine {
       target.setCurrentHp(0);
 
       if (target == opponentCat) {
-        battleWon = true;
-      } else if(target == playerCat) {
-        battleLost = true;
+        battleResult = BattleResult.VICTORY;
+      } else if (target == playerCat) {
+        battleResult = BattleResult.DEFEAT;
       }
     } else {
       target.setCurrentHp(newHp);
     }
   }
 
-  public String opponentTurn() {
-    if (battleWon || battleLost) {
-      throw new IllegalStateException("Battle has already ended.");
+  // TODO opponent attack logic (NPC AI)
+
+  // TODO make sure run button only visible in wild battles
+  public boolean attemptRun(int roll) {
+    validateBattleActive();
+
+    if (battleType != BattleType.WILD) {
+      throw new IllegalStateException(
+          "Run is only available during wild battles.");
     }
+
+    if (roll < 0 || roll > 99) {
+      throw new IllegalArgumentException(
+          "Escape roll must be between 0 and 99.");
+    }
+
+    boolean escaped = roll >= 50;
+
+    if (escaped) {
+      battleResult = BattleResult.ESCAPED;
+    }
+
+    return escaped;
+  }
+
+  public String opponentTurn() {
+    validateBattleActive();
 
     ArrayList<String> abilities = opponentCat.getAbilities();
 
@@ -102,9 +151,7 @@ public class BattleEngine {
   }
 
   public String playerTurn(String abilityName) {
-    if (battleWon || battleLost) {
-      throw new IllegalStateException("Battle has already ended.");
-    }
+    validateBattleActive();
 
     if (!playerCat.getAbilities().contains(abilityName)) {
       throw new IllegalArgumentException(
@@ -117,6 +164,12 @@ public class BattleEngine {
     return abilityName;
   }
 
+  private void validateBattleActive() {
+    if (isBattleOver()) {
+      throw new IllegalStateException(
+          "Battle has already ended.");
+    }
+  }
 
 }
 
