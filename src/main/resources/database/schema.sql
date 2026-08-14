@@ -61,19 +61,19 @@ CREATE TABLE IF NOT EXISTS cats (
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS trader_items (
-    item_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    item_name TEXT NOT NULL,
-    item_type TEXT NOT NULL,
-    description TEXT NOT NULL,
-    price INTEGER NOT NULL CHECK (price >= 0),
+                                            item_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                            item_name TEXT NOT NULL,
+                                            item_type TEXT NOT NULL,
+                                            description TEXT NOT NULL,
+                                            price INTEGER NOT NULL CHECK (price >= 0),
     stock_quantity INTEGER NOT NULL CHECK (stock_quantity >= 0)
     );
 
 CREATE TABLE IF NOT EXISTS player_inventory (
-    inventory_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    player_id INTEGER NOT NULL,
-    item_id INTEGER NOT NULL,
-    quantity INTEGER NOT NULL DEFAULT 0 CHECK (quantity >= 0),
+                                                inventory_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                                player_id INTEGER NOT NULL,
+                                                item_id INTEGER NOT NULL,
+                                                quantity INTEGER NOT NULL DEFAULT 0 CHECK (quantity >= 0),
 
     UNIQUE (player_id, item_id),
 
@@ -85,11 +85,25 @@ CREATE TABLE IF NOT EXISTS player_inventory (
     );
 
 -- ============================================================================
+-- Rename Original Catching Items
+-- ============================================================================
+-- These UPDATE statements allow existing game databases to keep their
+-- current item IDs and inventory relationships while changing the names.
+
+UPDATE trader_items
+SET item_name = 'Toy Mouse',
+    description = 'A toy mouse used to catch cats.'
+WHERE item_name = 'Basic Catching Item';
+
+UPDATE trader_items
+SET item_name = 'Tuna Can',
+    description = 'A tasty can of tuna with a better chance of catching cats.'
+WHERE item_name = 'Strong Catching Item';
+
+-- ============================================================================
 -- Default Trader Items
 -- ============================================================================
--- These items are added to the normal game database when the application
--- starts. WHERE NOT EXISTS prevents duplicate items from being added
--- every time the application is launched.
+-- WHERE NOT EXISTS prevents duplicate default items when the game starts.
 
 INSERT INTO trader_items (
     item_name,
@@ -137,15 +151,15 @@ INSERT INTO trader_items (
     stock_quantity
 )
 SELECT
-    'Basic Catching Item',
+    'Toy Mouse',
     'CATCHING',
-    'A basic item used to catch creatures.',
+    'A toy mouse used to catch cats.',
     40,
     8
     WHERE NOT EXISTS (
     SELECT 1
     FROM trader_items
-    WHERE item_name = 'Basic Catching Item'
+    WHERE item_name = 'Toy Mouse'
 );
 
 INSERT INTO trader_items (
@@ -156,13 +170,13 @@ INSERT INTO trader_items (
     stock_quantity
 )
 SELECT
-    'Strong Catching Item',
+    'Tuna Can',
     'CATCHING',
-    'A stronger item with a better chance of catching creatures.',
+    'A tasty can of tuna with a better chance of catching cats.',
     90,
     3
     WHERE NOT EXISTS (
     SELECT 1
     FROM trader_items
-    WHERE item_name = 'Strong Catching Item'
+    WHERE item_name = 'Tuna Can'
 );

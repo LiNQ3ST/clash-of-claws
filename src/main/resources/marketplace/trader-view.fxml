@@ -173,9 +173,9 @@
             <Region HBox.hgrow="ALWAYS"/>
 
             <Button fx:id="refreshTraderButton"
-                    text="Refresh"
-                    onAction="#refreshAll"
-                    prefWidth="120"
+                    text="Restock Trader"
+                    onAction="#restockTrader"
+                    prefWidth="160"
                     styleClass="primary-button"/>
         </HBox>
 

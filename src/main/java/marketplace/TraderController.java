@@ -132,6 +132,29 @@ public class TraderController {
         refreshPlayerAndCreatures();
     }
 
+    @FXML
+    private void restockTrader() {
+
+        try {
+            traderItemDAO.restockDefaultItems();
+
+            refreshItems();
+
+            TraderNotification.success(
+                    "Trader Restocked",
+                    "The trader has received new supplies!",
+                    "Potions and catching items have been restored to their starting stock."
+            );
+
+        } catch (SQLException exception) {
+
+            TraderNotification.error(
+                    "Restock Failed",
+                    "The trader's stock could not be restored.",
+                    exception.getMessage()
+            );
+        }
+    }
     private void refreshItems() {
         try {
             traderItemsTable.setItems(FXCollections.observableArrayList(
