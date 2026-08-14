@@ -392,4 +392,83 @@ class BattleEngineTest {
         () -> wildBattleEngine.getAbilityAmount("LASER_EYES")
     );
   }
+
+  @Test
+  void playerCanSwitchCats() {
+
+    ArrayList<String> abilities =
+        new ArrayList<>();
+
+    abilities.add("POUNCE");
+
+    Cat replacementCat =
+        new Cat(
+            "Mittens",
+            "Calico",
+            80,
+            abilities,
+            true,
+            true
+        );
+
+    wildBattleEngine.switchPlayerCat(
+        replacementCat
+    );
+
+    assertSame(
+        replacementCat,
+        wildBattleEngine.getPlayerCat()
+    );
+
+    assertSame(
+        opponentCat,
+        wildBattleEngine.getOpponentCat()
+    );
+
+    assertEquals(
+        BattleResult.IN_PROGRESS,
+        wildBattleEngine.getBattleResult()
+    );
+  }
+
+  @Test
+  void defeatedCatCannotBeSwitchedIntoBattle() {
+
+    ArrayList<String> abilities =
+        new ArrayList<>();
+
+    abilities.add("POUNCE");
+
+    Cat replacementCat =
+        new Cat(
+            "Mittens",
+            "Calico",
+            80,
+            abilities,
+            true,
+            true
+        );
+
+    replacementCat.setCurrentHp(0);
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            wildBattleEngine.switchPlayerCat(
+                replacementCat
+            )
+    );
+  }
+
+  @Test
+  void cannotSwitchToCurrentCat() {
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            wildBattleEngine.switchPlayerCat(
+                playerCat
+            )
+    );
+  }
 }
