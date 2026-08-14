@@ -20,12 +20,48 @@ CST 338 Project 2 — Team **L!NQ3ST**.
 |-------|--------------|-----------------|----------------|----------------------------------------------------------------------------------------------|-----|--------------------|--------|
 | 1 — Accounts | Sahtra Green | SahtraRG | #5, #6, #7, #8 | `sahtra/player-data`, `sahtra/account-scenes`, `sahtra/account-auth`, `sahtra/account-tests` | [#23](https://github.com/LiNQ3ST/clash-of-claws/pull/23), [#26](https://github.com/LiNQ3ST/clash-of-claws/pull/26), [#32](https://github.com/LiNQ3ST/clash-of-claws/pull/32) | Custom reusable FXML component | in-progress |
 | 2 — Admin & Arenas| Nabiha Fatima |nfatima-csumb | #13, #14, #15, #16 | `nabiha/admin-arena-skeleton`                                                                | [#29](https://github.com/LiNQ3ST/clash-of-claws/pull/29) | Confirmation and Validation Dialogs | in-progress |
-| 3 — Battle Engine | Quinton Nisonger | QuintonScripts | #1, #2, #3, #4 | `quinton/battle-skeleton`, `quinton/shared-battle-logic`                                     | [#27](https://github.com/LiNQ3ST/clash-of-claws/pull/27) | Extra TestFX scene tests | in-progress |
+| 3 — Battle Engine | Quinton Nisonger | QuintonScripts | #1, #2, #3, #4 | `quinton/battle-skeleton`, `quinton/shared-battle-logic`, `quinton/wild-battles` | [#27](https://github.com/LiNQ3ST/clash-of-claws/pull/27), [#46](https://github.com/LiNQ3ST/clash-of-claws/pull/46) | Extra TestFX scene tests | in-progress |
 | 4 — Marketplace & Trading | Todd Gonzales | toddgonzales-xg | #9, #10, #11, #12 | `todd/trader`                                                                                | [#25](https://github.com/LiNQ3ST/clash-of-claws/pull/25) | Notifications / alerts | in-progress|
 | 5- Creature Roster| Luke McCormick |lumccormick-collab | #17, #18, #19  | `luke/creature-skeleton`, `luke/creatureDex`, `luke/starterCat`                               | [#28](https://github.com/LiNQ3ST/clash-of-claws/pull/28) | Data binding | in-progress |
 
 
 _Status values: planned · in-progress · complete_
+
+## Battle Engine Issue Progress
+
+### Issue #2 — Wild Battle Integration
+- Integrated Wild battles with the shared `BattleEngine`.
+- Added Wild battle attack, escape, healing, catching, and victory/defeat flows.
+- Added player inventory support to the Battle Bag.
+- Added healing items with HP caps and item consumption.
+- Added catching items using the marketplace `Toy Mouse` and `Tuna Can`.
+- Added HP-based catch chance bonuses for weakened Wild cats.
+- Added successful capture persistence to creature storage.
+- Added Wild battle rewards and persistence.
+- Added unit and UI coverage for Wild battle behavior.
+
+**PR:** [#46 — Quinton/wild battles](https://github.com/LiNQ3ST/clash-of-claws/pull/46)
+
+### Issue #3 — Arena Battle Integration
+- Integrated Arena battles with the shared `BattleEngine`.
+- Added Arena-specific battle behavior and action restrictions.
+- Disabled Catch and Run behavior for Arena battles.
+- Added Arena victory rewards and battle outcome persistence.
+- Added Arena defeat handling and return-to-town flow.
+- Added Arena-focused unit tests.
+
+**Deferred:** Per-player Arena completion tracking will be handled separately because the required completion-status system is not currently part of the battle implementation.
+
+### Issue #4 — Battle UI & Final Integration
+- Added in-battle party cat switching.
+- Switching updates the active cat's sprite, HP, and available abilities.
+- Added opponent turns after switching and item use.
+- Improved battle dialogue progression and the full-size clickable message area.
+- Updated the battle layout and action menus for the shared Wild/Arena scene.
+- Added and updated battle UI/TestFX coverage.
+- Added a temporary opponent-click debug shortcut for testing battle inventory items.
+- Cleaned up integration issues from the merged Wild and Arena battle branches.
+
 
 ## WILL NOT DO (declared scope cuts)
 _Slices and beyond-scope items we are consciously NOT building. Move an item to a tracked
@@ -57,7 +93,10 @@ Issue if the team later decides to attempt it for extra credit._
 | #41 | Nabiha Fatima    | Quinton Nisonger, Sahtra Green   | -                | in review |
 | #42 | Luke McCormick   | Sahtra Green                     | -                | merged    |
 |  | Sahtra Green     |                                  | -                | in review |
-| #46 | Quinton Nisonger | -                                | [AI review + adjudication](PASTE-DIRECT-COMMENT-LINK) | in review |
+| #33 | Quinton Nisonger | Luke McCormick | - | merged |
+| #46 | Quinton Nisonger | Sahtra Green, Todd Gonzales | [AI review + adjudication](PASTE-DIRECT-COMMENT-LINK) | merged |
+| #52 | Quinton Nisonger | Sahtra Green | - | merged |
+
 ## AI Usage Log
 - **AI-drafted tests:** <link to TESTING.md / commit> — per owner.
 - **AI code reviews:** <PR link + adjudication note> — per owner.

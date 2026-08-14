@@ -10,12 +10,24 @@ import java.util.ArrayList;
  * @version 0.1.0
  * @since 8/9/2026
  */
+
 public class BattleEngine {
 
-  private final Cat playerCat;
+  private Cat playerCat;
   private final Cat opponentCat;
   private final BattleType battleType;
   private BattleResult battleResult;
+
+  public BattleEngine(
+      Cat playerCat,
+      Cat opponentCat) {
+
+    this(
+        playerCat,
+        opponentCat,
+        BattleType.WILD
+    );
+  }
 
   public BattleEngine(
       Cat playerCat,
@@ -112,6 +124,48 @@ public class BattleEngine {
     }
   }
 
+  public String playerTurn(String abilityName) {
+    validateBattleActive();
+
+    ArrayList<String> abilities = playerCat.getAbilities();
+
+    if (abilities == null || !abilities.contains(abilityName)) {
+      throw new IllegalArgumentException(
+          "Player cat does not know ability: " + abilityName
+      );
+    }
+
+    ability(
+        playerCat,
+        opponentCat,
+        abilityName
+    );
+
+    return abilityName;
+  }
+
+  public String opponentTurn() {
+    validateBattleActive();
+
+    ArrayList<String> abilities = opponentCat.getAbilities();
+
+    if (abilities == null || abilities.isEmpty()) {
+      throw new IllegalStateException(
+          "Opponent cat has no abilities."
+      );
+    }
+
+    String abilityName = abilities.get(0);
+
+    ability(
+        opponentCat,
+        playerCat,
+        abilityName
+    );
+
+    return abilityName;
+  }
+
   public void heal(Cat target, int amount) {
     validateBattleActive();
 
@@ -155,52 +209,6 @@ public class BattleEngine {
     return false;
   }
 
-
-  public String opponentTurn() {
-    validateBattleActive();
-
-    ArrayList<String> abilities = opponentCat.getAbilities();
-
-    if (abilities == null || abilities.isEmpty()) {
-      throw new IllegalStateException(
-              "Opponent cat has no abilities."
-      );
-    }
-
-    String abilityName = abilities.get(0);
-
-    ability(
-            opponentCat,
-            playerCat,
-            abilityName
-    );
-
-    return abilityName;
-  }
-
-
-  public String playerTurn(String abilityName) {
-    validateBattleActive();
-
-    ArrayList<String> abilities = playerCat.getAbilities();
-
-    if (abilities == null || !abilities.contains(abilityName)) {
-      throw new IllegalArgumentException(
-              "Player cat does not know ability: " + abilityName
-      );
-    }
-
-    ability(
-            playerCat,
-            opponentCat,
-            abilityName
-    );
-
-    return abilityName;
-  }
-
-
-
   public int getAbilityAmount(String abilityName) {
     return switch (abilityName) {
       case "SCRATCH" -> 10;
@@ -241,5 +249,30 @@ public class BattleEngine {
           "Battle is already over."
       );
     }
+  }
+
+  public void switchPlayerCat(Cat replacementCat) {
+
+    validateBattleActive();
+
+    if (replacementCat == null) {
+      throw new IllegalArgumentException(
+          "Replacement cat cannot be null."
+      );
+    }
+
+    if (replacementCat.getCurrentHp() <= 0) {
+      throw new IllegalArgumentException(
+          "A defeated cat cannot enter battle."
+      );
+    }
+
+    if (replacementCat == playerCat) {
+      throw new IllegalArgumentException(
+          "That cat is already battling."
+      );
+    }
+
+    playerCat = replacementCat;
   }
 }
