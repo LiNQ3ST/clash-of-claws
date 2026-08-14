@@ -285,12 +285,6 @@ public class BattleController {
       button.setManaged(false);
     }
 
-    for (Button button : itemButtons) {
-      button.setVisible(false);
-      button.setManaged(false);
-      button.setUserData(null);
-    }
-
     try {
       List<TraderItem> allItems =
           traderItemDAO.findAll();
@@ -336,87 +330,6 @@ public class BattleController {
       );
     }
   }
-
-  /*
-  private void useItem(PlayerInventoryItem item) {
-
-    if (item.isPotion()) {
-        useHealingItem(item);
-        return;
-    }
-
-    if (item.isCatchingItem()) {
-        useCatchingItem(item);
-    }
-}
-
-private void useHealingItem(...) {
-
-    // 1. verify quantity > 0
-
-    // 2. get healing value
-
-    battleEngine.heal(
-        battleEngine.getPlayerCat(),
-        healingAmount
-    );
-
-    // 3. consume one from inventory
-
-    // 4. update HP display
-    updateHealthLabels();
-
-    // 5. close Bag
-    bagMenu.setVisible(false);
-    bagMenu.setManaged(false);
-
-    // 6. show message, then opponent attacks
-    showMessage(
-        battleEngine.getPlayerCat().getName()
-            + " recovered "
-            + healingAmount
-            + " HP!",
-        this::performOpponentTurn
-    );
-}
-
-private void useCatchingItem(...) {
-
-    // 1. verify this is a Wild battle
-
-    if (battleEngine.getBattleType() != BattleType.WILD) {
-        return;
-    }
-
-    // 2. consume one catching item
-
-    // 3. calculate capture success
-
-    if (captured) {
-
-        // Luke roster handoff here
-
-        battleRecord.setStatus("CAPTURED");
-        battleDAO.update(battleRecord);
-
-        persistPlayerCat();
-
-        showMessage(
-            battleEngine.getOpponentCat().getName()
-                + " was captured!",
-            () -> SceneFactory.show(SceneType.MAIN)
-        );
-
-        return;
-    }
-
-    showMessage(
-        "The cat broke free!",
-        this::performOpponentTurn
-    );
-}
-   */
-
 
   private String formatAbilityName(String abilityId) {
     String[] words = abilityId.toLowerCase().split("_");
@@ -833,14 +746,25 @@ private void useCatchingItem(...) {
 
     if (captured) {
 
+      Cat capturedCat =
+          battleEngine.getOpponentCat();
+
+      capturedCat.setPlayerCat(true);
+      capturedCat.setInParty(false);
+
+      catDAO.insert(
+          capturedCat,
+          currentPlayer.getPlayerId()
+      );
+
       battleRecord.setStatus("CAPTURED");
       battleDAO.update(battleRecord);
 
       persistPlayerCat();
 
       showMessage(
-          battleEngine.getOpponentCat().getName()
-              + " was captured!",
+          capturedCat.getName()
+              + " was captured and sent to storage!",
           () -> SceneFactory.show(SceneType.MAIN)
       );
 
