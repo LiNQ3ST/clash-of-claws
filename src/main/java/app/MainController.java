@@ -1,6 +1,5 @@
 package app;
 
-
 import account.AccountService;
 import account.AccountService;
 import account.Player;
@@ -9,14 +8,22 @@ import creature.CatDAO;
 import creature.CatGenerator;
 import javafx.fxml.FXML;
 import battle.BattleType;
+import javafx.scene.control.Label;
 
 public class MainController {
 
-    @FXML
-    private void handleBackToLogin() {
-        AccountService.getInstance().logout();
-        SceneFactory.show(SceneType.LOGIN);
-    }
+  @FXML
+  private Label currencyLabel;
+
+  @FXML
+  private void initialize() {
+    refreshCurrency();
+  }
+
+  @FXML
+  private void handleOptions() {
+    SceneFactory.show(SceneType.OPTIONS);
+  }
 
   @FXML
   private void handleBattle() {
@@ -82,5 +89,30 @@ public class MainController {
   @FXML
   private void handleStorage() {
     SceneFactory.show(SceneType.STORAGE);
+  }
+
+  @FXML
+  private void handleCatDex() {
+    SceneFactory.show(SceneType.CAT_DEX);
+  }
+
+  @FXML
+  private void handleParty() {
+    SceneFactory.show(SceneType.PARTY);
+  }
+
+  @FXML
+  private void handleStorage() {
+    SceneFactory.show(SceneType.STORAGE);
+  }
+
+  private void refreshCurrency() {
+    AccountService.getInstance()
+        .getCurrentPlayer()
+        .ifPresent(player ->
+            currencyLabel.setText(
+                "Coins: " + player.getCurrencyBalance()
+            )
+        );
   }
 }

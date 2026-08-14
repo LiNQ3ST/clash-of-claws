@@ -5,6 +5,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 
+<?import javafx.scene.control.Label?>
 <StackPane xmlns:fx="http://javafx.com/fxml"
            fx:controller="app.MainController"
            prefWidth="960.0"
@@ -95,20 +96,22 @@
         <!-- Utility navigation -->
         <HBox layoutX="300.0"
               layoutY="548.0"
-              prefWidth="240.0"
               prefHeight="42.0"
               alignment="CENTER"
-              spacing="30"
+              spacing="18"
               styleClass="town-hud">
+
+            <Label fx:id="currencyLabel"
+                   text="Coins: 0"
+                   styleClass="hud-label"/>
 
             <Button text="View Party"
                     onAction="#handleParty"
                     focusTraversable="false"
                     styleClass="hud-button"/>
 
-
-            <Button text="Log Out"
-                    onAction="#handleBackToLogin"
+            <Button text="Options"
+                    onAction="#handleOptions"
                     focusTraversable="false"
                     styleClass="hud-button"/>
 

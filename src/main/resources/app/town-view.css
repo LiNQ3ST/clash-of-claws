@@ -48,9 +48,16 @@
 }
 
 .town-hud {
-    -fx-background-color: rgba(35, 26, 20, 0.72);
-    -fx-background-radius: 9;
-    -fx-padding: 5 8 5 8;
+    -fx-background-color: rgba(42, 31, 24, 0.78);
+    -fx-background-radius: 12px;
+    -fx-padding: 6px 14px;
+}
+
+.hud-label {
+    -fx-text-fill: #f1cf72;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 6px 8px;
 }
 
 .hud-button {

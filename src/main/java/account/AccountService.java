@@ -30,6 +30,24 @@ public class AccountService {
         return INSTANCE;
     }
 
+    public void deleteCurrentAccount() throws SQLException {
+        if (currentPlayer == null) {
+            throw new IllegalStateException(
+                    "No player is currently logged in."
+            );
+        }
+
+        int playerId = currentPlayer.getPlayerId();
+
+        if (!playerDAO.deleteAccount(playerId)) {
+            throw new SQLException(
+                    "Unable to delete account."
+            );
+        }
+
+        currentPlayer = null;
+    }
+
     public void register(String username, String password, String confirmation)
             throws SQLException {
 
@@ -119,5 +137,64 @@ public class AccountService {
 
             throw new IllegalArgumentException("Please enter credentials to continue.");
         }
+    }
+
+    public void updatePassword(
+            String currentPassword,
+            String newPassword,
+            String confirmation
+    ) throws SQLException {
+
+        Player player = currentPlayer;
+
+        if (player == null) {
+            throw new IllegalStateException("No player is currently logged in.");
+        }
+
+        if (!PasswordHasher.matches(
+                currentPassword,
+                player.getPasswordHash()
+        )) {
+            throw new IllegalArgumentException(
+                    "Current password is incorrect."
+            );
+        }
+
+        if (newPassword == null || newPassword.isBlank()) {
+            throw new IllegalArgumentException(
+                    "New password is required."
+            );
+        }
+
+        if (newPassword.length() < 6 || newPassword.length() > 64) {
+            throw new IllegalArgumentException(
+                    "Password must be between 6 and 64 characters."
+            );
+        }
+
+        if (!newPassword.equals(confirmation)) {
+            throw new IllegalArgumentException(
+                    "Passwords do not match."
+            );
+        }
+
+        String previousHash = player.getPasswordHash();
+
+        player.setPasswordHash(
+                PasswordHasher.hash(newPassword)
+        );
+
+        try {
+            if (!playerDAO.update(player)) {
+                throw new SQLException(
+                        "Unable to update password."
+                );
+            }
+        } catch (SQLException exception) {
+            player.setPasswordHash(previousHash);
+            throw exception;
+        }
+
+
     }
 }
