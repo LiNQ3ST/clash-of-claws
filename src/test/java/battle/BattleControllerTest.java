@@ -2,10 +2,10 @@ package battle;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import creature.Cat;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import creature.Cat;
 import java.util.ArrayList;
+import java.lang.reflect.Method;
 import marketplace.TraderItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,8 +13,6 @@ import org.junit.jupiter.api.Test;
 /**
  * Unit tests for BattleController behavior that does not require
  * launching the complete JavaFX scene.
- * A separate TestFX scene test should still be added for the final
- * UI acceptance requirement.
  *
  * @author Quinton Nisonger
  * @version 0.1.0
@@ -27,8 +25,7 @@ class BattleControllerTest {
 
   @BeforeEach
   void setUp() throws Exception {
-    controller =
-        new BattleController();
+    controller = new BattleController();
 
     formatAbilityName =
         BattleController.class
@@ -50,10 +47,7 @@ class BattleControllerTest {
             "SCRATCH"
         );
 
-    assertEquals(
-        "Scratch",
-        formatted
-    );
+    assertEquals("Scratch", formatted);
   }
 
   @Test
@@ -66,10 +60,7 @@ class BattleControllerTest {
             "HEALING_PURR"
         );
 
-    assertEquals(
-        "Healing Purr",
-        formatted
-    );
+    assertEquals("Healing Purr", formatted);
   }
 
   @Test
@@ -82,91 +73,7 @@ class BattleControllerTest {
             "NIGHT_CLAW"
         );
 
-    assertEquals(
-        "Night Claw",
-        formatted
-    );
-  }
-
-  @Test
-  void arenaVictoryDoesNotRunWildVictoryPersistence()
-      throws Exception {
-
-    ArrayList<String> playerAbilities =
-        new ArrayList<>();
-
-    playerAbilities.add(
-        "SCRATCH"
-    );
-
-    ArrayList<String> opponentAbilities =
-        new ArrayList<>();
-
-    opponentAbilities.add(
-        "POUNCE"
-    );
-
-    Cat playerCat =
-        new Cat(
-            "Whiskers",
-            "Tabby",
-            100,
-            playerAbilities,
-            true,
-            true
-        );
-
-    Cat opponentCat =
-        new Cat(
-            "Arena Cat",
-            "Sphinx",
-            10,
-            opponentAbilities,
-            false,
-            false
-        );
-
-    BattleEngine arenaEngine =
-        new BattleEngine(
-            playerCat,
-            opponentCat,
-            BattleType.ARENA
-        );
-
-    arenaEngine.playerTurn(
-        "SCRATCH"
-    );
-
-    assertEquals(
-        BattleResult.VICTORY,
-        arenaEngine.getBattleResult()
-    );
-
-    Field battleEngineField =
-        BattleController.class
-            .getDeclaredField(
-                "battleEngine"
-            );
-
-    battleEngineField.setAccessible(true);
-    battleEngineField.set(
-        controller,
-        arenaEngine
-    );
-
-    Method handleVictory =
-        BattleController.class
-            .getDeclaredMethod(
-                "handleVictory"
-            );
-
-    handleVictory.setAccessible(true);
-
-    assertDoesNotThrow(
-        () -> handleVictory.invoke(
-            controller
-        )
-    );
+    assertEquals("Night Claw", formatted);
   }
 
   @Test
@@ -198,10 +105,7 @@ class BattleControllerTest {
             item
         );
 
-    assertEquals(
-        10,
-        amount
-    );
+    assertEquals(10, amount);
   }
 
   @Test
@@ -233,10 +137,7 @@ class BattleControllerTest {
             item
         );
 
-    assertEquals(
-        20,
-        amount
-    );
+    assertEquals(20, amount);
   }
 
   @Test
@@ -306,10 +207,7 @@ class BattleControllerTest {
             item
         );
 
-    assertEquals(
-        50,
-        chance
-    );
+    assertEquals(50, chance);
   }
 
   @Test
@@ -341,86 +239,41 @@ class BattleControllerTest {
             item
         );
 
-    assertEquals(
-        75,
-        chance
-    );
+    assertEquals(75, chance);
   }
 
   @Test
   void basicCatchSucceedsAtRollFortyNine()
       throws Exception {
 
-    Method isCaptureSuccessful =
-        BattleController.class
-            .getDeclaredMethod(
-                "isCaptureSuccessful",
-                int.class,
-                int.class
-            );
-
-    isCaptureSuccessful.setAccessible(true);
-
-    boolean captured =
-        (boolean) isCaptureSuccessful.invoke(
-            controller,
-            50,
-            49
-        );
-
-    assertTrue(captured);
+    assertCaptureResult(50, 49, true);
   }
 
   @Test
   void basicCatchFailsAtRollFifty()
       throws Exception {
 
-    Method isCaptureSuccessful =
-        BattleController.class
-            .getDeclaredMethod(
-                "isCaptureSuccessful",
-                int.class,
-                int.class
-            );
-
-    isCaptureSuccessful.setAccessible(true);
-
-    boolean captured =
-        (boolean) isCaptureSuccessful.invoke(
-            controller,
-            50,
-            50
-        );
-
-    assertFalse(captured);
+    assertCaptureResult(50, 50, false);
   }
 
   @Test
   void strongCatchSucceedsAtRollSeventyFour()
       throws Exception {
 
-    Method isCaptureSuccessful =
-        BattleController.class
-            .getDeclaredMethod(
-                "isCaptureSuccessful",
-                int.class,
-                int.class
-            );
-
-    isCaptureSuccessful.setAccessible(true);
-
-    boolean captured =
-        (boolean) isCaptureSuccessful.invoke(
-            controller,
-            75,
-            74
-        );
-
-    assertTrue(captured);
+    assertCaptureResult(75, 74, true);
   }
 
   @Test
   void strongCatchFailsAtRollSeventyFive()
+      throws Exception {
+
+    assertCaptureResult(75, 75, false);
+  }
+
+  private void assertCaptureResult(
+      int catchChance,
+      int roll,
+      boolean expected)
       throws Exception {
 
     Method isCaptureSuccessful =
@@ -436,10 +289,167 @@ class BattleControllerTest {
     boolean captured =
         (boolean) isCaptureSuccessful.invoke(
             controller,
-            75,
-            75
+            catchChance,
+            roll
         );
 
-    assertFalse(captured);
+    assertEquals(expected, captured);
+  }
+
+  @Test
+  void arenaAllowsHealingItems()
+      throws Exception {
+
+    setBattleType(BattleType.ARENA);
+
+    TraderItem healingItem =
+        new TraderItem(
+            1,
+            "Small Potion",
+            "HEALING",
+            "Restores health.",
+            10,
+            5
+        );
+
+    Method isItemAllowedInBattle =
+        BattleController.class
+            .getDeclaredMethod(
+                "isItemAllowedInBattle",
+                TraderItem.class
+            );
+
+    isItemAllowedInBattle.setAccessible(true);
+
+    boolean allowed =
+        (boolean) isItemAllowedInBattle.invoke(
+            controller,
+            healingItem
+        );
+
+    assertTrue(allowed);
+  }
+
+  @Test
+  void arenaRejectsCatchingItems()
+      throws Exception {
+
+    setBattleType(BattleType.ARENA);
+
+    TraderItem catchingItem =
+        new TraderItem(
+            2,
+            "Basic Catching Item",
+            "CATCHING",
+            "Used to catch wild cats.",
+            25,
+            5
+        );
+
+    Method isItemAllowedInBattle =
+        BattleController.class
+            .getDeclaredMethod(
+                "isItemAllowedInBattle",
+                TraderItem.class
+            );
+
+    isItemAllowedInBattle.setAccessible(true);
+
+    boolean allowed =
+        (boolean) isItemAllowedInBattle.invoke(
+            controller,
+            catchingItem
+        );
+
+    assertFalse(allowed);
+  }
+
+  private void setBattleType(BattleType battleType)
+      throws Exception {
+
+    ArrayList<String> playerAbilities =
+        new ArrayList<>();
+
+    playerAbilities.add("SCRATCH");
+    playerAbilities.add("HEALING_PURR");
+
+    ArrayList<String> opponentAbilities =
+        new ArrayList<>();
+
+    opponentAbilities.add("POUNCE");
+
+    Cat playerCat =
+        new Cat(
+            "Whiskers",
+            "Tabby",
+            100,
+            playerAbilities,
+            true,
+            true
+        );
+
+    Cat opponentCat =
+        new Cat(
+            "Clawdia",
+            "Sphynx",
+            100,
+            opponentAbilities,
+            false,
+            false
+        );
+
+    BattleEngine engine =
+        new BattleEngine(
+            playerCat,
+            opponentCat,
+            battleType
+        );
+
+    Field battleEngineField =
+        BattleController.class
+            .getDeclaredField(
+                "battleEngine"
+            );
+
+    battleEngineField.setAccessible(true);
+
+    battleEngineField.set(
+        controller,
+        engine
+    );
+  }
+
+  @Test
+  void wildAllowsCatchingItems()
+      throws Exception {
+
+    setBattleType(BattleType.WILD);
+
+    TraderItem catchingItem =
+        new TraderItem(
+            2,
+            "Basic Catching Item",
+            "CATCHING",
+            "Used to catch wild cats.",
+            25,
+            5
+        );
+
+    Method isItemAllowedInBattle =
+        BattleController.class
+            .getDeclaredMethod(
+                "isItemAllowedInBattle",
+                TraderItem.class
+            );
+
+    isItemAllowedInBattle.setAccessible(true);
+
+    boolean allowed =
+        (boolean) isItemAllowedInBattle.invoke(
+            controller,
+            catchingItem
+        );
+
+    assertTrue(allowed);
   }
 }

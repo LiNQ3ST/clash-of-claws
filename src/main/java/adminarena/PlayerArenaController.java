@@ -4,6 +4,7 @@ import account.AccountService;
 import account.Player;
 import app.SceneFactory;
 import app.SceneType;
+import battle.BattleType;
 import creature.Cat;
 import creature.CatDAO;
 import creature.CatGenerator;
@@ -269,11 +270,12 @@ public class PlayerArenaController {
                         Cat opponentCat =
                                 catGenerator.generateCat();
 
-                        SceneFactory.showBattle(
-                                activeCat,
-                                opponentCat,
-                                "ARENA"
-                        );
+                      SceneFactory.showBattle(
+                          activeCat,
+                          opponentCat,
+                          BattleType.ARENA,
+                          arena
+                      );
                     }
                 });
     }
