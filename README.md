@@ -1,15 +1,3 @@
-<!--
-CST 338 Project 2 — README template.
-Copy this file into the ROOT of your team's repository as README.md and keep it current.
-This README is your project dashboard: it is the first thing the instructor reads when
-grading, and a working, up-to-date README is part of your integration score.
-
-GitHub Issues are your LIVE tracker — every slice task, enhancement, and scope decision is
-an Issue: assigned to its owner, labeled (slice-1, testing, enhancement, will-not-do,
-extra-credit), and closed by a PR via "Closes #N". The tables below link into those Issues
-and PRs. Replace every <placeholder> and delete this comment before you submit.
--->
-
 # Clash of Claws
 ### Collect cats. Train champions. Throw paws.
 **Clash of Claws** is a single-player, turn-based JavaFX battle game created by
@@ -28,91 +16,133 @@ CST 338 Project 2 — Team **L!NQ3ST**.
 | 1 — Accounts              | Sahtra Green     | SahtraRG           | #5, #6, #7, #8, #20, #48 | `sahtra/project-scaffold`, `sahtra/player-data`, `sahtra/account-scenes`, `sahtra/account-auth`, `sahtra/account-tests`, `sahtra/images`, `sahtra/account-options`, `sahtra/player-updates` | [#21](https://github.com/LiNQ3ST/clash-of-claws/pull/21), [#23](https://github.com/LiNQ3ST/clash-of-claws/pull/23), [#26](https://github.com/LiNQ3ST/clash-of-claws/pull/26), [#32](https://github.com/LiNQ3ST/clash-of-claws/pull/32), [#36](https://github.com/LiNQ3ST/clash-of-claws/pull/36), [#45](https://github.com/LiNQ3ST/clash-of-claws/pull/45), [#49](https://github.com/LiNQ3ST/clash-of-claws/pull/49), [#53](https://github.com/LiNQ3ST/clash-of-claws/pull/53) | Custom reusable FXML component      | complete |
 | 2 — Admin & Arenas        | Nabiha Fatima    | nfatima-csumb      | #13, #14, #15, #16, #40  | `nabiha/admin-arena-skeleton`, `nabiha/admin-arena-skeleton`                                                                                                                                | [#29](https://github.com/LiNQ3ST/clash-of-claws/pull/29), [#41](https://github.com/LiNQ3ST/clash-of-claws/pull/41), [#54](https://github.com/LiNQ3ST/clash-of-claws/pull/54)                                                                                                                                                                                                                                                                                                   | Confirmation and Validation Dialogs | complete |
 | 3 — Battle Engine         | Quinton Nisonger | QuintonScripts     | #1, #2, #3, #4, #22      | `quinton/battle-skeleton`, `quinton/shared-battle-logic`, `quinton/wild-battles`, `quinton/arena-battles`, `quinton/battle-testfx`                                                          | [#27](https://github.com/LiNQ3ST/clash-of-claws/pull/27), [#33](https://github.com/LiNQ3ST/clash-of-claws/pull/33), [#46](https://github.com/LiNQ3ST/clash-of-claws/pull/46), [#52](https://github.com/LiNQ3ST/clash-of-claws/pull/52), [#55](https://github.com/LiNQ3ST/clash-of-claws/pull/55)                                                                                                                                                                               | Extra TestFX scene tests            | complete |
-| 4 — Marketplace & Trading | Todd Gonzales    | toddgonzales-xg    | #9, #10, #11, #12        | `todd/trader`, `todd/trader-scene`, `todd/trader-service`, `todd/trader-notifications-testfx`, `todd/ui-design-change`                                                                      | [#25](https://github.com/LiNQ3ST/clash-of-claws/pull/25), [#37](https://github.com/LiNQ3ST/clash-of-claws/pull/37), [#38](https://github.com/LiNQ3ST/clash-of-claws/pull/38), [#43](https://github.com/LiNQ3ST/clash-of-claws/pull/43), [#50](https://github.com/LiNQ3ST/clash-of-claws/pull/50), [#51](https://github.com/LiNQ3ST/clash-of-claws/pull/51),                                                                                                                    | Notifications / alerts              | complete |
-| 5- Creature Roster        | Luke McCormick   | lumccormick-collab | #17, #18, #19            | `luke/creature-skeleton`, `luke/creatureDex`, `luke/starterCat`, `luke/data-binding`, `luke/creature-png`, `luke/cleanup`                                                                   | [#28](https://github.com/LiNQ3ST/clash-of-claws/pull/28), [#34](https://github.com/LiNQ3ST/clash-of-claws/pull/34), [#35](https://github.com/LiNQ3ST/clash-of-claws/pull/35), [#39](https://github.com/LiNQ3ST/clash-of-claws/pull/39), [#42](https://github.com/LiNQ3ST/clash-of-claws/pull/42), [#47](https://github.com/LiNQ3ST/clash-of-claws/pull/47)                                                                                                                     | Data binding                        | complete |
+| 4 — Marketplace & Trading | Todd Gonzales    | toddgonzales-xg    | #9, #10, #11, #12        | `todd/trader`, `todd/trader-scene`, `todd/trader-service`, `todd/trader-notifications-testfx`, `todd/ui-design-change`, `toddgonzales-xg-patch-2`                                           | [#25](https://github.com/LiNQ3ST/clash-of-claws/pull/25), [#37](https://github.com/LiNQ3ST/clash-of-claws/pull/37), [#38](https://github.com/LiNQ3ST/clash-of-claws/pull/38), [#43](https://github.com/LiNQ3ST/clash-of-claws/pull/43), [#50](https://github.com/LiNQ3ST/clash-of-claws/pull/50), [#51](https://github.com/LiNQ3ST/clash-of-claws/pull/51),                                                                                                                    | Notifications / alerts              | complete |
+| 5 — Creature Roster       | Luke McCormick   | lumccormick-collab | #17, #18, #19            | `luke/creature-skeleton`, `luke/creatureDex`, `luke/starterCat`, `luke/data-binding`, `luke/creature-png`, `luke/cleanup`                                                                   | [#28](https://github.com/LiNQ3ST/clash-of-claws/pull/28), [#34](https://github.com/LiNQ3ST/clash-of-claws/pull/34), [#35](https://github.com/LiNQ3ST/clash-of-claws/pull/35), [#39](https://github.com/LiNQ3ST/clash-of-claws/pull/39), [#42](https://github.com/LiNQ3ST/clash-of-claws/pull/42), [#47](https://github.com/LiNQ3ST/clash-of-claws/pull/47)                                                                                                                     | Data binding                        | complete |
 
 
 _Status values: planned · in-progress · complete_
 
-## Battle Engine Issue Progress
+## Slice Implementation Progress
 
-### Issue #2 — Wild Battle Integration
-- Integrated Wild battles with the shared `BattleEngine`.
-- Added Wild battle attack, escape, healing, catching, and victory/defeat flows.
-- Added player inventory support to the Battle Bag.
-- Added healing items with HP caps and item consumption.
-- Added catching items using the marketplace `Toy Mouse` and `Tuna Can`.
-- Added HP-based catch chance bonuses for weakened Wild cats.
-- Added successful capture persistence to creature storage.
-- Added Wild battle rewards and persistence.
-- Added unit and UI coverage for Wild battle behavior.
+### Slice 1 — Accounts
+- Added persistent player accounts with registration and login.
+- Added account validation and authentication.
+- Added starter-cat routing for players without an active cat.
+- Added account options, logout, password update, and account deletion.
+- Added persistent currency and active-cat state.
+- Added reusable credential FXML.
+- Added DAO, logic, and TestFX coverage.
 
-**PR:** [#46 — Quinton/wild battles](https://github.com/LiNQ3ST/clash-of-claws/pull/46)
+### Slice 2 — Admin & Arenas
+- Added the player-facing Arena selection scene.
+- Added Easy, Medium, and Hard Arena options with distinct rewards.
+- Added active-cat health validation before Arena challenges.
+- Integrated Arena challenges with the shared `BattleEngine`.
+- Added Arena-specific reward handling and navigation.
+- Added confirmation and validation feedback.
+- Added Arena DAO and UI coverage.
 
-### Issue #3 — Arena Battle Integration
-- Integrated Arena battles with the shared `BattleEngine`.
-- Added Arena-specific battle behavior and action restrictions.
-- Disabled Catch and Run behavior for Arena battles.
-- Added Arena victory rewards and battle outcome persistence.
-- Added Arena defeat handling and return-to-town flow.
-- Added Arena-focused unit tests.
+### Slice 3 — Battle Engine
+- Integrated Wild and Arena battles with the shared `BattleEngine`.
+- Added attack, healing, catching, escape, victory, and defeat flows.
+- Added inventory use during battle.
+- Added Wild capture persistence to creature storage.
+- Added Arena-specific action restrictions and rewards.
+- Added battle-result and health persistence.
+- Added battle UI and TestFX coverage.
 
-**Deferred:** Per-player Arena completion tracking will be handled separately because the required completion-status system is not currently part of the battle implementation.
+### Slice 4 — Marketplace & Trading
+- Added the in-game Trader and persistent Trader inventory.
+- Added item purchasing with quantity, stock, and currency validation.
+- Added healing and catching items to player inventory.
+- Added owned-cat selling and sale-value calculation.
+- Prevented selling the active cat.
+- Added transaction rollback for failed purchases and sales.
+- Added notifications, validation messages, and TestFX coverage.
 
-### Issue #4 — Battle UI & Final Integration
-- Added in-battle party cat switching.
-- Switching updates the active cat's sprite, HP, and available abilities.
-- Added opponent turns after switching and item use.
-- Improved battle dialogue progression and the full-size clickable message area.
-- Updated the battle layout and action menus for the shared Wild/Arena scene.
-- Added and updated battle UI/TestFX coverage.
-- Added a temporary opponent-click debug shortcut for testing battle inventory items.
-- Cleaned up integration issues from the merged Wild and Arena battle branches.
+### Slice 5 — Creature Roster
+- Added starter-cat selection.
+- Added persistent player-owned cat data.
+- Added Party, Storage, and CatDex scenes.
+- Added moving cats between Party and Storage.
+- Added persistent active-cat selection.
+- Added Rest Party to restore current party health.
+- Added JavaFX data binding and Creature Roster UI coverage.
 
+## WILL NOT DO
 
-## WILL NOT DO (declared scope cuts)
-_Slices and beyond-scope items we are consciously NOT building. Move an item to a tracked
-Issue if the team later decides to attempt it for extra credit._
-
-- <Slice 1>: Sahtra Green, Accounts: User profiles and roles - out of scope.
-- <Slice 2>: Nabiha Fatima, Admin & Arenas: Tournaments and seasonal areas — out of scope.
-- <Slice 3>: Quinton Nisonger, Battle Engine: Type-effectiveness matrix, status effects, animations — out of scope.
-- <Slice 4>: Todd Gonzales, Marketplace & Trading: Auctions, trade history, and REST imports — out of scope.
-- <Slice 5>: Luke McCormick, Creature Roster: Building Evolutions - out of scope.
+- **Slice 1 — Accounts, Sahtra Green:** User profiles and roles.
+- **Slice 2 — Admin & Arenas, Nabiha Fatima:** Tournaments and seasonal arenas.
+- **Slice 3 — Battle Engine, Quinton Nisonger:** Type-effectiveness matrix, status effects, and advanced animations.
+- **Slice 4 — Marketplace & Trading, Todd Gonzales:** Auctions, trade history, and REST imports.
+- **Slice 5 — Creature Roster, Luke McCormick:** Creature evolutions.
 
 ## Code Review Log
-| PR | Author           | Human reviewer(s)                | AI review (link) | Outcome   |
-|--|------------------|----------------------------------|------------------|-----------|
-| #27 | Quinton Nisonger | Sahtra Green                     | -                | merged    |
-| #28 | Luke McCormick   | Todd Gonzales                    | -                | merged    |
-| #23 | Sahtra Green     | Quinton Nisonger                 | -                | merged    |
-| #25 | Todd Gonzales    | Luke McCormick                   | -                | merged    |
-| #26 | Sahtra Green     | Nabiha Fatima, Quinton Nisonger  | -                | merged    |
-| #29 | Nabiha Fatima    | Todd Gonzales                    | -                | merged    |
-| #32 | Sahtra Green     | Quinton Nisonger                 | -                | merged    |
-| #33 | Quinton Nisonger | Luke McCormick                   | -                | merged    |
-| #34 | Luke McCormick   | Quinton Nisonger                 | -                | merged    |
-| #35 | Luke McCormick   | Sahtra Green                     | -                | merged    |
-| #36 | Sahtra Green     | Luke McCormick, Quinton Nisonger | -                | merged    |
-| #37 | Todd Gonzales    | Quinton Nisonger                 | -                | merged    |
-| #38 | Todd Gonzales    | Quinton Nisonger                 | -                | merged    |
-| #39 | Luke McCormick   | Sahtra Green                     | -                | merged    |
-| #41 | Nabiha Fatima    | Quinton Nisonger, Sahtra Green   | -                | in review |
-| #42 | Luke McCormick   | Sahtra Green                     | -                | merged    |
-|  | Sahtra Green     |                                  | -                | in review |
-| #33 | Quinton Nisonger | Luke McCormick | - | merged |
-| #46 | Quinton Nisonger | Sahtra Green, Todd Gonzales | [AI review + adjudication](PASTE-DIRECT-COMMENT-LINK) | merged |
-| #52 | Quinton Nisonger | Sahtra Green | - | merged |
+| PR  | Author           | Human reviewer(s)                | AI review (link)                                                                                        | Outcome   |
+|-----|------------------|----------------------------------|---------------------------------------------------------------------------------------------------------|-----------|
+| #27 | Quinton Nisonger | Sahtra Green                     | -                                                                                                       | merged    |
+| #28 | Luke McCormick   | Todd Gonzales                    | -                                                                                                       | merged    |
+| #23 | Sahtra Green     | Quinton Nisonger                 | -                                                                                                       | merged    |
+| #25 | Todd Gonzales    | Luke McCormick                   | -                                                                                                       | merged    |
+| #26 | Sahtra Green     | Nabiha Fatima, Quinton Nisonger  | -                                                                                                       | merged    |
+| #29 | Nabiha Fatima    | Todd Gonzales                    | -                                                                                                       | merged    |
+| #32 | Sahtra Green     | Quinton Nisonger                 | -                                                                                                       | merged    |
+| #33 | Quinton Nisonger | Luke McCormick                   | -                                                                                                       | merged    |
+| #34 | Luke McCormick   | Quinton Nisonger                 | -                                                                                                       | merged    |
+| #35 | Luke McCormick   | Sahtra Green                     | -                                                                                                       | merged    |
+| #36 | Sahtra Green     | Luke McCormick, Quinton Nisonger | [AI review + adjudication](https://github.com/LiNQ3ST/clash-of-claws/pull/36#issuecomment-5275818143)   | merged    |
+| #37 | Todd Gonzales    | Quinton Nisonger                 | -                                                                                                       | merged    |
+| #38 | Todd Gonzales    | Quinton Nisonger                 | -                                                                                                       | merged    |
+| #39 | Luke McCormick   | Sahtra Green                     | -                                                                                                       | merged    |
+| #41 | Nabiha Fatima    | Quinton Nisonger, Sahtra Green   | [AI review and adjudication](https://github.com/LiNQ3ST/clash-of-claws/pull/41#issuecomment-5275512493) | merged    |
+| #42 | Luke McCormick   | Sahtra Green                     | [AI review and adjudication](https://github.com/LiNQ3ST/clash-of-claws/pull/42)                         | merged    |
+| #43 | Todd Gonzales    | Sahtra Green                     | [AI review and adjudication](https://github.com/LiNQ3ST/clash-of-claws/pull/43#issuecomment-5276036189) | merged    |
+| #45 | Sahtra Green     | Todd Gonzales                    | -                                                                                                       | merged    |
+| #46 | Quinton Nisonger | Sahtra Green, Todd Gonzales      | [AI review + adjudication](https://github.com/LiNQ3ST/clash-of-claws/pull/46#issuecomment-5275623986)   | merged    |
+| #47 | Luke McCormick   | Sahtra Green                     | -                                                                                                       | merged    |
+| #49 | Sahtra Green     | Todd Gonzales                    | -                                                                                                       | merged    |
+| #50 | Todd Gonzales    | Nabiha Fatima, Sahtra Green      | -                                                                                                       | merged    |
+| #51 | Todd Gonzales    | Nabiha Fatima                    | -                                                                                                       | merged    |
+| #52 | Quinton Nisonger | Sahtra Green                     | -                                                                                                       | merged    |
+| #53 | Sahtra Green     | Nabiha Fatima                    | -                                                                                                       | merged    |
+| #54 | Nabiha Fatima    | Todd Gonzales                    | -                                                                                                       | merged    |
+| #55 | Quinton Nisonger | Todd Gonzales                    | -                                                                                                       | merged    |
+| #56 | Todd Gonzales    | Sahtra Green                     | -                                                                                                       | merged    |
+| #57 | Sahtra Green     |                                  | -                                                                                                       | in review |
 
 ## AI Usage Log
-- **AI-drafted tests:** <link to TESTING.md / commit> — per owner.
-- **AI code reviews:** <PR link + adjudication note> — per owner.
-- **AI code reviews:** [PR #46 — Wild Battle AI review and adjudication](PASTE-DIRECT-COMMENT-LINK) — Quinton Nisonger.
+
+### AI-Drafted Tests
+- **Sahtra Green — Accounts**
+    - [AI-generated test commit](https://github.com/LiNQ3ST/clash-of-claws/pull/36/changes/116ce7ad8b1d0afbce8780dad7a418411d2c7a79)
+- **Luke McCormick — Creature Roster**
+    - [PR #47](https://github.com/LiNQ3ST/clash-of-claws/pull/47).
+- **Quinton Nisonger — Battle Engine**
+    - [PR #55](https://github.com/LiNQ3ST/clash-of-claws/pull/55).
+- **Nabiha Fatima — Admin & Arenas**
+    - [PR #29](https://github.com/LiNQ3ST/clash-of-claws/pull/29).
+- **Todd Gonzales — Marketplace & Trading**
+    - [PR #38](https://github.com/LiNQ3ST/clash-of-claws/pull/38).
+
+### AI Code Reviews
+- **Sahtra Green — Accounts**
+    - [PR #36 AI review and adjudication](https://github.com/LiNQ3ST/clash-of-claws/pull/36#issuecomment-5275818143)
+- **Luke McCormick — Creature Roster**
+    - [PR #42 AI review and adjudication](https://github.com/LiNQ3ST/clash-of-claws/pull/42)
+- **Quinton Nisonger — Battle Engine**
+    - [PR #46 AI review and adjudication](https://github.com/LiNQ3ST/clash-of-claws/pull/46#issuecomment-5275623986)
+- **Nabiha Fatima — Admin & Arenas**
+    - [PR #41 AI review and adjudication](https://github.com/LiNQ3ST/clash-of-claws/pull/41#issuecomment-5275512493)
+- **Todd Gonzales — Marketplace & Trading**
+    - [PR #43 AI review and adjudication](https://github.com/LiNQ3ST/clash-of-claws/pull/43#issuecomment-5276036189)
+
+### AI-Assisted Visual Assets
+- Used AI image generation to create the Town Hub background artwork used in the final application.
 
 ## Extra Credit Log
-| Item | Who | Evidence (Issue/PR) |
-|------|-----|---------------------|
-| Built Slice 5 | | #34 |
+| Item         | Who          | Evidence (Issue/PR) |
+|--------------|--------------|---------------------|
+| None claimed | Team L!NQ3ST | —                   |
 
 ## Build & Run
 
