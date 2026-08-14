@@ -1228,8 +1228,8 @@ public class BattleController {
       button.setManaged(false);
     }
 
-    ArrayList<Cat> partyCats =
-        catDAO.findPartyCats(
+    ArrayList<Cat> ownedCats =
+        catDAO.findAll(
             currentPlayer.getPlayerId()
         );
 
@@ -1238,7 +1238,11 @@ public class BattleController {
 
     int buttonIndex = 0;
 
-    for (Cat cat : partyCats) {
+    for (Cat cat : ownedCats) {
+
+      if (!cat.isPlayerCat()) {
+        continue;
+      }
 
       if (cat.getId() == currentCat.getId()) {
         continue;
@@ -1272,7 +1276,7 @@ public class BattleController {
 
     if (buttonIndex == 0) {
       showMessage(
-          "No other healthy party cats are available.",
+          "No other healthy cats are available.",
           null
       );
     }
