@@ -94,7 +94,7 @@ class CatDAOTest {
             }
 
 
-            playerDAO.delete(
+            playerDAO.deleteAccount(
                     playerId
             );
         }

@@ -11,6 +11,12 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ListCell;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.util.Callback;
+
+
 
 
 public class StorageController {
@@ -71,6 +77,22 @@ public class StorageController {
                 storedCats
         );
 
+        setupCatListView(
+            partyListView
+        );
+
+        setupCatListView(
+            storageListView
+        );
+
+
+        partyListView.setFixedCellSize(
+            100
+        );
+
+        storageListView.setFixedCellSize(
+            100
+        );
 
         /*
          * Bind the labels to the list sizes.
@@ -349,6 +371,90 @@ public class StorageController {
 
         SceneFactory.show(
                 SceneType.MAIN
+        );
+    }
+
+
+
+    private void setupCatListView(
+        ListView<Cat> listView
+    ) {
+
+        listView.setCellFactory(
+            new Callback<ListView<Cat>, ListCell<Cat>>() {
+
+                @Override
+                public ListCell<Cat> call(
+                    ListView<Cat> catList
+                ) {
+
+                    return new ListCell<Cat>() {
+
+                        @Override
+                        protected void updateItem(
+                            Cat cat,
+                            boolean empty
+                        ) {
+
+                            super.updateItem(
+                                cat,
+                                empty
+                            );
+
+
+                            if (empty || cat == null) {
+
+                                setText(null);
+
+                                setGraphic(null);
+
+                                return;
+                            }
+
+
+                            ImageView catImage =
+                                new ImageView();
+
+
+                            catImage.setFitWidth(
+                                48
+                            );
+
+                            catImage.setFitHeight(
+                                48
+                            );
+
+
+                            CatSpriteRenderer.setSprite(
+                                catImage,
+                                cat,
+                                CatSpriteRenderer.IDLE
+                            );
+
+
+                            Label catName =
+                                new Label(
+                                    cat.getName()
+                                );
+
+
+                            HBox row =
+                                new HBox(
+                                    10,
+                                    catImage,
+                                    catName
+                                );
+
+
+                            setText(null);
+
+                            setGraphic(
+                                row
+                            );
+                        }
+                    };
+                }
+            }
         );
     }
 }

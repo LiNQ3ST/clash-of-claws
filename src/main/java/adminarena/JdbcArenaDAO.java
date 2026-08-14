@@ -37,12 +37,11 @@ public class JdbcArenaDAO implements ArenaDAO {
                 INSERT INTO arenas (
                     arena_name,
                     town_name,
-                    opponent_cat_id,
                     difficulty,
                     reward_amount,
                     active
                 )
-                VALUES (?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?)
                 """;
 
         try (
@@ -63,23 +62,18 @@ public class JdbcArenaDAO implements ArenaDAO {
                     arena.getTownName()
             );
 
-            statement.setInt(
-                    3,
-                    arena.getOpponentCatId()
-            );
-
             statement.setString(
-                    4,
+                    3,
                     arena.getDifficulty()
             );
 
             statement.setInt(
-                    5,
+                    4,
                     arena.getRewardAmount()
             );
 
             statement.setBoolean(
-                    6,
+                    5,
                     arena.isActive()
             );
 
@@ -118,7 +112,6 @@ public class JdbcArenaDAO implements ArenaDAO {
                     arena_id,
                     arena_name,
                     town_name,
-                    opponent_cat_id,
                     difficulty,
                     reward_amount,
                     active
@@ -156,7 +149,6 @@ public class JdbcArenaDAO implements ArenaDAO {
                     arena_id,
                     arena_name,
                     town_name,
-                    opponent_cat_id,
                     difficulty,
                     reward_amount,
                     active
@@ -203,7 +195,6 @@ public class JdbcArenaDAO implements ArenaDAO {
                 SET
                     arena_name = ?,
                     town_name = ?,
-                    opponent_cat_id = ?,
                     difficulty = ?,
                     reward_amount = ?,
                     active = ?
@@ -227,28 +218,23 @@ public class JdbcArenaDAO implements ArenaDAO {
                     arena.getTownName()
             );
 
-            statement.setInt(
-                    3,
-                    arena.getOpponentCatId()
-            );
-
             statement.setString(
-                    4,
+                    3,
                     arena.getDifficulty()
             );
 
             statement.setInt(
-                    5,
+                    4,
                     arena.getRewardAmount()
             );
 
             statement.setBoolean(
-                    6,
+                    5,
                     arena.isActive()
             );
 
             statement.setInt(
-                    7,
+                    6,
                     arena.getArenaId()
             );
 
@@ -285,7 +271,6 @@ public class JdbcArenaDAO implements ArenaDAO {
                 resultSet.getInt("arena_id"),
                 resultSet.getString("arena_name"),
                 resultSet.getString("town_name"),
-                resultSet.getInt("opponent_cat_id"),
                 resultSet.getString("difficulty"),
                 resultSet.getInt("reward_amount"),
                 resultSet.getBoolean("active")
@@ -339,12 +324,6 @@ public class JdbcArenaDAO implements ArenaDAO {
         ) {
             throw new IllegalArgumentException(
                     "Town name is required."
-            );
-        }
-
-        if (arena.getOpponentCatId() == null) {
-            throw new IllegalArgumentException(
-                    "Opponent cat ID is required."
             );
         }
 

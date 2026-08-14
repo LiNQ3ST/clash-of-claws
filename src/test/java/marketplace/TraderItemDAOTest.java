@@ -22,12 +22,21 @@ class TraderItemDAOTest {
 
     @BeforeEach
     void setUp() throws SQLException {
-        String databaseUrl = "jdbc:h2:mem:trader_"
-                + UUID.randomUUID()
-                + ";DB_CLOSE_DELAY=-1";
 
-        try (Connection connection = DriverManager.getConnection(databaseUrl);
-             Statement statement = connection.createStatement()) {
+        String databaseUrl =
+                "jdbc:h2:mem:trader_"
+                        + UUID.randomUUID()
+                        + ";DB_CLOSE_DELAY=-1";
+
+        try (
+                Connection connection =
+                        DriverManager.getConnection(
+                                databaseUrl
+                        );
+
+                Statement statement =
+                        connection.createStatement()
+        ) {
 
             statement.execute("""
                     CREATE TABLE trader_items (
@@ -41,82 +50,319 @@ class TraderItemDAOTest {
                     """);
         }
 
-        traderItemDAO = new TraderItemDAO(databaseUrl);
+        traderItemDAO =
+                new TraderItemDAO(databaseUrl);
     }
 
     @Test
-    void createReadUpdateDeleteItem() throws SQLException {
-        TraderItem item = new TraderItem(
-                "Small Potion",
-                "HEALING",
-                "Restores 20 HP.",
-                25,
-                10
+    void createReadUpdateDeleteItem()
+            throws SQLException {
+
+        TraderItem item =
+                new TraderItem(
+                        "Small Potion",
+                        "HEALING",
+                        "Restores 20 HP.",
+                        25,
+                        10
+                );
+
+        TraderItem created =
+                traderItemDAO.createItem(item);
+
+        assertTrue(
+                created.getItemId() > 0
         );
 
-        TraderItem created = traderItemDAO.createItem(item);
-        assertTrue(created.getItemId() > 0);
+        Optional<TraderItem> found =
+                traderItemDAO.findById(
+                        created.getItemId()
+                );
 
-        Optional<TraderItem> found = traderItemDAO.findById(created.getItemId());
-        assertTrue(found.isPresent());
-        assertEquals("Small Potion", found.orElseThrow().getItemName());
-        assertEquals(25, found.orElseThrow().getPrice());
+        assertTrue(
+                found.isPresent()
+        );
+
+        assertEquals(
+                "Small Potion",
+                found.orElseThrow().getItemName()
+        );
+
+        assertEquals(
+                25,
+                found.orElseThrow().getPrice()
+        );
 
         created.setPrice(30);
         created.setStockQuantity(8);
-        assertTrue(traderItemDAO.updateItem(created));
 
-        TraderItem updated = traderItemDAO.findById(created.getItemId()).orElseThrow();
-        assertEquals(30, updated.getPrice());
-        assertEquals(8, updated.getStockQuantity());
-
-        assertTrue(traderItemDAO.deleteItem(created.getItemId()));
-        assertTrue(traderItemDAO.findById(created.getItemId()).isEmpty());
-    }
-
-    @Test
-    void availableAndTypeQueriesReturnCorrectItems() throws SQLException {
-        traderItemDAO.createItem(new TraderItem(
-                "Small Potion", "HEALING", "Restores HP.", 25, 10
-        ));
-        traderItemDAO.createItem(new TraderItem(
-                "Empty Potion", "HEALING", "Out of stock.", 5, 0
-        ));
-        traderItemDAO.createItem(new TraderItem(
-                "Basic Catching Item", "CATCHING", "Catches cats.", 40, 3
-        ));
-
-        List<TraderItem> availableItems = traderItemDAO.findAllAvailableItems();
-        assertEquals(2, availableItems.size());
-        assertTrue(availableItems.stream()
-                .allMatch(item -> item.getStockQuantity() > 0));
-
-        List<TraderItem> healingItems = traderItemDAO.findByItemType("healing");
-        assertEquals(2, healingItems.size());
-        assertTrue(healingItems.stream()
-                .allMatch(item -> item.getItemType().equals("HEALING")));
-    }
-
-    @Test
-    void nonexistentItemReturnsEmptyAndNegativeValuesAreRejected() throws SQLException {
-        assertTrue(traderItemDAO.findById(9999).isEmpty());
-        assertFalse(traderItemDAO.deleteItem(9999));
-
-        TraderItem negativePrice = new TraderItem(
-                "Bad Potion", "HEALING", "Invalid price.", -1, 1
+        assertTrue(
+                traderItemDAO.updateItem(created)
         );
-        TraderItem negativeStock = new TraderItem(
-                "Bad Stock", "HEALING", "Invalid stock.", 1, -1
+
+        TraderItem updated =
+                traderItemDAO
+                        .findById(created.getItemId())
+                        .orElseThrow();
+
+        assertEquals(
+                30,
+                updated.getPrice()
+        );
+
+        assertEquals(
+                8,
+                updated.getStockQuantity()
+        );
+
+        assertTrue(
+                traderItemDAO.deleteItem(
+                        created.getItemId()
+                )
+        );
+
+        assertTrue(
+                traderItemDAO
+                        .findById(created.getItemId())
+                        .isEmpty()
+        );
+    }
+
+    @Test
+    void availableAndTypeQueriesReturnCorrectItems()
+            throws SQLException {
+
+        traderItemDAO.createItem(
+                new TraderItem(
+                        "Small Potion",
+                        "HEALING",
+                        "Restores HP.",
+                        25,
+                        10
+                )
+        );
+
+        traderItemDAO.createItem(
+                new TraderItem(
+                        "Empty Potion",
+                        "HEALING",
+                        "Out of stock.",
+                        5,
+                        0
+                )
+        );
+
+        traderItemDAO.createItem(
+                new TraderItem(
+                        "Toy Mouse",
+                        "CATCHING",
+                        "A toy mouse used to catch cats.",
+                        40,
+                        3
+                )
+        );
+
+        List<TraderItem> availableItems =
+                traderItemDAO
+                        .findAllAvailableItems();
+
+        assertEquals(
+                2,
+                availableItems.size()
+        );
+
+        assertTrue(
+                availableItems.stream()
+                        .allMatch(
+                                item ->
+                                        item.getStockQuantity() > 0
+                        )
+        );
+
+        List<TraderItem> healingItems =
+                traderItemDAO
+                        .findByItemType("healing");
+
+        assertEquals(
+                2,
+                healingItems.size()
+        );
+
+        assertTrue(
+                healingItems.stream()
+                        .allMatch(
+                                item ->
+                                        item.getItemType()
+                                                .equals("HEALING")
+                        )
+        );
+
+        List<TraderItem> catchingItems =
+                traderItemDAO
+                        .findByItemType("catching");
+
+        assertEquals(
+                1,
+                catchingItems.size()
+        );
+
+        assertEquals(
+                "Toy Mouse",
+                catchingItems.get(0).getItemName()
+        );
+    }
+
+    @Test
+    void restockDefaultItemsRestoresStartingStock()
+            throws SQLException {
+
+        traderItemDAO.createItem(
+                new TraderItem(
+                        "Small Potion",
+                        "HEALING",
+                        "Restores a small amount of health.",
+                        25,
+                        0
+                )
+        );
+
+        traderItemDAO.createItem(
+                new TraderItem(
+                        "Large Potion",
+                        "HEALING",
+                        "Restores a large amount of health.",
+                        60,
+                        0
+                )
+        );
+
+        traderItemDAO.createItem(
+                new TraderItem(
+                        "Toy Mouse",
+                        "CATCHING",
+                        "A toy mouse used to catch cats.",
+                        40,
+                        0
+                )
+        );
+
+        traderItemDAO.createItem(
+                new TraderItem(
+                        "Tuna Can",
+                        "CATCHING",
+                        "A tasty can of tuna with a better chance of catching cats.",
+                        90,
+                        0
+                )
+        );
+
+        int updatedRows =
+                traderItemDAO.restockDefaultItems();
+
+        assertEquals(
+                4,
+                updatedRows
+        );
+
+        List<TraderItem> items =
+                traderItemDAO.findAll();
+
+        assertEquals(
+                10,
+                findStock(
+                        items,
+                        "Small Potion"
+                )
+        );
+
+        assertEquals(
+                5,
+                findStock(
+                        items,
+                        "Large Potion"
+                )
+        );
+
+        assertEquals(
+                8,
+                findStock(
+                        items,
+                        "Toy Mouse"
+                )
+        );
+
+        assertEquals(
+                3,
+                findStock(
+                        items,
+                        "Tuna Can"
+                )
+        );
+    }
+
+    @Test
+    void nonexistentItemReturnsEmptyAndNegativeValuesAreRejected()
+            throws SQLException {
+
+        assertTrue(
+                traderItemDAO
+                        .findById(9999)
+                        .isEmpty()
+        );
+
+        assertFalse(
+                traderItemDAO.deleteItem(9999)
+        );
+
+        TraderItem negativePrice =
+                new TraderItem(
+                        "Bad Potion",
+                        "HEALING",
+                        "Invalid price.",
+                        -1,
+                        1
+                );
+
+        TraderItem negativeStock =
+                new TraderItem(
+                        "Bad Stock",
+                        "HEALING",
+                        "Invalid stock.",
+                        1,
+                        -1
+                );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        traderItemDAO.createItem(
+                                negativePrice
+                        )
         );
 
         assertThrows(
                 IllegalArgumentException.class,
-                () -> traderItemDAO.createItem(negativePrice)
+                () ->
+                        traderItemDAO.createItem(
+                                negativeStock
+                        )
         );
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> traderItemDAO.createItem(negativeStock)
-        );
+    }
+
+    private int findStock(
+            List<TraderItem> items,
+            String itemName
+    ) {
+
+        return items.stream()
+                .filter(
+                        item ->
+                                item.getItemName()
+                                        .equals(itemName)
+                )
+                .findFirst()
+                .orElseThrow()
+                .getStockQuantity();
     }
 }
 

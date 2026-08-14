@@ -557,4 +557,38 @@ public class CatDAO {
     }
 
 
+    public boolean deleteAllForPlayer(int playerId) {
+
+        String sql =
+                "DELETE FROM cats "
+                        + "WHERE player_id = ?";
+
+
+        try (
+                Connection connection =
+                        DatabaseManager
+                                .getInstance()
+                                .getConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+
+            statement.setInt(
+                    1,
+                    playerId
+            );
+
+
+            statement.executeUpdate();
+
+            return true;
+
+        } catch (SQLException exception) {
+
+            exception.printStackTrace();
+
+            return false;
+        }
+    }
 }

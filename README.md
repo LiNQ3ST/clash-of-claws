@@ -38,8 +38,8 @@ Issue if the team later decides to attempt it for extra credit._
 - <Slice 5>: Luke McCormick, Creature Roster: Building Evolutions - out of scope.
 
 ## Code Review Log
-| PR  | Author           | Human reviewer(s)                | AI review (link) | Outcome   |
-|-----|------------------|----------------------------------|------------------|-----------|
+| PR | Author           | Human reviewer(s)                | AI review (link) | Outcome   |
+|--|------------------|----------------------------------|------------------|-----------|
 | #27 | Quinton Nisonger | Sahtra Green                     | -                | merged    |
 | #28 | Luke McCormick   | Todd Gonzales                    | -                | merged    |
 | #23 | Sahtra Green     | Quinton Nisonger                 | -                | merged    |
@@ -50,10 +50,18 @@ Issue if the team later decides to attempt it for extra credit._
 | #33 | Quinton Nisonger | Luke McCormick                   | -                | merged    |
 | #34 | Luke McCormick   | Quinton Nisonger                 | -                | merged    |
 | #35 | Luke McCormick   | Sahtra Green                     | -                | merged    |
-| #36 | Sahtra Green     |                                  | -                | in review |
+| #36 | Sahtra Green     | Luke McCormick, Quinton Nisonger | -                | merged    |
+| #37 | Todd Gonzales    | Quinton Nisonger                 | -                | merged    |
+| #38 | Todd Gonzales    | Quinton Nisonger                 | -                | merged    |
+| #39 | Luke McCormick   | Sahtra Green                     | -                | merged    |
+| #41 | Nabiha Fatima    | Quinton Nisonger, Sahtra Green   | -                | in review |
+| #42 | Luke McCormick   | Sahtra Green                     | -                | merged    |
+|  | Sahtra Green     |                                  | -                | in review |
+| #46 | Quinton Nisonger | -                                | [AI review + adjudication](PASTE-DIRECT-COMMENT-LINK) | in review |
 ## AI Usage Log
 - **AI-drafted tests:** <link to TESTING.md / commit> — per owner.
 - **AI code reviews:** <PR link + adjudication note> — per owner.
+- **AI code reviews:** [PR #46 — Wild Battle AI review and adjudication](PASTE-DIRECT-COMMENT-LINK) — Quinton Nisonger.
 
 ## Extra Credit Log
 | Item | Who | Evidence (Issue/PR) |

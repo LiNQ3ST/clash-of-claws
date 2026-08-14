@@ -10,9 +10,11 @@ package app;
 public enum SceneType {
     LOGIN("/account/Login.fxml"),
     REGISTER("/account/Register.fxml"),
+    OPTIONS("/account/Options.fxml"),
     BATTLE("/battle/battle.fxml"),
     TRADER("/marketplace/trader-view.fxml"),
     ARENA("/adminarena/arena-admin.fxml"),
+    PLAYER_ARENA("/adminarena/player-arena.fxml"),
     STARTER("/creature/starter.fxml"),
     CAT_DEX("/creature/cat-dex.fxml"),
     PARTY("/creature/party.fxml"),
