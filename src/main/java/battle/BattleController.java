@@ -26,6 +26,9 @@ import javafx.util.Duration;
 import marketplace.TraderItem;
 import marketplace.TraderItemDAO;
 import marketplace.TraderService;
+import database.DatabaseManager;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 /**
  * Controls the shared Wild and Arena battle scene.
@@ -38,6 +41,7 @@ public class BattleController {
 
   private static final Duration LETTER_DELAY = Duration.millis(28);
   private static final int WILD_VICTORY_REWARD = 10;
+  private int opponentDebugClickCount;
 
   @FXML
   private Label battleMessageLabel;
@@ -110,6 +114,21 @@ public class BattleController {
 
   @FXML
   private Button itemActionButton;
+
+  @FXML
+  private VBox switchMenu;
+
+  @FXML
+  private Button switchCatButton1;
+
+  @FXML
+  private Button switchCatButton2;
+
+  @FXML
+  private Button switchCatButton3;
+
+  @FXML
+  private Button switchCatButton4;
 
   private BattleEngine battleEngine;
   private Player currentPlayer;
@@ -507,6 +526,9 @@ public class BattleController {
 
     wildVictoryMenu.setVisible(false);
     wildVictoryMenu.setManaged(false);
+
+    switchMenu.setVisible(false);
+    switchMenu.setManaged(false);
   }
 
   private void showMessage(String message, Runnable advanceAction) {
@@ -607,9 +629,9 @@ public class BattleController {
 
   @FXML
   private void handleMessageClick() {
+
     if (messageTyping) {
       finishTyping();
-      return;
     }
 
     if (messageAdvanceAction == null) {
@@ -618,8 +640,105 @@ public class BattleController {
 
     Runnable action = messageAdvanceAction;
     messageAdvanceAction = null;
+
     stopAdvanceIndicatorBlink();
+
     action.run();
+  }
+
+  private void giveDebugItems() {
+
+    if (currentPlayer == null
+        || currentPlayer.getPlayerId() == null) {
+      return;
+    }
+
+    String updateSql = """
+      UPDATE player_inventory
+      SET quantity = quantity + 2
+      WHERE player_id = ?
+        AND item_id = ?
+      """;
+
+    String insertSql = """
+      INSERT INTO player_inventory (
+          player_id,
+          item_id,
+          quantity
+      )
+      VALUES (?, ?, 2)
+      """;
+
+    try (
+        Connection connection =
+            DatabaseManager.getInstance()
+                .getConnection()
+    ) {
+
+      List<TraderItem> items =
+          traderItemDAO.findAll();
+
+      for (TraderItem item : items) {
+
+        int rowsUpdated;
+
+        try (
+            PreparedStatement updateStatement =
+                connection.prepareStatement(
+                    updateSql
+                )
+        ) {
+
+          updateStatement.setInt(
+              1,
+              currentPlayer.getPlayerId()
+          );
+
+          updateStatement.setInt(
+              2,
+              item.getItemId()
+          );
+
+          rowsUpdated =
+              updateStatement.executeUpdate();
+        }
+
+        if (rowsUpdated == 0) {
+
+          try (
+              PreparedStatement insertStatement =
+                  connection.prepareStatement(
+                      insertSql
+                  )
+          ) {
+
+            insertStatement.setInt(
+                1,
+                currentPlayer.getPlayerId()
+            );
+
+            insertStatement.setInt(
+                2,
+                item.getItemId()
+            );
+
+            insertStatement.executeUpdate();
+          }
+        }
+      }
+
+      showMessage(
+          "Debug items added: +2 of every item.",
+          null
+      );
+
+    } catch (SQLException exception) {
+
+      throw new IllegalStateException(
+          "Could not add debug items.",
+          exception
+      );
+    }
   }
 
   @FXML
@@ -767,7 +886,8 @@ public class BattleController {
     int catchChance;
 
     try {
-      catchChance = getCatchChance(item);
+      catchChance =
+          getAdjustedCatchChance(item);
     } catch (IllegalArgumentException exception) {
       showMessage(
           "That item cannot be used for catching.",
@@ -1012,6 +1132,173 @@ public class BattleController {
     );
   }
 
+  @FXML
+  private void handleSwitch() {
+
+    actionMenu.setVisible(false);
+    actionMenu.setManaged(false);
+
+    loadSwitchButtons();
+
+    switchMenu.setVisible(true);
+    switchMenu.setManaged(true);
+
+    showMessage(
+        "Choose a cat.",
+        null
+    );
+  }
+
+  @FXML
+  private void handleSwitchCat(
+      ActionEvent event) {
+
+    Button button =
+        (Button) event.getSource();
+
+    Object data =
+        button.getUserData();
+
+    if (!(data instanceof Cat newCat)) {
+      return;
+    }
+
+    Cat oldCat =
+        battleEngine.getPlayerCat();
+
+    persistPlayerCat();
+
+    battleEngine.switchPlayerCat(
+        newCat
+    );
+
+    playerNameLabel.setText(
+        newCat.getName()
+    );
+
+    CatSpriteRenderer.setSprite(
+        playerCatImage,
+        newCat,
+        CatSpriteRenderer.BATTLE_PLAYER
+    );
+
+    updateHealthLabels();
+    loadAbilityButtons();
+
+    switchMenu.setVisible(false);
+    switchMenu.setManaged(false);
+
+    showMessage(
+        oldCat.getName()
+            + ", come back! Go "
+            + newCat.getName()
+            + "!",
+        this::performOpponentTurn
+    );
+  }
+
+  @FXML
+  private void handleSwitchBack() {
+
+    switchMenu.setVisible(false);
+    switchMenu.setManaged(false);
+
+    actionMenu.setVisible(true);
+    actionMenu.setManaged(true);
+
+    showMessage(
+        "Choose an action.",
+        null
+    );
+  }
+
+  private void loadSwitchButtons() {
+
+    Button[] buttons = {
+        switchCatButton1,
+        switchCatButton2,
+        switchCatButton3,
+        switchCatButton4
+    };
+
+    for (Button button : buttons) {
+      button.setText("");
+      button.setUserData(null);
+      button.setVisible(false);
+      button.setManaged(false);
+    }
+
+    ArrayList<Cat> ownedCats =
+        catDAO.findAll(
+            currentPlayer.getPlayerId()
+        );
+
+    Cat currentCat =
+        battleEngine.getPlayerCat();
+
+    int buttonIndex = 0;
+
+    for (Cat cat : ownedCats) {
+
+      if (!cat.isPlayerCat()) {
+        continue;
+      }
+
+      if (cat.getId() == currentCat.getId()) {
+        continue;
+      }
+
+      if (cat.getCurrentHp() <= 0) {
+        continue;
+      }
+
+      if (buttonIndex >= buttons.length) {
+        break;
+      }
+
+      Button button =
+          buttons[buttonIndex];
+
+      button.setText(
+          cat.getName()
+              + " - HP: "
+              + cat.getCurrentHp()
+              + "/"
+              + cat.getMaxHp()
+      );
+
+      button.setUserData(cat);
+      button.setVisible(true);
+      button.setManaged(true);
+
+      buttonIndex++;
+    }
+
+    if (buttonIndex == 0) {
+      showMessage(
+          "No other healthy cats are available.",
+          null
+      );
+    }
+  }
+
+  @FXML
+  private void handleOpponentDebugClick() {
+
+    opponentDebugClickCount++;
+
+    if (opponentDebugClickCount < 10) {
+      return;
+    }
+
+    opponentDebugClickCount = 0;
+
+    giveDebugItems();
+  }
+
+  private boolean isDebugItemRewardReady() {
+    return opponentDebugClickCount >= 10;
+  }
   private void updatePlayerOrThrow(String errorMessage) {
     try {
       boolean updated = playerDAO.update(currentPlayer);
@@ -1054,11 +1341,12 @@ public class BattleController {
   }
 
   private int getCatchChance(TraderItem item) {
-    if ("Basic Catching Item".equalsIgnoreCase(item.getItemName())) {
+
+    if ("Toy Mouse".equalsIgnoreCase(item.getItemName())) {
       return 50;
     }
 
-    if ("Strong Catching Item".equalsIgnoreCase(item.getItemName())) {
+    if ("Tuna Can".equalsIgnoreCase(item.getItemName())) {
       return 75;
     }
 
@@ -1072,5 +1360,32 @@ public class BattleController {
       int roll) {
 
     return roll < catchChance;
+  }
+
+  private int getAdjustedCatchChance(
+      TraderItem item) {
+
+    int baseChance =
+        getCatchChance(item);
+
+    Cat opponent =
+        battleEngine.getOpponentCat();
+
+    double healthPercent =
+        (double) opponent.getCurrentHp()
+            / opponent.getMaxHp();
+
+    int bonus = 0;
+
+    if (healthPercent <= 0.25) {
+      bonus = 20;
+    } else if (healthPercent <= 0.50) {
+      bonus = 10;
+    }
+
+    return Math.min(
+        95,
+        baseChance + bonus
+    );
   }
 }
