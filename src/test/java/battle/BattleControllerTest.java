@@ -2,6 +2,9 @@ package battle;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.lang.reflect.Field;
+import creature.Cat;
+import java.util.ArrayList;
 import java.lang.reflect.Method;
 import marketplace.TraderItem;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,14 +74,6 @@ class BattleControllerTest {
         );
 
     assertEquals("Night Claw", formatted);
-  }
-
-  @Test
-  void arenaDaoCannotBeNull() {
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> controller.setArenaDAO(null)
-    );
   }
 
   @Test
@@ -299,5 +294,162 @@ class BattleControllerTest {
         );
 
     assertEquals(expected, captured);
+  }
+
+  @Test
+  void arenaAllowsHealingItems()
+      throws Exception {
+
+    setBattleType(BattleType.ARENA);
+
+    TraderItem healingItem =
+        new TraderItem(
+            1,
+            "Small Potion",
+            "HEALING",
+            "Restores health.",
+            10,
+            5
+        );
+
+    Method isItemAllowedInBattle =
+        BattleController.class
+            .getDeclaredMethod(
+                "isItemAllowedInBattle",
+                TraderItem.class
+            );
+
+    isItemAllowedInBattle.setAccessible(true);
+
+    boolean allowed =
+        (boolean) isItemAllowedInBattle.invoke(
+            controller,
+            healingItem
+        );
+
+    assertTrue(allowed);
+  }
+
+  @Test
+  void arenaRejectsCatchingItems()
+      throws Exception {
+
+    setBattleType(BattleType.ARENA);
+
+    TraderItem catchingItem =
+        new TraderItem(
+            2,
+            "Basic Catching Item",
+            "CATCHING",
+            "Used to catch wild cats.",
+            25,
+            5
+        );
+
+    Method isItemAllowedInBattle =
+        BattleController.class
+            .getDeclaredMethod(
+                "isItemAllowedInBattle",
+                TraderItem.class
+            );
+
+    isItemAllowedInBattle.setAccessible(true);
+
+    boolean allowed =
+        (boolean) isItemAllowedInBattle.invoke(
+            controller,
+            catchingItem
+        );
+
+    assertFalse(allowed);
+  }
+
+  private void setBattleType(BattleType battleType)
+      throws Exception {
+
+    ArrayList<String> playerAbilities =
+        new ArrayList<>();
+
+    playerAbilities.add("SCRATCH");
+    playerAbilities.add("HEALING_PURR");
+
+    ArrayList<String> opponentAbilities =
+        new ArrayList<>();
+
+    opponentAbilities.add("POUNCE");
+
+    Cat playerCat =
+        new Cat(
+            "Whiskers",
+            "Tabby",
+            100,
+            playerAbilities,
+            true,
+            true
+        );
+
+    Cat opponentCat =
+        new Cat(
+            "Clawdia",
+            "Sphynx",
+            100,
+            opponentAbilities,
+            false,
+            false
+        );
+
+    BattleEngine engine =
+        new BattleEngine(
+            playerCat,
+            opponentCat,
+            battleType
+        );
+
+    Field battleEngineField =
+        BattleController.class
+            .getDeclaredField(
+                "battleEngine"
+            );
+
+    battleEngineField.setAccessible(true);
+
+    battleEngineField.set(
+        controller,
+        engine
+    );
+  }
+
+  @Test
+  void wildAllowsCatchingItems()
+      throws Exception {
+
+    setBattleType(BattleType.WILD);
+
+    TraderItem catchingItem =
+        new TraderItem(
+            2,
+            "Basic Catching Item",
+            "CATCHING",
+            "Used to catch wild cats.",
+            25,
+            5
+        );
+
+    Method isItemAllowedInBattle =
+        BattleController.class
+            .getDeclaredMethod(
+                "isItemAllowedInBattle",
+                TraderItem.class
+            );
+
+    isItemAllowedInBattle.setAccessible(true);
+
+    boolean allowed =
+        (boolean) isItemAllowedInBattle.invoke(
+            controller,
+            catchingItem
+        );
+
+    assertTrue(allowed);
   }
 }

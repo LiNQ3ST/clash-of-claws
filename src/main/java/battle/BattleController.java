@@ -4,7 +4,6 @@ import account.AccountService;
 import account.Player;
 import account.PlayerDAO;
 import adminarena.Arena;
-import adminarena.ArenaDAO;
 import app.SceneFactory;
 import app.SceneType;
 import creature.Cat;
@@ -122,14 +121,13 @@ public class BattleController {
   private final TraderItemDAO traderItemDAO = new TraderItemDAO();
   private final TraderService traderService = new TraderService();
 
-  private ArenaDAO arenaDAO;
-
   private Timeline messageTimeline;
   private String fullMessage = "";
   private int messageCharacterIndex;
   private Runnable messageAdvanceAction;
   private boolean messageTyping;
   private boolean continuingWilds;
+  private Arena currentArena;
 
   public BattleController() {
   }
@@ -151,15 +149,13 @@ public class BattleController {
       Cat playerCat,
       Cat opponentCat,
       BattleType battleType,
-      Integer arenaId) {
+      Arena arena) {
 
     currentPlayer =
         AccountService.getInstance()
             .getCurrentPlayer()
             .orElse(null);
 
-  public void startBattle(Cat playerCat, Cat opponentCat, String battleType) {
-    battleEngine = new BattleEngine(playerCat, opponentCat, battleType);
     if (currentPlayer == null
         || currentPlayer.getPlayerId() == null) {
       throw new IllegalStateException(
@@ -167,11 +163,13 @@ public class BattleController {
       );
     }
 
-    if (battleType == BattleType.ARENA && arenaId == null) {
+    if (battleType == BattleType.ARENA && arena == null) {
       throw new IllegalArgumentException(
-          "Arena battles require an arena ID."
+          "Arena battles require an Arena."
       );
     }
+
+    currentArena = arena;
 
     hideAllMenus();
 
@@ -181,6 +179,11 @@ public class BattleController {
             opponentCat,
             battleType
         );
+
+    Integer arenaId =
+        arena == null
+            ? null
+            : arena.getArenaId();
 
     battleRecord =
         new Battle(
@@ -223,16 +226,6 @@ public class BattleController {
             + "!",
         this::showActionMenu
     );
-  }
-
-  public void setArenaDAO(ArenaDAO arenaDAO) {
-    if (arenaDAO == null) {
-      throw new IllegalArgumentException(
-          "Arena DAO cannot be null."
-      );
-    }
-
-    this.arenaDAO = arenaDAO;
   }
 
   private void showWildOpeningMessage(Cat opponentCat) {
@@ -336,8 +329,7 @@ public class BattleController {
       int buttonIndex = 0;
 
       for (TraderItem item : allItems) {
-        if (battleEngine.getBattleType() == BattleType.ARENA
-            && !"HEALING".equalsIgnoreCase(item.getItemType())) {
+        if (!isItemAllowedInBattle(item)) {
           continue;
         }
 
@@ -489,6 +481,18 @@ public class BattleController {
     } else {
       itemActionButton.setText("Heal");
     }
+  }
+
+  private boolean isItemAllowedInBattle(
+      TraderItem item) {
+
+    if (battleEngine.getBattleType() == BattleType.ARENA) {
+      return "HEALING".equalsIgnoreCase(
+          item.getItemType()
+      );
+    }
+
+    return true;
   }
 
   private void hideAllMenus() {
@@ -923,40 +927,17 @@ public class BattleController {
   }
 
   private void handleArenaVictory() {
+
     persistPlayerCat();
 
-    Integer arenaId = battleRecord.getArenaId();
-
-    if (arenaId == null) {
+    if (currentArena == null) {
       throw new IllegalStateException(
-          "Arena battle is missing its arena ID."
+          "Arena battle is missing Arena information."
       );
     }
 
-    if (arenaDAO == null) {
-      throw new IllegalStateException(
-          "Arena DAO has not been configured."
-      );
-    }
-
-    Arena arena;
-
-    try {
-      arena =
-          arenaDAO.findById(arenaId)
-              .orElseThrow(
-                  () -> new IllegalStateException(
-                      "Arena could not be found."
-                  )
-              );
-    } catch (SQLException exception) {
-      throw new IllegalStateException(
-          "Arena could not be loaded.",
-          exception
-      );
-    }
-
-    int currencyReward = arena.getRewardAmount();
+    int currencyReward =
+        currentArena.getRewardAmount();
 
     currentPlayer.setCurrencyBalance(
         currentPlayer.getCurrencyBalance()
@@ -970,6 +951,7 @@ public class BattleController {
     battleRecord.setStatus(
         BattleResult.VICTORY.name()
     );
+
     battleDAO.update(battleRecord);
 
     showMessage(
