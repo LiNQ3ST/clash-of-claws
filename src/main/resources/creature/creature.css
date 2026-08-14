@@ -1,0 +1,166 @@
+/* Main background for creature screens */
+.creature-root {
+  -fx-background-image: url("../images/wood-wall.png");
+  -fx-background-repeat: no-repeat;
+  -fx-background-position: center center;
+  -fx-background-size: 100% 100%;
+  -fx-padding: 28;
+}
+
+
+/* Parchment area holding the CatDex / Party / Storage */
+.creature-panel {
+  -fx-background-color:
+      linear-gradient(
+          from 0% 0% to 100% 100%,
+          #fff1c9 0%,
+          #d1bf8d 55%,
+          #c2a76f 100%
+      );
+
+  -fx-background-radius: 4;
+
+  -fx-border-color: #6b4024;
+  -fx-border-width: 4;
+  -fx-border-radius: 4;
+
+  -fx-padding: 20;
+
+  -fx-effect:
+      dropshadow(
+          gaussian,
+          rgba(33, 20, 12, 0.58),
+          16,
+          0.2,
+          0,
+          7
+      );
+}
+
+
+/* Screen title */
+.creature-title {
+  -fx-text-fill: #5a321d;
+  -fx-font-size: 32px;
+  -fx-font-weight: bold;
+}
+
+
+/* Party / Storage / CatDex ListViews */
+.cat-list {
+  -fx-background-color: #fff8df;
+
+  -fx-border-color: #8a5834;
+  -fx-border-width: 2;
+  -fx-border-radius: 3;
+
+  -fx-padding: 5;
+}
+
+
+/*
+ * Individual cat rows.
+ */
+.cat-list .list-cell {
+  -fx-background-color: #fff8df;
+  -fx-text-fill: #432718;
+
+  -fx-border-color: transparent transparent #c2a76f transparent;
+  -fx-border-width: 0 0 1 0;
+
+  -fx-padding: 8;
+}
+
+
+/*
+ * Remove the weird alternating empty rows.
+ */
+.cat-list .list-cell:empty {
+  -fx-background-color: transparent;
+  -fx-border-width: 0;
+}
+
+
+/*
+ * Selected cat.
+ */
+.cat-list .list-cell:selected {
+  -fx-background-color: #d7c18a;
+}
+
+
+/*
+ * Text inside each cat card.
+ */
+.cat-list .label {
+  -fx-text-fill: #432718;
+}
+
+
+/* Buttons copied from account style */
+.primary-button {
+  -fx-background-color: #3a2819;
+  -fx-background-radius: 4;
+
+  -fx-border-color: #3f2416, #d7a94b;
+  -fx-border-width: 1, 2;
+  -fx-border-insets: 0, 1;
+  -fx-border-radius: 5, 4;
+
+  -fx-text-fill: #f1cf72;
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+
+  -fx-padding: 8 16 8 16;
+
+  -fx-cursor: hand;
+}
+
+
+.primary-button:hover {
+  -fx-background-color: #52351f;
+  -fx-border-color: #3f2416, #ffe08a;
+  -fx-text-fill: #fff0bd;
+}
+
+
+.primary-button:pressed {
+  -fx-background-color: #2e1d12;
+  -fx-translate-y: 1;
+}
+
+
+/* Counts and status messages */
+.creature-status {
+  -fx-text-fill: #5a321d;
+  -fx-font-size: 15px;
+  -fx-font-weight: bold;
+}
+
+
+.danger-button {
+  -fx-background-color: #57281f;
+  -fx-background-radius: 4;
+
+  -fx-border-color: #3f2416, #c58a52;
+  -fx-border-width: 1, 2;
+  -fx-border-insets: 0, 1;
+  -fx-border-radius: 5, 4;
+
+  -fx-text-fill: #f4d7a1;
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+
+  -fx-padding: 8 14;
+  -fx-cursor: hand;
+}
+
+.danger-button:hover {
+  -fx-background-color: #79362a;
+  -fx-border-color: #3f2416, #e4b66c;
+}
+
+.danger-button:pressed {
+  -fx-background-color: #421d17;
+  -fx-translate-y: 1;
+}

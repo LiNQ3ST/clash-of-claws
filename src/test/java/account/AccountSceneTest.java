@@ -67,7 +67,7 @@ public class AccountSceneTest {
             Player testPlayer = playerDAO.findByUsername(testUsername).orElse(null);
 
             if (testPlayer != null) {
-                playerDAO.delete(testPlayer.getPlayerId());
+                playerDAO.deleteAccount(testPlayer.getPlayerId());
             }
         }
     }
@@ -86,7 +86,7 @@ public class AccountSceneTest {
         robot.clickOn("#usernameField").write(testUsername);
         robot.clickOn("#passwordField").write(TEST_PASSWORD);
 
-        robot.clickOn("Log in");
+        robot.clickOn("LOG IN");
 
         Label errorLabel = robot.lookup("#errorLabel").queryAs(Label.class);
         waitForLabel(errorLabel, INVALID_LOGIN_MESSAGE);
@@ -97,7 +97,7 @@ public class AccountSceneTest {
 
 
         // Create a new account through the registration scene.
-        robot.clickOn("Create Account");
+        robot.clickOn("CREATE ACCOUNT");
 
         Scene registerScene = stage.getScene();
         assertNotSame(loginScene, registerScene);
@@ -108,7 +108,7 @@ public class AccountSceneTest {
         robot.clickOn("#passwordField").write(TEST_PASSWORD);
         robot.clickOn("#confirmationField").write(TEST_PASSWORD);
 
-        robot.clickOn("Create Account");
+        robot.clickOn("CREATE ACCOUNT");
 
         // Verify registration succeeded and the account-created alert is displayed.
         waitForNode(robot, "Log In");
@@ -128,7 +128,7 @@ public class AccountSceneTest {
 
         robot.clickOn("#usernameField").write(testUsername);
 
-        robot.clickOn("Log in");
+        robot.clickOn("LOG IN");
 
         Label loginError = robot.lookup("#errorLabel").queryAs(Label.class);
         waitForLabel(loginError, MISSING_CREDENTIALS_MESSAGE);
@@ -141,7 +141,7 @@ public class AccountSceneTest {
         // Submit the correct username with the wrong password.
         robot.clickOn("#passwordField").write(WRONG_PASSWORD);
 
-        robot.clickOn("Log in");
+        robot.clickOn("LOG IN");
 
         waitForLabel(loginError, INVALID_LOGIN_MESSAGE);
 
@@ -156,7 +156,7 @@ public class AccountSceneTest {
         robot.interact(passwordField::clear);
         robot.clickOn("#passwordField").write(TEST_PASSWORD);
 
-        robot.clickOn("Log in");
+        robot.clickOn("LOG IN");
 
         // A new player has no active cat, so successful login routes to Starter.
         waitForNode(robot, "Choose Your Starter Cat");

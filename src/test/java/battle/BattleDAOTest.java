@@ -23,7 +23,9 @@ class BattleDAOTest {
 
   @BeforeEach
   void setUp() throws SQLException {
-    DatabaseManager.getInstance().initializeDatabase();
+    DatabaseManager.getInstance()
+        .initializeDatabase();
+
     battleDAO = new BattleDAO();
 
     clearBattleTable();
@@ -35,13 +37,14 @@ class BattleDAOTest {
   }
 
   @Test
-  void insert() {
-    Battle battle = new Battle(
-        1,
-        "WILD",
-        null,
-        "IN_PROGRESS"
-    );
+  void insertWildBattleAssignsIdAndPersistsFields() {
+    Battle battle =
+        new Battle(
+            1,
+            BattleType.WILD.name(),
+            null,
+            BattleResult.IN_PROGRESS.name()
+        );
 
     battleDAO.insert(battle);
 
@@ -51,90 +54,186 @@ class BattleDAOTest {
     );
 
     Battle savedBattle =
-        battleDAO.findById(battle.getBattleId());
+        battleDAO.findById(
+            battle.getBattleId()
+        );
 
     assertNotNull(savedBattle);
     assertEquals(1, savedBattle.getPlayerId());
-    assertEquals("WILD", savedBattle.getBattleType());
+    assertEquals(
+        BattleType.WILD.name(),
+        savedBattle.getBattleType()
+    );
     assertNull(savedBattle.getArenaId());
-    assertEquals("IN_PROGRESS", savedBattle.getStatus());
+    assertEquals(
+        BattleResult.IN_PROGRESS.name(),
+        savedBattle.getStatus()
+    );
   }
 
   @Test
-  void findById() {
-    Battle battle = new Battle(
-        2,
-        "ARENA",
-        10,
-        "IN_PROGRESS"
-    );
+  void findByIdReturnsStoredArenaBattle() {
+    Battle battle =
+        new Battle(
+            2,
+            BattleType.ARENA.name(),
+            10,
+            BattleResult.IN_PROGRESS.name()
+        );
 
     battleDAO.insert(battle);
 
     Battle foundBattle =
-        battleDAO.findById(battle.getBattleId());
+        battleDAO.findById(
+            battle.getBattleId()
+        );
 
     assertNotNull(foundBattle);
-    assertEquals(battle, foundBattle);
+    assertEquals(
+        battle,
+        foundBattle
+    );
+  }
+
+  @Test
+  void findByIdReturnsNullForMissingBattle() {
+    assertNull(
+        battleDAO.findById(
+            Integer.MAX_VALUE
+        )
+    );
+  }
+
+  @Test
+  void updatePersistsVictoryStatus() {
+    Battle battle =
+        new Battle(
+            3,
+            BattleType.WILD.name(),
+            null,
+            BattleResult.IN_PROGRESS.name()
+        );
+
+    battleDAO.insert(battle);
+
+    battle.setStatus(
+        BattleResult.VICTORY.name()
+    );
+
+    boolean updated =
+        battleDAO.update(battle);
+
+    Battle savedBattle =
+        battleDAO.findById(
+            battle.getBattleId()
+        );
+
+    assertTrue(updated);
+    assertNotNull(savedBattle);
+    assertEquals(
+        BattleResult.VICTORY.name(),
+        savedBattle.getStatus()
+    );
+  }
+
+  @Test
+  void updatePersistsEscapedStatus() {
+    Battle battle =
+        new Battle(
+            4,
+            BattleType.WILD.name(),
+            null,
+            BattleResult.IN_PROGRESS.name()
+        );
+
+    battleDAO.insert(battle);
+
+    battle.setStatus(
+        BattleResult.ESCAPED.name()
+    );
+
+    assertTrue(
+        battleDAO.update(battle)
+    );
+
+    Battle savedBattle =
+        battleDAO.findById(
+            battle.getBattleId()
+        );
+
+    assertNotNull(savedBattle);
+    assertEquals(
+        BattleResult.ESCAPED.name(),
+        savedBattle.getStatus()
+    );
+  }
+
+  @Test
+  void updateReturnsFalseForMissingBattle() {
+    Battle battle =
+        new Battle(
+            5,
+            BattleType.WILD.name(),
+            null,
+            BattleResult.DEFEAT.name()
+        );
+
+    battle.setBattleId(
+        Integer.MAX_VALUE
+    );
+
+    assertFalse(
+        battleDAO.update(battle)
+    );
+  }
+
+  @Test
+  void deleteRemovesBattle() {
+    Battle battle =
+        new Battle(
+            6,
+            BattleType.WILD.name(),
+            null,
+            BattleResult.IN_PROGRESS.name()
+        );
+
+    battleDAO.insert(battle);
+
+    int battleId =
+        battle.getBattleId();
+
+    assertTrue(
+        battleDAO.delete(battleId)
+    );
 
     assertNull(
-        battleDAO.findById(Integer.MAX_VALUE),
-        "A nonexistent battle ID should return null."
+        battleDAO.findById(battleId)
     );
   }
 
   @Test
-  void update() {
-    Battle battle = new Battle(
-        3,
-        "WILD",
-        null,
-        "IN_PROGRESS"
-    );
-
-    battleDAO.insert(battle);
-
-    battle.setStatus("WON");
-
-    boolean wasUpdated = battleDAO.update(battle);
-    Battle updatedBattle =
-        battleDAO.findById(battle.getBattleId());
-
-    assertTrue(wasUpdated);
-    assertNotNull(updatedBattle);
-    assertEquals("WON", updatedBattle.getStatus());
-  }
-
-  @Test
-  void delete() {
-    Battle battle = new Battle(
-        4,
-        "WILD",
-        null,
-        "IN_PROGRESS"
-    );
-
-    battleDAO.insert(battle);
-
-    int battleId = battle.getBattleId();
-
-    boolean wasDeleted = battleDAO.delete(battleId);
-
-    assertTrue(wasDeleted);
-    assertNull(battleDAO.findById(battleId));
+  void deletingMissingBattleReturnsFalse() {
     assertFalse(
-        battleDAO.delete(battleId),
-        "Deleting the same battle twice should return false."
+        battleDAO.delete(
+            Integer.MAX_VALUE
+        )
     );
   }
 
-  private void clearBattleTable() throws SQLException {
+  private void clearBattleTable()
+      throws SQLException {
+
     try (
         Connection connection =
-            DatabaseManager.getInstance().getConnection();
-        Statement statement = connection.createStatement()
+            DatabaseManager.getInstance()
+                .getConnection();
+
+        Statement statement =
+            connection.createStatement()
     ) {
-      statement.executeUpdate("DELETE FROM battle");
+      statement.executeUpdate(
+          "DELETE FROM battle"
+      );
     }
   }
 }

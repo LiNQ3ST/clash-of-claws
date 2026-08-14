@@ -1,12 +1,12 @@
 package app;
 
+import battle.BattleController;
+import battle.BattleType;
+import creature.Cat;
 import java.io.IOException;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import battle.BattleController;
-import creature.Cat;
 import java.net.URL;
 
 /**
@@ -19,67 +19,116 @@ import java.net.URL;
 
 public final class SceneFactory {
 
-    private static final double WINDOW_WIDTH = 960;
-    private static final double WINDOW_HEIGHT = 600;
+  private static final double WINDOW_WIDTH = 960;
+  private static final double WINDOW_HEIGHT = 600;
+  private static final double MIN_WINDOW_WIDTH = 760;
+  private static final double MIN_WINDOW_HEIGHT = 620;
 
-    private static Stage primaryStage;
+  private static Stage primaryStage;
 
-    private SceneFactory() {
-        // Utility class.
+  private SceneFactory() {
+    // Utility class.
+  }
+
+  public static void initialize(Stage stage) {
+    if (stage == null) {
+      throw new IllegalArgumentException(
+          "Stage cannot be null."
+      );
     }
 
-    public static void initialize(Stage stage) {
-        if (stage == null) {
-            throw new IllegalArgumentException(
-                    "Stage cannot be null."
-            );
-        }
+    primaryStage = stage;
+  }
 
-        primaryStage = stage;
+  public static Scene create(SceneType type) {
+    URL resource = SceneFactory.class.getResource(
+        type.getFxmlPath()
+    );
+
+    if (resource == null) {
+      throw new IllegalStateException(
+          "FXML resource was not found: "
+              + type.getFxmlPath()
+      );
     }
 
-    public static Scene create(SceneType type) {
-        URL resource = SceneFactory.class.getResource(
-                type.getFxmlPath()
-        );
+    try {
+      FXMLLoader loader = new FXMLLoader(resource);
 
-        if (resource == null) {
-            throw new IllegalStateException(
-                    "FXML resource was not found: "
-                            + type.getFxmlPath()
-            );
-        }
+      return new Scene(
+          loader.load(),
+          WINDOW_WIDTH,
+          WINDOW_HEIGHT
+      );
+    } catch (IOException exception) {
+      throw new IllegalStateException(
+          "Unable to load scene: " + type,
+          exception
+      );
+    }
+  }
 
-        try {
-            FXMLLoader loader = new FXMLLoader(resource);
+  public static void show(SceneType type) {
+    ensureInitialized();
 
-            return new Scene(
-                    loader.load(),
-                    WINDOW_WIDTH,
-                    WINDOW_HEIGHT
-            );
-        } catch (IOException exception) {
-            throw new IllegalStateException(
-                    "Unable to load scene: " + type,
-                    exception
-            );
-        }
+    primaryStage.setScene(create(type));
+    primaryStage.show();
+  }
+
+  public static void showMainScene() {
+    show(SceneType.MAIN);
+  }
+
+  public static void showTraderScene() {
+    show(SceneType.TRADER);
+  }
+
+  public static void showBattle(
+      Cat playerCat,
+      Cat opponentCat,
+      BattleType battleType) {
+
+    ensureInitialized();
+
+    URL resource = SceneFactory.class.getResource(
+        SceneType.BATTLE.getFxmlPath()
+    );
+
+    if (resource == null) {
+      throw new IllegalStateException(
+          "FXML resource was not found: "
+              + SceneType.BATTLE.getFxmlPath()
+      );
     }
 
-    public static void show(SceneType type) {
-        ensureInitialized();
+    try {
+      FXMLLoader loader = new FXMLLoader(resource);
 
-        primaryStage.setScene(create(type));
-        primaryStage.show();
-    }
+      Scene scene = new Scene(
+          loader.load(),
+          WINDOW_WIDTH,
+          WINDOW_HEIGHT
+      );
 
-    public static void showMainScene() {
-        show(SceneType.MAIN);
-    }
+      BattleController controller =
+          loader.getController();
 
-    public static void showTraderScene() {
-        show(SceneType.TRADER);
+      controller.startBattle(
+          playerCat,
+          opponentCat,
+          battleType
+      );
+
+      primaryStage.setScene(scene);
+      primaryStage.show();
+
+    } catch (IOException exception) {
+      throw new IllegalStateException(
+          "Unable to load battle scene.",
+          exception
+      );
     }
+  }
 
     public static void showBattle(
             Cat playerCat,
@@ -134,6 +183,12 @@ public final class SceneFactory {
                     "SceneFactory must be initialized first."
             );
         }
+  private static void ensureInitialized() {
+    if (primaryStage == null) {
+      throw new IllegalStateException(
+          "SceneFactory must be initialized first."
+      );
     }
+  }
 }
 
