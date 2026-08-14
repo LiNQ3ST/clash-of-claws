@@ -13,6 +13,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.ApplicationTest;
 
@@ -26,6 +27,7 @@ import static org.testfx.matcher.control.LabeledMatchers.hasText;
  * @version 0.1.0
  * @since 8/13/2026
  */
+@Tag("testfx")
 class PlayerArenaControllerTest extends ApplicationTest {
 
     @Override

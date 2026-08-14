@@ -18,6 +18,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.ApplicationTest;
 import marketplace.TraderItem;
@@ -30,6 +31,7 @@ import marketplace.TraderItem;
  * @since 8/11/2026
  */
 
+@Tag("testfx")
 class BattleFxTest extends ApplicationTest {
 
   private BattleController controller;
